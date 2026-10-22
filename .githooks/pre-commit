@@ -24,6 +24,7 @@ fi
 # Conta linhas alteradas, ignorando arquivos gerados
 linhas="$(git diff --cached --numstat -- . \
   ':(exclude)package-lock.json' ':(exclude)**/database.types.ts' ':(exclude)referencias/**' \
+  ':(exclude).claude/skills/**' ':(exclude)skills-lock.json' \
   | awk '{ if ($1 != "-") s += $1 + $2 } END { print s + 0 }')"
 
 if [ "$linhas" -ge "$LIMITE" ]; then
