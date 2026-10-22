@@ -8,6 +8,8 @@ port = 54321
 schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
+# Nexus: igual à nuvem (obrigatório desde 30/10/2026) — tabela nova só aparece na API com GRANT explícito na migration.
+auto_expose_new_tables = false
 
 [api.tls]
 enabled = false
@@ -72,15 +74,16 @@ max_indexes = 5
 
 [auth]
 enabled = true
-site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# Nexus: Angular local (npm start). Produção é configurada no painel (docs/DEPLOY.md, T-40).
+site_url = "http://localhost:4200"
+additional_redirect_urls = ["http://localhost:4200/**", "http://127.0.0.1:4200/**"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
 enable_signup = true
 enable_anonymous_sign_ins = false
 enable_manual_linking = false
-minimum_password_length = 6
+minimum_password_length = 8
 password_requirements = ""
 
 [auth.rate_limit]
@@ -92,6 +95,7 @@ sign_in_sign_ups = 30
 token_verifications = 30
 web3 = 30
 
+# Nexus: e-mail/senha existe SÓ no ambiente local (logins do seed.sql). Em produção fica desligado (NAO_FAZER #7).
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
@@ -134,6 +138,18 @@ secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
 redirect_uri = ""
 url = ""
 skip_nonce_check = false
+email_optional = false
+
+# Nexus: login Google da empresa. Credenciais vêm de supabase/.env (fora do Git) — ver .env.example.
+# Redirect autorizado no Google Cloud para uso local: http://127.0.0.1:54321/auth/v1/callback
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+redirect_uri = ""
+url = ""
+# Exigido pelo Supabase para login Google no ambiente local.
+skip_nonce_check = true
 email_optional = false
 
 [auth.web3.solana]
