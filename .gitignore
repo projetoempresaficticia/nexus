@@ -11,3 +11,14 @@ supabase/.temp/
 supabase/.branches/
 *.csv
 .DS_Store
+Thumbs.db
+/tmp
+/out-tsc
+npm-debug.log
+__screenshots__/
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
