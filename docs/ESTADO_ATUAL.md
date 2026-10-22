@@ -20,7 +20,7 @@
 Incluídos: tarefas sem projeto (US-34), vários responsáveis (US-35), título editável (US-09), membro vê só o que o envolve (US-36), tempo real + abertura instantânea (US-37, T-43, T-44).
 
 ## Bloqueios / pendências de decisão
-- ⚠️ Repositório **público ou GitHub Pro**? Necessário para proteger a `main` (T-01) e para o GitHub Pages (T-04/T-40). Conta usada: `projetoempresaficticia` — confirmar se é a definitiva.
+- ⚠️ Repositório **público ou GitHub Pro**? Necessário para proteger a `main` (T-01) e para o GitHub Pages (T-04/T-40). Conta definitiva: `projetoempresaficticia` (confirmado pelo Germano em 2026-10-22).
 - ⚠️ Provedor de e-mail (Resend vs SMTP Google Workspace) — necessário até T-36.
 - ⚠️ Domínio próprio — necessário até T-40.
 - ⚠️ Líder pode gerir vínculos/sub-setores? Membro criador pode excluir item com filhos? (SEGURANCA.md §3) — necessário até T-06/T-20.
