@@ -10,6 +10,24 @@ Formato de cada entrada:
 - **Data / tarefa:** AAAA-MM-DD · T-XX
 ```
 
+## Angular 22 não instala com Node 24.11
+- **Sintoma:** `npm install` avisa/recusa `@angular/core` por `engines`.
+- **Causa:** Angular 22 exige Node `^22.22.3 || ^24.15.0 || >=26`.
+- **Solução:** `winget upgrade OpenJS.NodeJS.LTS` (ou instalador LTS de nodejs.org) e reabrir o VS Code.
+- **Data / tarefa:** 2026-10-22 · T-01
+
+## Aviso "install scripts not yet covered by allowScripts" no npm install
+- **Sintoma:** npm 11.19 lista esbuild, lmdb, @parcel/watcher e msgpackr-extract.
+- **Causa:** o npm novo não roda scripts de instalação sem aprovação.
+- **Solução:** pode ignorar — o build e os testes funcionam (os binários vêm em pacotes opcionais). Se algum dia falhar, `npm install-scripts approve <pacote>`.
+- **Data / tarefa:** 2026-10-22 · T-01
+
+## Proteção da `main` recusada pelo GitHub (HTTP 403)
+- **Sintoma:** "Upgrade to GitHub Pro or make this repository public to enable this feature."
+- **Causa:** no plano gratuito, proteção de branch (e rulesets) só existe em repositório público.
+- **Solução:** tornar o repositório público ou assinar GitHub Pro e rodar de novo o comando de proteção. Resolvido tornando o repositório público.
+- **Data / tarefa:** 2026-10-22 · T-01
+
 ## Herdados do v26 (para não repetir)
 ## Datas viram objetos Date e quebram as visões de semana/mês
 - **Sintoma:** prazos aparecem um dia antes/depois ou somem das visões.
