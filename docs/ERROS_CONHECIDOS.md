@@ -25,7 +25,7 @@ Formato de cada entrada:
 ## Proteção da `main` recusada pelo GitHub (HTTP 403)
 - **Sintoma:** "Upgrade to GitHub Pro or make this repository public to enable this feature."
 - **Causa:** no plano gratuito, proteção de branch (e rulesets) só existe em repositório público.
-- **Solução:** tornar o repositório público ou assinar GitHub Pro e rodar de novo o comando de proteção. Até lá, o hook `.githooks/pre-commit` bloqueia commits na `main` localmente.
+- **Solução:** tornar o repositório público ou assinar GitHub Pro e rodar de novo o comando de proteção. Resolvido tornando o repositório público.
 - **Data / tarefa:** 2026-10-22 · T-01
 
 ## Herdados do v26 (para não repetir)
