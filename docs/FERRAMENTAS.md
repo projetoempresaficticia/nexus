@@ -2,11 +2,13 @@
 
 Quando houver dúvida técnica, **pesquise antes de inventar**. Ordem: docs do projeto → skills → fontes oficiais → perguntar ao Germano.
 
-## Skills do projeto (instaladas em T-02)
+## Skills do projeto (instaladas em T-02, em `.claude/skills/`, versionadas no Git)
 | skill | instalar | usar para |
 |---|---|---|
-| `angular-developer`, `angular-new-app` | `npx skills add https://github.com/angular/skills` | componentes, signals, rotas, formulários, testes, criação do projeto |
-| Supabase agent skills | `npx skills add supabase/agent-skills` | migrations, RLS, funções SQL, Storage, Auth, Edge Functions |
+| `angular-developer`, `angular-new-app` | `npx skills add https://github.com/angular/skills -a claude-code -s '*' -y --copy` | componentes, signals, rotas, formulários, testes, criação do projeto |
+| `supabase`, `supabase-postgres-best-practices` | `npx skills add supabase/agent-skills -a claude-code -s '*' -y --copy` | migrations, RLS, funções SQL, Storage, Auth, Edge Functions |
+
+Atualizar: `npx skills update -p -y` (revise o diff antes do commit — skills rodam com as permissões do agente).
 
 ## findskills (procurar outras skills)
 - Comando nesta máquina: `npx skills find <termos>` (ex.: `npx skills find playwright`).

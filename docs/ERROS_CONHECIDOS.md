@@ -28,6 +28,12 @@ Formato de cada entrada:
 - **Solução:** tornar o repositório público ou assinar GitHub Pro e rodar de novo o comando de proteção. Resolvido tornando o repositório público.
 - **Data / tarefa:** 2026-10-22 · T-01
 
+## Hook bloqueia commit com "service_role" que não é chave
+- **Sintoma:** "✖ Parece haver uma chave service_role no commit" em arquivos sem segredo (skills, SQL com `grant … to service_role`).
+- **Causa:** a regex antiga procurava a palavra `service_role`.
+- **Solução:** regex agora procura o valor da chave (ver DECISOES). Se mesmo assim bloquear, confira a linha com `git diff --cached | grep -i service_role` — se for uma chave de verdade, **remova-a**.
+- **Data / tarefa:** 2026-10-22 · T-02
+
 ## Herdados do v26 (para não repetir)
 ## Datas viram objetos Date e quebram as visões de semana/mês
 - **Sintoma:** prazos aparecem um dia antes/depois ou somem das visões.
