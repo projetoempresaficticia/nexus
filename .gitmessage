@@ -1,0 +1,16 @@
+
+# tipo(escopo): descrição no imperativo, minúscula, sem ponto final
+#
+# Tipos:   feat | fix | docs | style | refactor | perf | test | chore
+# Escopos: auth shell ui itens projetos tarefas item kanban visoes solicitacoes
+#          comentarios anexos painel produtividade equipe usuarios setores
+#          notificacoes db rls functions importacao ci deploy
+#
+# Exemplo: feat(solicitacoes): abre solicitação a partir da página do item
+#
+# [corpo opcional — o PORQUÊ em 1-3 linhas]
+#
+# Refs: T-XX
+#
+# Regras: uma mudança lógica por commit · alvo até ~150 linhas · projeto compilando.
+# Ativar este template:  git config commit.template .gitmessage

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.angular/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+*.csv
+.DS_Store

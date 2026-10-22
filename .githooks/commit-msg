@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Valida a mensagem de commit no padrão tipo(escopo): descrição — ver docs/COMMITS.md
+msg_file="$1"
+first_line="$(grep -v '^#' "$msg_file" | sed '/^\s*$/d' | head -n1)"
+
+# Permite merges e reverts gerados pelo git
+case "$first_line" in
+  Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
+esac
+
+pattern='^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z0-9-]+\))?!?: [^A-Z].{2,}[^.]$'
+if ! printf '%s' "$first_line" | grep -Eq "$pattern"; then
+  echo ""
+  echo "✖ Mensagem de commit fora do padrão:"
+  echo "    $first_line"
+  echo ""
+  echo "  Use:  tipo(escopo): descrição no imperativo, minúscula, sem ponto final"
+  echo "  Ex.:  feat(solicitacoes): abre solicitação a partir da página do item"
+  echo "  Tipos: feat fix docs style refactor perf test chore  (ver docs/COMMITS.md)"
+  echo ""
+  exit 1
+fi
+
+if [ "${#first_line}" -gt 100 ]; then
+  echo "✖ Primeira linha com ${#first_line} caracteres (máx. 100). Mova detalhes para o corpo."
+  exit 1
+fi
+exit 0
