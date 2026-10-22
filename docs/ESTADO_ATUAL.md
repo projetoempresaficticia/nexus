@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-22 — T-01 concluída: projeto Angular 22 (zoneless, strict, Vitest, ESLint, Prettier), tokens de design e fontes; repositório GitHub público com `main` protegida.
+2026-10-22 — T-01 concluída e juntada (PR #1). T-02 concluída: skills do Angular e do Supabase, modelo de commit, labels, só "Squash and merge"; hook de segredos corrigido.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -10,11 +10,13 @@
 - Node atualizado para 24.22.1. Hooks ativados localmente (`core.hooksPath .githooks`).
 - Repositório **público**: https://github.com/projetoempresaficticia/nexus — `main` protegida (PR obrigatório, inclusive para admins; histórico linear; sem force push).
 
+- **T-02**: skills em `.claude/skills/` (+ `skills-lock.json`), `commit.template` = `.gitmessage`, 16 labels (12 de área + 4 de tipo), merge só por squash (título = PR), branch apagada após merge.
+
 ## Em andamento
-- PR #1 da T-01 aberto, aguardando o merge do Germano ("Squash and merge").
+- PR da T-02 aberto.
 
 ## Próximo passo
-- **T-02** — skills, `.gitmessage`, labels do GitHub, só "Squash and merge".
+- **T-03** — Supabase local (`npx supabase init`, `config.toml`, `supabase.client.ts`, `environments`). **Abrir o Docker Desktop antes.**
 
 ## Revisão de 2026-10-22
 Incluídos: tarefas sem projeto (US-34), vários responsáveis (US-35), título editável (US-09), membro vê só o que o envolve (US-36), tempo real + abertura instantânea (US-37, T-43, T-44).

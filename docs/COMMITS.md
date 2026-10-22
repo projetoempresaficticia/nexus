@@ -54,7 +54,7 @@ docs: registra decisão sobre provedor de e-mail
 
 ### Regras de tamanho (o mais importante)
 - **Uma mudança lógica por commit.** Se precisa de "e" na descrição, provavelmente são dois commits.
-- **Alvo: até ~150 linhas alteradas por commit.** O hook `.githooks/pre-commit` **avisa** a partir de 200 linhas e **pede confirmação** a partir de 400. (Arquivos gerados — `package-lock.json`, `database.types.ts` — não contam.)
+- **Alvo: até ~150 linhas alteradas por commit.** O hook `.githooks/pre-commit` **avisa** a partir de 200 linhas e **pede confirmação** a partir de 400. (Arquivos gerados ou de terceiros — `package-lock.json`, `database.types.ts`, `referencias/`, `.claude/skills/`, `skills-lock.json` — não contam.)
 - Ordem natural numa tarefa de banco: migration → políticas → testes → seed. Numa tarefa de tela: service → store → componente → estilos → testes.
 - Testes entram no mesmo PR que o código (podem ser commit separado `test(...)`).
 - Commit tem de deixar o projeto **compilando**. Nunca commitar código quebrado "para continuar depois".

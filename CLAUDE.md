@@ -23,6 +23,7 @@ npm run e2e                     # Playwright
 npm run build                   # build de produção em dist/
 npm run lint                    # lint
 git config core.hooksPath .githooks   # ativar hooks de commit (uma vez)
+git config commit.template .gitmessage  # modelo de mensagem de commit (uma vez)
 ```
 
 ## Estrutura de pastas
