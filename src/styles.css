@@ -1,5 +1,6 @@
 /* Estilos globais — base do protótipo aprovado. Estilos de componente ficam no próprio componente. */
 @import './styles/tokens.css';
+@import './styles/prototipo.css';
 
 *,
 *::before,
