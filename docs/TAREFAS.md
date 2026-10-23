@@ -11,7 +11,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-04** GitHub Actions: `ci.yml` (lint, test, build, pgTAP com Supabase local) em todo PR; `deploy.yml` para GitHub Pages na `main` (`--base-href /nexus/`, copiar `index.html` → `404.html`). — Dep.: T-03
 
 ## Fase 1 — Banco de dados
-- [ ] **T-05** Migration: enums; `perfis`, `setores`, `vinculos`; funções `meu_perfil_id`, `eh_admin`, `setores_descendentes`, `setores_visiveis`, `setores_administrados`, `administra_setor`; trigger anti-ciclo de setor; RLS; pgTAP. — Dep.: T-03 · US-02, US-05
+- [x] **T-05** Migration: enums; `perfis`, `setores`, `vinculos`; funções `meu_perfil_id`, `eh_admin`, `setores_descendentes`, `setores_visiveis`, `setores_administrados`, `administra_setor`; trigger anti-ciclo de setor; RLS; pgTAP. — Dep.: T-03 · US-02, US-05
 - [ ] **T-06** Migration: `itens` (com tarefa avulsa), `item_responsaveis`, `checklist_itens`, `dependencias`; triggers (nível/setor herdado, anti-ciclo, `atualizado_em`, `parado_desde`); `itens_envolvidos`, `pode_ver_item` (regra "só o que me envolve", SEGURANCA §2.1), `pode_editar_item`; RLS; pgTAP cobrindo US-36. — Dep.: T-05 · US-07..US-12, US-34..US-36
 - [ ] **T-07** Migration: `solicitacoes`, `solicitacao_mensagens`, `comentarios`, `mencoes`, `anexos`; bucket `anexos` + políticas Storage; RLS; pgTAP. — Dep.: T-06 · US-15..US-20
 - [ ] **T-08** Migration: `historico` + triggers de auditoria; `notificacoes`; views `vw_itens` (com `responsaveis`, `meu_envolvimento`) e `vw_produtividade`; índices; publicação `supabase_realtime` + `replica identity full` nas tabelas de SCHEMA §Tempo real. — Dep.: T-07 · US-30, US-32, US-37

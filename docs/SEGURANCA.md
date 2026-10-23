@@ -11,6 +11,7 @@ Princípio: **o banco decide**. O Angular só esconde o que a pessoa não pode f
 - Login por e-mail/senha **só no ambiente local** (para testes e2e). Desligado em produção.
 
 ## 2. Funções auxiliares (SQL, `security definer`, `stable`, `set search_path = ''`)
+Ficam no schema **`privado`** (não exposto na API; `execute` só para `authenticated`, revogado de `anon`/`public`). Nas políticas, chame com o schema: `(select privado.meu_perfil_id())`.
 | função | devolve |
 |---|---|
 | `meu_perfil_id()` | uuid do perfil ativo logado ou null |
@@ -42,7 +43,8 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 | Perfis — ver | todos | pessoas ativas (para atribuir/mencionar) | pessoas ativas | pessoas ativas |
 | Perfis — criar/editar/desativar | ✅ | ❌ | ❌ | ❌ |
 | Setores — ver | todos | visíveis | visíveis | ❌ |
-| Setores — criar/editar/desativar | ✅ | ❌ ⚠️ | ❌ | ❌ |
+| Setores — criar | ✅ | ✅ só **abaixo** de um setor que administra (nunca na raiz nem acima) | ❌ | ❌ |
+| Setores — editar/mover/desativar | ✅ | ❌ | ❌ | ❌ |
 | Vínculos — ver | todos | dos setores visíveis | dos setores visíveis | ❌ |
 | Vínculos — gerir | ✅ | ❌ ⚠️ | ❌ | ❌ |
 | Projeto — criar | ✅ | ✅ | ✅ (decisão: qualquer vínculo) | ❌ |
@@ -67,7 +69,8 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 | Histórico — ver | todos | quem vê o registo | quem vê o registo | ❌ |
 | Notificações — ver | ✅ | ❌ (só Edge Function com service role) | ❌ | ❌ |
 
-> ⚠️ A CONFIRMAR: (1) Líder pode gerir vínculos/sub-setores do seu setor ou continua só Adm, como no v26? (2) Membro criador pode excluir item que já tem filhos? Por padrão o kit assume **não**.
+> Confirmado (2026-10-23, Germano): Líder pode criar sub-setor abaixo do seu setor, nunca acima.
+> ⚠️ A CONFIRMAR: (1) Líder pode gerir **vínculos** (pôr/tirar pessoas) do seu setor? Implementado como **só Adm** (padrão do v26) até confirmação. (2) Membro criador pode excluir item que já tem filhos? Por padrão o kit assume **não**.
 
 ## 4. Políticas RLS (resumo em SQL — a implementação vai em migrations)
 ```sql
