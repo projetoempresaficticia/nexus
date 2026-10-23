@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-23 — T-01 a T-07 concluídas (modo autónomo: Germano testa no fim). 79 testes pgTAP.
+2026-10-23 — T-01 a T-08 concluídas (modo autónomo: Germano testa no fim). 95 testes pgTAP.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -14,20 +14,21 @@
 - **T-05**: migration `20261023075322_perfis_setores_vinculos.sql` (7 enums, `perfis`, `setores`, `vinculos`, funções em `privado`, trigger anti-ciclo, RLS + grants), `supabase/tests/001_perfis_setores_vinculos.test.sql` (24 testes, verdes no CI). Aplicada no nexus-dev; advisors de segurança sem alertas; API anônima recusada.
 - **T-06**: migration `20261023080619_itens_responsaveis_checklist_dependencias.sql` (itens + tarefa avulsa, responsáveis, checklist, dependências; triggers de nível/setor/status/ciclo; `itens_visiveis`/`pode_ver_item`/`pode_editar_item`; RLS) + 32 testes pgTAP. Aplicada no nexus-dev.
 - **T-07**: migration `20261023083122_solicitacoes_comentarios_anexos.sql` (solicitações, mensagens, comentários, menções, anexos; envolvimento por solicitação/menção; bucket privado `anexos` + políticas Storage) + 23 testes. Aplicada no nexus-dev.
+- **T-08**: migration `20261023193718_historico_notificacoes_views_realtime.sql` (historico + trigger de auditoria em itens/solicitacoes/vinculos/perfis, notificacoes + `privado.notificar`, `vw_itens`, `vw_produtividade`, Realtime em 8 tabelas) + 16 testes; seed religado (CI). Aplicada no nexus-dev. Advisor INFO "notificacoes sem política" é intencional (só service role).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-08** — `historico` + triggers, `notificacoes`, views `vw_itens` e `vw_produtividade`, Realtime; religar o seed (e deixar os testes pgTAP independentes das contagens do seed).
+- **T-09** — RPCs de itens: criar_item, atualizar_item, definir_responsaveis, mudar_status (recorrência), contar_descendentes, excluir_item, definir_dependencia + pgTAP.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
 
 ## Lembretes para as próximas tarefas
 - **Todas as tabelas novas:** `grant` explícito a `authenticated` + RLS; funções de acesso em `privado`, chamadas como `(select privado.f())`.
-- **T-08:** religar `[db.seed] enabled = true` (o seed usa `notificacoes`) e carregar o seed no nexus-dev; testes pgTAP sem contagens globais.
+- **Seed no nexus-dev:** carregar o `supabase/seed.sql` foi recusado no pedido de confirmação (2026-10-23) — ⚠️ o Germano decide se carrega (dados fictícios; útil para testar as telas).
 - **T-12:** configurar Auth do nexus-dev no painel (DEPLOY.md §Projeto nexus-dev); login Google local precisa de `supabase/.env` (só se usar o Supabase local).
 - **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 

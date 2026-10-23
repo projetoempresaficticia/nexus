@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-23 — Histórico automático das alterações, fila de e-mails, visões prontas para as telas (itens e produtividade) e atualização em tempo real ligada no banco (T-08).
 - 2026-10-23 — Base de dados de solicitações (com conversa), comentários com menções e anexos (arquivo até 20 MB ou link), com armazenamento privado de arquivos (T-07).
 - 2026-10-23 — Base de dados de projetos, tarefas e subtarefas (incl. tarefas sem projeto), vários responsáveis, checklist e dependências; cada membro vê só o que o envolve (T-06).
 - 2026-10-23 — Base de dados: pessoas, setores (com sub-setores) e vínculos, com regras de quem vê e altera o quê; líder pode criar sub-setores abaixo do seu (T-05).

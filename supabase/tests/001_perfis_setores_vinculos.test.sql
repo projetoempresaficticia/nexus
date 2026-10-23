@@ -48,7 +48,8 @@ select throws_ok(
 -- ---------------------------------------------------------------- Adm
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
-select results_eq('select count(*)::int from public.setores', array[4], 'Adm vê todos os setores');
+select results_eq($$select count(*)::int from public.setores where id::text like '20000000-%'$$, array[4],
+  'Adm vê todos os setores');
 select lives_ok(
   $$insert into public.vinculos (perfil_id, setor_id, papel)
     values ('10000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-0000000000a1', 'membro')$$,
@@ -89,7 +90,8 @@ update public.setores set pai_id = '20000000-0000-0000-0000-00000000000b'
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a3","role":"authenticated"}';
 select set_eq('select id from public.setores', array['20000000-0000-0000-0000-0000000000a1'::uuid],
   'Membro vê só o setor em que tem vínculo');
-select results_eq('select count(*)::int from public.perfis', array[4], 'Membro vê só as pessoas ativas');
+select results_eq($$select count(*)::int from public.perfis where id::text like '10000000-%'$$, array[4],
+  'Membro vê só as pessoas ativas');
 select throws_ok(
   $$insert into public.setores (nome, pai_id, criado_por)
     values ('X', '20000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-000000000003')$$,
