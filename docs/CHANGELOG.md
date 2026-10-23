@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-23 — Carregamento inicial da sessão, números do painel, carga de trabalho e funções de administração (setores, vínculos, reatribuir tarefas) (T-11).
 - 2026-10-23 — Regras de abrir, responder e cancelar solicitações (o item bloqueia e desbloqueia sozinho) e de comentar com @menções e avisos (T-10).
 - 2026-10-23 — Regras de criar, editar, mudar status (com tarefas recorrentes), definir responsáveis, excluir em cascata e dependências, validadas no banco (T-09).
 - 2026-10-23 — Histórico automático das alterações, fila de e-mails, visões prontas para as telas (itens e produtividade) e atualização em tempo real ligada no banco (T-08).
