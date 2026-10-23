@@ -14,7 +14,11 @@
 | `supabaseUrl` | `https://xxxx.supabase.co` |
 | `supabaseAnonKey` | publishable/anon key |
 | `appUrl` | `https://<usuario>.github.io/nexus` |
-No CI, `environment.prod.ts` é gerado a partir dos **secrets** do repositório `SUPABASE_URL` e `SUPABASE_ANON_KEY` (não ficam no Git).
+- `environment.development.ts` (local, no Git): Supabase local `http://127.0.0.1:54321` + chave publishable de demonstração.
+- `environment.ts` (produção): vazio no Git; no deploy é **reescrito** a partir dos secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` antes do `ng build` (T-04).
+
+### Supabase local (`supabase/.env`, fora do Git)
+Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` (cliente OAuth com redirect `http://127.0.0.1:54321/auth/v1/callback`). Sem eles, use o login por e-mail/senha local.
 
 ### Edge Functions (segredos do Supabase)
 `SUPABASE_SERVICE_ROLE_KEY` (automático) · `RESEND_API_KEY` · `EMAIL_REMETENTE` · `APP_URL` · `CRON_SECRET`
