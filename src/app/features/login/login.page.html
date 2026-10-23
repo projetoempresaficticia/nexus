@@ -1,0 +1,98 @@
+<div class="login fade">
+  <div class="login-brand">
+    <div class="logo">
+      <span class="logo-mark" aria-hidden="true">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M9 11l3 3 8-8" />
+          <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </svg>
+      </span>
+      {{ t.marca }}
+    </div>
+    <div class="destaque">
+      <h1>{{ t.login.destaque }}</h1>
+      <p>{{ t.login.descricao }}</p>
+    </div>
+    <div class="rodape">{{ t.login.rodape }}</div>
+  </div>
+
+  <div class="login-side">
+    <div class="coluna">
+      <div class="card entrar">
+        <div class="cabecalho">
+          <h2>{{ t.login.titulo }}</h2>
+          <p class="muted">{{ t.login.subtitulo }}</p>
+        </div>
+        <button type="button" class="btn google" [disabled]="ocupado()" (click)="entrarComGoogle()">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#4285F4"
+              d="M22.5 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2-1.9 3.2-4.7 3.2-8z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23z"
+            />
+            <path fill="#FBBC05" d="M5.8 14.2a6.6 6.6 0 0 1 0-4.3V7.1H2.1a11 11 0 0 0 0 9.9z" />
+            <path
+              fill="#EA4335"
+              d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"
+            />
+          </svg>
+          {{ t.login.entrarGoogle }}
+        </button>
+        <div class="hint aviso">{{ t.login.aviso }}</div>
+      </div>
+
+      @if (loginComSenha) {
+        <form class="card senha" (submit)="entrarComSenha($event)">
+          <div class="nav-label">{{ t.login.senhaTitulo }}</div>
+          <p class="muted ajuda">{{ t.login.senhaAjuda }}</p>
+          <label class="campo">
+            <span>{{ t.login.email }}</span>
+            <input
+              type="email"
+              name="email"
+              autocomplete="username"
+              required
+              [value]="email()"
+              (input)="email.set($any($event.target).value)"
+            />
+          </label>
+          <label class="campo">
+            <span>{{ t.login.senha }}</span>
+            <input
+              type="password"
+              name="senha"
+              autocomplete="current-password"
+              required
+              minlength="8"
+              [value]="senha()"
+              (input)="senha.set($any($event.target).value)"
+            />
+          </label>
+          @if (mensagem(); as m) {
+            <p class="mensagem" role="alert">{{ m }}</p>
+          }
+          <div class="acoes">
+            <button type="submit" class="btn primary" [disabled]="ocupado()">
+              {{ t.login.entrar }}
+            </button>
+            <button type="button" class="btn ghost" [disabled]="ocupado()" (click)="criarSenha()">
+              {{ t.login.criarSenha }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

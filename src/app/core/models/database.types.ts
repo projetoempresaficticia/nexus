@@ -600,6 +600,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"auth_hook_antes_criar_usuario":
+{ Args: { "event": Json }; Returns: Json
+                           },
 "cancelar_solicitacao":
 { Args: { "p_id": string }; Returns: Json
                            },

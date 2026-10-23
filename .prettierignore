@@ -7,3 +7,4 @@ docs/
 referencias/
 supabase/
 src/app/core/models/database.types.ts
+src/styles/prototipo.css

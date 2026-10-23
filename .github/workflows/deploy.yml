@@ -39,16 +39,14 @@ jobs:
             supabaseUrl: '${SUPABASE_URL}',
             supabaseAnonKey: '${SUPABASE_ANON_KEY}',
             appUrl: '${APP_URL}',
+            loginComSenha: false,
           };
           EOF
       - run: npx ng build --configuration production --base-href /${{ github.event.repository.name }}/
       - name: Rotas do Angular no Pages (404.html = index.html)
         run: cp dist/nexus/browser/index.html dist/nexus/browser/404.html
       - name: Nenhuma chave secreta no bundle
-        run: |
-          if grep -rEl 'service_role|sb_secret_' dist/; then
-            echo "::error::Chave secreta encontrada no build"; exit 1
-          fi
+        run: bash .github/scripts/sem-segredos.sh dist
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
