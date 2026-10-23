@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-23 — T-01 e T-02 juntadas na `main` (PRs #1 e #2). T-03 concluída: Supabase local a funcionar (versão leve por falta de RAM), cliente Supabase e environments.
+2026-10-23 — T-01 a T-04 juntadas na `main` (PRs #1–#5). Desenvolvimento no Supabase nexus-dev (nuvem); CI obrigatório em todo PR; deploy automático no GitHub Pages.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -10,18 +10,19 @@
 - **T-02**: skills em `.claude/skills/` (+ `skills-lock.json`), `commit.template`, 16 labels, merge só por squash, hook de segredos corrigido.
 - **T-03**: `supabase/config.toml` (localhost:4200, Google por `supabase/.env`, e-mail/senha só local, `auto_expose_new_tables = false`, `health_timeout` 10m, seed desligado), `core/supabase.client.ts` (token `SUPABASE`), `environment.ts` (produção, vazio) e `environment.development.ts` (local), `npm run db:start`.
 - **T-03b**: desenvolvimento aponta para o projeto Supabase **nexus-dev** na nuvem (`https://woroiluncnfscajlqoot.supabase.co`, Frankfurt).
+- **T-04**: `ci.yml` (lint, formatação, testes, build, chave secreta no bundle, pgTAP) — checks obrigatórios na `main`; `deploy.yml` → https://projetoempresaficticia.github.io/nexus/ (secrets `SUPABASE_URL`/`SUPABASE_ANON_KEY` = nexus-dev até a T-40).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-04** — GitHub Actions: `ci.yml` (lint, test, build, pgTAP) e `deploy.yml` (Pages, `--base-href /nexus/`, `404.html`; reescrever `environment.ts` a partir dos secrets).
+- **T-05** — primeira migration (enums, `perfis`, `setores`, `vinculos`, funções de acesso, RLS, pgTAP). ⚠️ Antes de começar: decidir as pendências de SEGURANCA.md §3 que afetam T-05/T-06, e o Germano fazer `npx supabase login` para o link com o nexus-dev.
 
 ## Lembretes para as próximas tarefas
 - **T-05:** religar `[db.seed] enabled = true` no config.toml; cada tabela precisa de `grant` explícito a `authenticated` (tabelas novas não ficam expostas na API automaticamente) além da RLS. Para aplicar migrations no **nexus-dev**: `npx supabase link --project-ref woroiluncnfscajlqoot` (pede `supabase login` — o Germano faz no terminal) e `npx supabase db push`. pgTAP: CI (local no runner) ou `npx supabase test db --linked` no nexus-dev.
 - **T-12:** configurar Auth do nexus-dev no painel (DEPLOY.md §Projeto nexus-dev); login Google local precisa de `supabase/.env` (só se usar o Supabase local).
-- **T-40:** plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
+- **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 
 ## Revisão de 2026-10-22
 Incluídos: tarefas sem projeto (US-34), vários responsáveis (US-35), título editável (US-09), membro vê só o que o envolve (US-36), tempo real + abertura instantânea (US-37, T-43, T-44).
