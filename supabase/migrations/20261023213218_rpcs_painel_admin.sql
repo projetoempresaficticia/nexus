@@ -111,7 +111,114 @@ begin
 end;
 $$;
 
-revoke all on function public.carregar_inicial(), public.resumo_painel(uuid[]), public.carga_trabalho(uuid[], date, date)
+-- ---------------------------------------------------------------- administração (só Adm do sistema)
+create function privado.exigir_admin()
+returns void
+language plpgsql stable security definer
+set search_path = ''
+as $$
+begin
+  if not privado.eh_admin() then
+    raise exception using errcode = 'P0001', message = 'sem_permissao';
+  end if;
+end;
+$$;
+revoke all on function privado.exigir_admin() from public, anon, authenticated;
+
+-- Cria (sem id) ou altera nome/pai/ativo de um setor. Ciclo → ciclo_setor (trigger).
+create function public.salvar_setor(p jsonb)
+returns public.setores
+language plpgsql security definer
+set search_path = ''
+as $$
+declare
+  v_setor public.setores;
+begin
+  perform privado.exigir_admin();
+  if nullif(p ->> 'id', '') is null then
+    insert into public.setores (nome, pai_id, ativo, criado_por)
+    values (p ->> 'nome', nullif(p ->> 'pai_id', '')::uuid, coalesce((p ->> 'ativo')::boolean, true), privado.meu_perfil_id())
+    returning * into v_setor;
+  else
+    update public.setores set
+      nome   = case when p ? 'nome' then p ->> 'nome' else nome end,
+      pai_id = case when p ? 'pai_id' then nullif(p ->> 'pai_id', '')::uuid else pai_id end,
+      ativo  = case when p ? 'ativo' then (p ->> 'ativo')::boolean else ativo end
+    where id = (p ->> 'id')::uuid
+    returning * into v_setor;
+    if not found then
+      raise exception using errcode = 'P0001', message = 'nao_encontrado';
+    end if;
+  end if;
+  return v_setor;
+end;
+$$;
+
+-- Substitui todos os vínculos da pessoa: p_vinculos = [{"setor_id": "...", "papel": "lider|membro"}].
+create function public.salvar_vinculos(p_perfil_id uuid, p_vinculos jsonb)
+returns jsonb
+language plpgsql security definer
+set search_path = ''
+as $$
+begin
+  perform privado.exigir_admin();
+  if not exists (select 1 from public.perfis where id = p_perfil_id) then
+    raise exception using errcode = 'P0001', message = 'nao_encontrado';
+  end if;
+
+  delete from public.vinculos v
+  where v.perfil_id = p_perfil_id
+    and v.setor_id not in (select (e ->> 'setor_id')::uuid from jsonb_array_elements(p_vinculos) as e);
+
+  insert into public.vinculos (perfil_id, setor_id, papel)
+  select p_perfil_id, (e ->> 'setor_id')::uuid, (e ->> 'papel')::public.papel_setor
+  from jsonb_array_elements(p_vinculos) as e
+  on conflict (perfil_id, setor_id) do update set papel = excluded.papel
+  where public.vinculos.papel is distinct from excluded.papel;
+
+  return coalesce((select jsonb_agg(jsonb_build_object('setor_id', setor_id, 'papel', papel))
+                   from public.vinculos where perfil_id = p_perfil_id), '[]');
+end;
+$$;
+
+-- Passa as responsabilidades de uma pessoa para outra (ex.: ao desativar). p_ids nulo = todos os itens abertos.
+create function public.reatribuir_itens(p_de uuid, p_para uuid, p_ids uuid[] default null)
+returns integer
+language plpgsql security definer
+set search_path = ''
+as $$
+declare
+  v_qtd integer;
+begin
+  perform privado.exigir_admin();
+  if not exists (select 1 from public.perfis where id = p_para and ativo) then
+    raise exception using errcode = 'P0001', message = 'nao_encontrado';
+  end if;
+
+  with alvo as (
+    select r.item_id from public.item_responsaveis r
+    join public.itens i on i.id = r.item_id
+    where r.perfil_id = p_de
+      and (p_ids is null and i.status <> 'concluida' or r.item_id = any (p_ids))
+  ), novos as (
+    insert into public.item_responsaveis (item_id, perfil_id, atribuido_por)
+    select item_id, p_para, privado.meu_perfil_id() from alvo
+    on conflict do nothing
+  ), apagados as (
+    delete from public.item_responsaveis r using alvo
+    where r.item_id = alvo.item_id and r.perfil_id = p_de
+    returning 1
+  )
+  select count(*)::integer into v_qtd from apagados;
+
+  return v_qtd;
+end;
+$$;
+
+-- ---------------------------------------------------------------- permissões
+revoke all on function public.carregar_inicial(), public.resumo_painel(uuid[]), public.carga_trabalho(uuid[], date, date),
+  public.salvar_setor(jsonb), public.salvar_vinculos(uuid, jsonb), public.reatribuir_itens(uuid, uuid, uuid[])
   from public, anon;
-grant execute on function public.carregar_inicial(), public.resumo_painel(uuid[]), public.carga_trabalho(uuid[], date, date)
+grant execute on function public.carregar_inicial(), public.resumo_painel(uuid[]), public.carga_trabalho(uuid[], date, date),
+  public.salvar_setor(jsonb), public.salvar_vinculos(uuid, jsonb), public.reatribuir_itens(uuid, uuid, uuid[])
   to authenticated;
