@@ -70,3 +70,68 @@ create table public.anexos (
 create index anexos_item_idx on public.anexos (item_id);
 create index anexos_comentario_idx on public.anexos (comentario_id);
 create index anexos_enviado_por_idx on public.anexos (enviado_por);
+
+-- ---------------------------------------------------------------- envolvimento: + solicitações e menções
+create or replace function privado.itens_envolvidos()
+returns setof uuid
+language sql stable security definer
+set search_path = ''
+as $$
+  select r.item_id from public.item_responsaveis r
+  where r.perfil_id = (select privado.meu_perfil_id())
+  union
+  select i.id from public.itens i
+  where i.criado_por = (select privado.meu_perfil_id())
+     or i.aprovador_id = (select privado.meu_perfil_id())
+  union
+  select s.item_id from public.solicitacoes s
+  where s.de_id = (select privado.meu_perfil_id()) or s.para_id = (select privado.meu_perfil_id())
+  union
+  select c.item_id from public.mencoes m join public.comentarios c on c.id = m.comentario_id
+  where m.perfil_id = (select privado.meu_perfil_id());
+$$;
+
+-- ---------------------------------------------------------------- RLS e permissões
+alter table public.solicitacoes          enable row level security;
+alter table public.solicitacao_mensagens enable row level security;
+alter table public.comentarios           enable row level security;
+alter table public.mencoes               enable row level security;
+alter table public.anexos                enable row level security;
+
+revoke all on public.solicitacoes, public.solicitacao_mensagens, public.comentarios, public.mencoes, public.anexos
+  from anon, authenticated;
+-- solicitações e comentários mudam por RPC (T-10); aqui só o que é direto
+grant select on public.solicitacoes, public.mencoes to authenticated;
+grant select, insert on public.solicitacao_mensagens to authenticated;
+grant select, delete on public.comentarios to authenticated;
+grant select, insert, delete on public.anexos to authenticated;
+
+create policy solic_select on public.solicitacoes for select to authenticated
+  using (de_id = (select privado.meu_perfil_id())
+         or para_id = (select privado.meu_perfil_id())
+         or item_id in (select privado.itens_visiveis()));
+
+-- mensagens herdam a RLS de solicitacoes (o exists só enxerga solicitações visíveis)
+create policy solic_msg_select on public.solicitacao_mensagens for select to authenticated
+  using (exists (select 1 from public.solicitacoes s where s.id = solicitacao_id));
+create policy solic_msg_insert on public.solicitacao_mensagens for insert to authenticated
+  with check (autor_id = (select privado.meu_perfil_id())
+              and exists (select 1 from public.solicitacoes s where s.id = solicitacao_id));
+
+create policy com_select on public.comentarios for select to authenticated
+  using (item_id in (select privado.itens_visiveis()));
+create policy com_delete on public.comentarios for delete to authenticated
+  using (autor_id = (select privado.meu_perfil_id())
+         or (select i.setor_id from public.itens i where i.id = item_id) in (select privado.setores_administrados()));
+
+create policy men_select on public.mencoes for select to authenticated
+  using (exists (select 1 from public.comentarios c where c.id = comentario_id));
+
+create policy anexos_select on public.anexos for select to authenticated
+  using (item_id in (select privado.itens_visiveis()));
+create policy anexos_insert on public.anexos for insert to authenticated
+  with check (enviado_por = (select privado.meu_perfil_id())
+              and item_id in (select privado.itens_visiveis()));
+create policy anexos_delete on public.anexos for delete to authenticated
+  using (enviado_por = (select privado.meu_perfil_id())
+         or (select i.setor_id from public.itens i where i.id = item_id) in (select privado.setores_administrados()));
