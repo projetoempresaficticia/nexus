@@ -21,7 +21,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 
 ## Fase 2 — Acesso
 - [x] **T-12** Auth: Google OAuth, hook `auth_hook_antes_criar_usuario`, trigger de ligação `auth_id`, telas Login e Sem acesso, `AuthService`, guards. — Dep.: T-05, T-04 · US-01, US-02
-- [ ] **T-13** Shell: barra lateral por perfil, contador de solicitações, Meus setores, seletor de Setor, tema claro/escuro, `AcessoStore` com `carregar_inicial`. — Dep.: T-12, T-11 · US-31
+- [x] **T-13** Shell: barra lateral por perfil, contador de solicitações, Meus setores, seletor de Setor, tema claro/escuro, `AcessoStore` com `carregar_inicial`. — Dep.: T-12, T-11 · US-31
 
 ## Fase 3 — Funcionalidades
 - [ ] **T-14** `shared/ui`: botão, pill-status, nível, avatar, modal, confirmação, toast, vazio, carregando, kpi-card, barra; `textos.ts` e `rotulos.ts`. — Dep.: T-01
