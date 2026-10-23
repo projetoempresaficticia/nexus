@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Tela de entrada com Google (só contas da empresa já cadastradas) e tela "Acesso não autorizado" (T-12).
 - 2026-10-23 — Carregamento inicial da sessão, números do painel, carga de trabalho e funções de administração (setores, vínculos, reatribuir tarefas) (T-11).
 - 2026-10-23 — Regras de abrir, responder e cancelar solicitações (o item bloqueia e desbloqueia sozinho) e de comentar com @menções e avisos (T-10).
 - 2026-10-23 — Regras de criar, editar, mudar status (com tarefas recorrentes), definir responsáveis, excluir em cascata e dependências, validadas no banco (T-09).

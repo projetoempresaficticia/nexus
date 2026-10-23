@@ -20,7 +20,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-11** RPCs `carregar_inicial`, `resumo_painel`, `carga_trabalho`, `salvar_setor`, `salvar_vinculos`, `reatribuir_itens`; revisar `supabase/seed.sql`; gerar `database.types.ts`. — Dep.: T-10 · US-26, US-28
 
 ## Fase 2 — Acesso
-- [ ] **T-12** Auth: Google OAuth, hook `auth_hook_antes_criar_usuario`, trigger de ligação `auth_id`, telas Login e Sem acesso, `AuthService`, guards. — Dep.: T-05, T-04 · US-01, US-02
+- [x] **T-12** Auth: Google OAuth, hook `auth_hook_antes_criar_usuario`, trigger de ligação `auth_id`, telas Login e Sem acesso, `AuthService`, guards. — Dep.: T-05, T-04 · US-01, US-02
 - [ ] **T-13** Shell: barra lateral por perfil, contador de solicitações, Meus setores, seletor de Setor, tema claro/escuro, `AcessoStore` com `carregar_inicial`. — Dep.: T-12, T-11 · US-31
 
 ## Fase 3 — Funcionalidades

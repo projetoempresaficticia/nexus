@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-23 — T-01 a T-11 concluídas: banco completo (170 testes pgTAP). Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-12 concluídas (banco completo + login). Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -18,13 +18,14 @@
 - **T-09**: migration `20261023195015_rpcs_itens.sql` (criar_item, atualizar_item, definir_responsaveis, mudar_status + recorrência, contar_descendentes, excluir_item, definir_dependencia) + 30 testes. **Ainda NÃO aplicada no nexus-dev** (confirmação recusada).
 - **T-10**: migration `20261023204848_rpcs_solicitacoes_comentarios.sql` (abrir/responder/cancelar solicitação, salvar_comentario com menções) + 25 testes. Por aplicar no nexus-dev.
 - **T-11**: migration `20261023213218_rpcs_painel_admin.sql` (carregar_inicial, resumo_painel, carga_trabalho, salvar_setor, salvar_vinculos, reatribuir_itens) + 20 testes; `core/models/database.types.ts` gerado pelo CI (job pgTAP gera e compara; artefato `database-types`); cliente Supabase tipado. Por aplicar no nexus-dev.
+- **T-12**: migration `20261023230649_auth_hook_e_ligacao_perfil.sql` (hook + trigger em auth.users) + 9 testes; `AuthService`, guards `autenticado`/`visitante`, telas Login e Sem acesso, `core/models/textos.ts`, estilos do protótipo em `src/styles/prototipo.css`, `src/testing/supabase-falso.ts`. Login com senha só em dev.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-12** — Auth: Google OAuth, hook antes de criar usuário, trigger que liga `auth_id`, telas Login e Sem acesso, AuthService, guards. (Precisa das migrations aplicadas no nexus-dev para testar no navegador.)
+- **T-13** — Shell: barra lateral por perfil, contador de solicitações, Meus setores, seletor de Setor, tema claro/escuro, `AcessoStore` com `carregar_inicial`.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
@@ -33,7 +34,7 @@ CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arq
 - **Todas as tabelas novas:** `grant` explícito a `authenticated` + RLS; funções de acesso em `privado`, chamadas como `(select privado.f())`.
 - **Seed no nexus-dev:** carregar o `supabase/seed.sql` foi recusado no pedido de confirmação (2026-10-23) — ⚠️ o Germano decide se carrega (dados fictícios; útil para testar as telas).
 - **Migrations pendentes no nexus-dev** (o `apply_migration` foi recusado na confirmação, provavelmente por ausência): a partir de `20261023195015_rpcs_itens.sql`. Aplicar em lote quando o Germano estiver presente (MCP `apply_migration`, por ordem de nome).
-- **T-12:** configurar Auth do nexus-dev no painel (DEPLOY.md §Projeto nexus-dev); login Google local precisa de `supabase/.env` (só se usar o Supabase local).
+- **Para testar o login no nexus-dev** (o Germano, no painel): DEPLOY.md §Projeto nexus-dev passos 1–5 (URLs, desligar confirmação de e-mail, ligar o hook, seed, migrations).
 - **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 
 ## Revisão de 2026-10-22

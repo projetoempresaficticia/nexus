@@ -18,7 +18,11 @@
 - `environment.development.ts` (no Git): projeto **nexus-dev** + chave publishable dele (pública; RLS protege). Para usar o Supabase local, troque pela URL `http://127.0.0.1:54321` e a chave de `npx supabase status`.
 
 ### Projeto nexus-dev — configuração no painel (antes da T-12)
-Auth → URL Configuration: Site URL `http://localhost:4200`; Redirect URLs `http://localhost:4200/**`. Auth → Providers → Email: desligar "Confirm email" (só no dev, para os logins do seed). Google: igual à produção, com o redirect do nexus-dev.
+1. Auth → URL Configuration: Site URL `http://localhost:4200`; Redirect URLs `http://localhost:4200/**` e `https://projetoempresaficticia.github.io/nexus/**`.
+2. Auth → Providers → Email: desligar "Confirm email" (só no dev, para criar senha dos perfis do seed na tela de login).
+3. Auth → Hooks → **Before User Created** → Postgres → `public` → `auth_hook_antes_criar_usuario` (sem isto, qualquer e-mail cria conta — a RLS ainda bloqueia os dados, mas o login não mostra "Acesso não autorizado").
+4. Google: igual à produção, com o redirect do nexus-dev (`https://woroiluncnfscajlqoot.supabase.co/auth/v1/callback`).
+5. Carregar o `supabase/seed.sql` (SQL Editor) e aplicar as migrations pendentes — ver ESTADO_ATUAL.
 **É um ambiente de desenvolvimento:** só dados fictícios (seed.sql); `db push`/`db reset --linked` aqui é permitido, mas **nunca** no projeto de produção sem confirmação (NAO_FAZER #9).
 - `environment.ts` (produção): vazio no Git; no deploy é **reescrito** a partir dos secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` antes do `ng build` (T-04).
 
