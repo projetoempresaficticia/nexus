@@ -34,8 +34,7 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# Nexus: desligado até a T-05 criar as tabelas que o seed.sql usa (perfis, setores...). Religar na T-05.
-enabled = false
+enabled = true
 sql_paths = ["./seed.sql"]
 
 [db.network_restrictions]
