@@ -3,7 +3,8 @@
 ## Ambientes
 | ambiente | frontend | Supabase | uso |
 |---|---|---|---|
-| local | `npm start` → localhost:4200 | `npx supabase start` (Docker) | desenvolvimento e testes |
+| desenvolvimento | `npm start` → localhost:4200 | projeto **nexus-dev** na nuvem (`woroiluncnfscajlqoot`, Frankfurt, plano free) | dia a dia do Germano (PC com pouca RAM) |
+| local / CI | `npm start` | `npx supabase start` (Docker) | testes pgTAP no CI; opcional em PC com RAM suficiente |
 | produção | GitHub Pages `https://<usuario>.github.io/nexus/` | projeto `nexus-prod` (região UE) | equipa |
 > ⚠️ A CONFIRMAR: conta/organização do GitHub (pessoal do Germano ou da empresa) e se haverá domínio próprio (ex.: `tarefas.preparaportugal.pt` via CNAME).
 
@@ -14,7 +15,11 @@
 | `supabaseUrl` | `https://xxxx.supabase.co` |
 | `supabaseAnonKey` | publishable/anon key |
 | `appUrl` | `https://<usuario>.github.io/nexus` |
-- `environment.development.ts` (local, no Git): Supabase local `http://127.0.0.1:54321` + chave publishable de demonstração.
+- `environment.development.ts` (no Git): projeto **nexus-dev** + chave publishable dele (pública; RLS protege). Para usar o Supabase local, troque pela URL `http://127.0.0.1:54321` e a chave de `npx supabase status`.
+
+### Projeto nexus-dev — configuração no painel (antes da T-12)
+Auth → URL Configuration: Site URL `http://localhost:4200`; Redirect URLs `http://localhost:4200/**`. Auth → Providers → Email: desligar "Confirm email" (só no dev, para os logins do seed). Google: igual à produção, com o redirect do nexus-dev.
+**É um ambiente de desenvolvimento:** só dados fictícios (seed.sql); `db push`/`db reset --linked` aqui é permitido, mas **nunca** no projeto de produção sem confirmação (NAO_FAZER #9).
 - `environment.ts` (produção): vazio no Git; no deploy é **reescrito** a partir dos secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` antes do `ng build` (T-04).
 
 ### Supabase local (`supabase/.env`, fora do Git)
