@@ -77,3 +77,112 @@ create table public.dependencias (
   constraint dependencias_diferentes check (item_id <> depende_de_id)
 );
 create index dependencias_depende_de_idx on public.dependencias (depende_de_id);
+
+-- ---------------------------------------------------------------- triggers de itens
+-- Antes de gravar: nível e setor vêm do pai; carimbos de status; atualizado_em.
+create function privado.itens_antes_gravar()
+returns trigger
+language plpgsql security definer
+set search_path = ''
+as $$
+declare
+  v_pai public.itens%rowtype;
+begin
+  if new.pai_id is not null then
+    select * into v_pai from public.itens where id = new.pai_id;
+    if not found then
+      raise exception using errcode = 'P0001', message = 'nao_encontrado';
+    end if;
+    -- tarefa só dentro de projeto; subtarefa só dentro de tarefa
+    if new.nivel is distinct from v_pai.nivel + 1 then
+      raise exception using errcode = 'P0001', message = 'nivel_invalido';
+    end if;
+    new.setor_id := v_pai.setor_id;
+  elsif new.nivel = 2 then
+    raise exception using errcode = 'P0001', message = 'nivel_invalido';
+  end if;
+
+  if new.setor_id is null then
+    raise exception using errcode = 'P0001', message = 'setor_obrigatorio';
+  end if;
+
+  if tg_op = 'UPDATE' then
+    if new.nivel <> old.nivel then
+      raise exception using errcode = 'P0001', message = 'nivel_invalido';
+    end if;
+    new.atualizado_em := now();
+  end if;
+
+  -- parado_desde: entra em bloqueada/aguardando → agora; sai → nulo (FLUXOS.md §1)
+  if new.status in ('bloqueada', 'aguardando_aprovacao') then
+    if tg_op = 'INSERT' or old.status not in ('bloqueada', 'aguardando_aprovacao') then
+      new.parado_desde := coalesce(new.parado_desde, now());
+    end if;
+  else
+    new.parado_desde := null;
+  end if;
+
+  -- concluido_em: concluir → agora; reabrir → nulo
+  if new.status = 'concluida' then
+    if tg_op = 'INSERT' then
+      new.concluido_em := coalesce(new.concluido_em, now());
+    elsif old.status <> 'concluida' then
+      new.concluido_em := now();
+    end if;
+  else
+    new.concluido_em := null;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger itens_antes_gravar
+  before insert or update on public.itens
+  for each row execute function privado.itens_antes_gravar();
+
+-- Depois de mudar o setor (ex.: tarefa avulsa movida para projeto de outro setor), os filhos acompanham.
+create function privado.itens_propagar_setor()
+returns trigger
+language plpgsql security definer
+set search_path = ''
+as $$
+begin
+  update public.itens set setor_id = new.setor_id
+  where pai_id = new.id and setor_id <> new.setor_id;
+  return null;
+end;
+$$;
+
+create trigger itens_propagar_setor
+  after update of setor_id on public.itens
+  for each row when (new.setor_id is distinct from old.setor_id)
+  execute function privado.itens_propagar_setor();
+
+-- Dependências: impede ciclo (A espera B e B espera A, direta ou indiretamente).
+create function privado.dependencias_impede_ciclo()
+returns trigger
+language plpgsql security definer
+set search_path = ''
+as $$
+begin
+  if exists (
+    with recursive cadeia(id) as (
+      select d.depende_de_id from public.dependencias d where d.item_id = new.depende_de_id
+      union
+      select d.depende_de_id from public.dependencias d join cadeia c on d.item_id = c.id
+    )
+    select 1 from cadeia where id = new.item_id
+  ) or new.depende_de_id = new.item_id then
+    raise exception using errcode = 'P0001', message = 'ciclo_dependencia';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger dependencias_impede_ciclo
+  before insert or update on public.dependencias
+  for each row execute function privado.dependencias_impede_ciclo();
+
+revoke all on function privado.itens_antes_gravar(), privado.itens_propagar_setor(),
+  privado.dependencias_impede_ciclo() from public, anon, authenticated;
