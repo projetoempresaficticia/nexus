@@ -186,3 +186,118 @@ create trigger dependencias_impede_ciclo
 
 revoke all on function privado.itens_antes_gravar(), privado.itens_propagar_setor(),
   privado.dependencias_impede_ciclo() from public, anon, authenticated;
+
+-- ---------------------------------------------------------------- funções de acesso a itens
+-- Itens em que estou diretamente envolvido. A T-07 acrescenta solicitações e menções.
+create function privado.itens_envolvidos()
+returns setof uuid
+language sql stable security definer
+set search_path = ''
+as $$
+  select r.item_id from public.item_responsaveis r
+  where r.perfil_id = (select privado.meu_perfil_id())
+  union
+  select i.id from public.itens i
+  where i.criado_por = (select privado.meu_perfil_id())
+     or i.aprovador_id = (select privado.meu_perfil_id());
+$$;
+
+-- Regra "só o que me envolve" (SEGURANCA.md §2.1):
+-- (1) setores administrados; (2) envolvidos; (3) descendentes do que sou responsável/criador;
+-- (4) ancestrais de (2)+(3), só como contexto.
+create function privado.itens_visiveis()
+returns setof uuid
+language sql stable security definer
+set search_path = ''
+as $$
+  with recursive
+    donos(id) as (
+      select r.item_id from public.item_responsaveis r
+      where r.perfil_id = (select privado.meu_perfil_id())
+      union
+      select i.id from public.itens i where i.criado_por = (select privado.meu_perfil_id())
+    ),
+    abaixo(id) as (
+      select id from donos
+      union
+      select f.id from public.itens f join abaixo a on f.pai_id = a.id
+    ),
+    base(id) as (
+      select id from abaixo
+      union
+      select e.id from privado.itens_envolvidos() as e(id)
+    ),
+    acima(id) as (
+      select id from base
+      union
+      select p.pai_id from public.itens p join acima a on p.id = a.id where p.pai_id is not null
+    )
+  select i.id from public.itens i
+  where i.setor_id in (select privado.setores_administrados())
+  union
+  select id from acima;
+$$;
+
+create function privado.pode_ver_item(p_item uuid)
+returns boolean
+language sql stable security definer
+set search_path = ''
+as $$
+  select exists (select 1 from privado.itens_visiveis() as v(id) where v.id = p_item);
+$$;
+
+-- Edita quem administra o setor do item, quem o criou ou quem é responsável (não quem só o vê como contexto).
+create function privado.pode_editar_item(p_item uuid)
+returns boolean
+language sql stable security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.itens i
+    where i.id = p_item
+      and (i.setor_id in (select privado.setores_administrados())
+           or i.criado_por = (select privado.meu_perfil_id())
+           or exists (select 1 from public.item_responsaveis r
+                      where r.item_id = i.id and r.perfil_id = (select privado.meu_perfil_id())))
+  );
+$$;
+
+revoke all on function privado.itens_envolvidos(), privado.itens_visiveis(),
+  privado.pode_ver_item(uuid), privado.pode_editar_item(uuid) from public, anon;
+grant execute on function privado.itens_envolvidos(), privado.itens_visiveis(),
+  privado.pode_ver_item(uuid), privado.pode_editar_item(uuid) to authenticated;
+
+-- ---------------------------------------------------------------- RLS e permissões
+-- itens e responsáveis: só leitura direta; escrita pelos RPCs da T-09 (security definer).
+alter table public.itens             enable row level security;
+alter table public.item_responsaveis enable row level security;
+alter table public.checklist_itens   enable row level security;
+alter table public.dependencias      enable row level security;
+
+revoke all on public.itens, public.item_responsaveis, public.checklist_itens, public.dependencias
+  from anon, authenticated;
+grant select on public.itens, public.item_responsaveis to authenticated;
+grant select, insert, update, delete on public.checklist_itens to authenticated;
+grant select, insert, delete on public.dependencias to authenticated;
+
+create policy itens_select on public.itens for select to authenticated
+  using (id in (select privado.itens_visiveis()));
+
+create policy resp_select on public.item_responsaveis for select to authenticated
+  using (item_id in (select privado.itens_visiveis()));
+
+create policy checklist_select on public.checklist_itens for select to authenticated
+  using (item_id in (select privado.itens_visiveis()));
+create policy checklist_insert on public.checklist_itens for insert to authenticated
+  with check (privado.pode_editar_item(item_id));
+create policy checklist_update on public.checklist_itens for update to authenticated
+  using (privado.pode_editar_item(item_id)) with check (privado.pode_editar_item(item_id));
+create policy checklist_delete on public.checklist_itens for delete to authenticated
+  using (privado.pode_editar_item(item_id));
+
+create policy deps_select on public.dependencias for select to authenticated
+  using (item_id in (select privado.itens_visiveis()));
+create policy deps_insert on public.dependencias for insert to authenticated
+  with check (privado.pode_editar_item(item_id) and depende_de_id in (select privado.itens_visiveis()));
+create policy deps_delete on public.dependencias for delete to authenticated
+  using (privado.pode_editar_item(item_id));
