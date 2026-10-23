@@ -1,0 +1,68 @@
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AcessoStore } from '../../core/auth/acesso.store';
+import { AuthService } from '../../core/auth/auth.service';
+import { TEXTOS } from '../../core/models/textos';
+import { TemaService } from '../../core/services/tema.service';
+
+interface ItemMenu {
+  rota: string;
+  texto: string;
+  contador?: number;
+}
+
+/** Barra lateral escura + área de trabalho (DESIGN.md §Navegação). O menu muda conforme o perfil. */
+@Component({
+  selector: 'app-shell',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './shell.component.html',
+  styleUrl: './shell.component.css',
+})
+export class ShellComponent {
+  protected readonly acesso = inject(AcessoStore);
+  protected readonly tema = inject(TemaService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  protected readonly t = TEXTOS;
+
+  protected readonly itens = computed<ItemMenu[]>(() => {
+    const m = this.t.menu;
+    const solicitacoes = {
+      rota: '/solicitacoes',
+      texto: m.solicitacoes,
+      contador: this.acesso.pendentes(),
+    };
+    if (!this.acesso.ehLider()) {
+      return [
+        { rota: '/tarefas', texto: m.minhasTarefas },
+        { rota: '/projetos', texto: m.projetos },
+        solicitacoes,
+        { rota: '/equipe', texto: m.equipe },
+      ];
+    }
+    const itens: ItemMenu[] = [
+      { rota: '/painel', texto: m.painel },
+      { rota: '/produtividade', texto: m.produtividade },
+      { rota: '/projetos', texto: m.projetos },
+      { rota: '/tarefas', texto: m.tarefas },
+      solicitacoes,
+      { rota: '/equipe', texto: m.equipe },
+    ];
+    if (this.acesso.ehAdmin()) {
+      itens.push({ rota: '/usuarios', texto: m.usuarios }, { rota: '/setores', texto: m.setores });
+    }
+    return itens;
+  });
+
+  protected readonly resumoPapel = computed(() => {
+    const n = this.acesso.qtdLideranca();
+    if (n) return this.t.resumoLideranca(n);
+    return this.acesso.ehAdmin() ? this.t.papel.adm : this.t.papel.membro;
+  });
+
+  protected async sair(): Promise<void> {
+    await this.auth.sair();
+    this.acesso.limpar();
+    await this.router.navigateByUrl('/login');
+  }
+}

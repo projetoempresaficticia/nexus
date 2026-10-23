@@ -1,0 +1,73 @@
+/* .shell, .nav, .nav-item, .count, .nav-label, .main vêm de styles/prototipo.css */
+.marca {
+  padding: 0 8px;
+  font-size: 15px;
+}
+.marca .logo-mark {
+  width: 34px;
+  height: 34px;
+}
+.itens {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.nav-item {
+  text-decoration: none;
+}
+.meus-setores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px;
+}
+.setor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.setor span:first-child {
+  margin-right: auto;
+}
+.setor .pill {
+  background: var(--nav-active);
+  color: var(--nav-fg);
+}
+.setor .pill.lider {
+  background: var(--gold);
+  color: var(--gold-fg);
+}
+.tema {
+  margin-top: auto;
+  padding: 0 8px;
+}
+.tema .btn {
+  width: 100%;
+  background: var(--nav-active);
+  border-color: var(--nav-line);
+  color: var(--nav-fg);
+}
+.eu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 0;
+  border-top: 1px solid var(--nav-line);
+}
+.eu .av {
+  background: var(--nav-active);
+  color: var(--nav-fg);
+}
+.quem {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  margin-right: auto;
+}
+.quem span {
+  color: var(--nav-muted);
+}
+.sair {
+  color: var(--nav-fg);
+}
