@@ -40,6 +40,129 @@
     >
       <s>S</s>
     </button>
+    <span class="sep"></span>
+    <button
+      type="button"
+      title="Título"
+      aria-label="Título"
+      class="titulo"
+      [class.on]="ativo('heading')"
+      [attr.aria-pressed]="ativo('heading')"
+      (click)="alternar('heading')"
+    >
+      T
+    </button>
+    <button
+      type="button"
+      title="Lista"
+      aria-label="Lista"
+      [class.on]="ativo('bulletList')"
+      [attr.aria-pressed]="ativo('bulletList')"
+      (click)="alternar('bulletList')"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M9 6h11M9 12h11M9 18h11" />
+        <circle cx="4" cy="6" r="1" />
+        <circle cx="4" cy="12" r="1" />
+        <circle cx="4" cy="18" r="1" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      title="Lista numerada"
+      aria-label="Lista numerada"
+      [class.on]="ativo('orderedList')"
+      [attr.aria-pressed]="ativo('orderedList')"
+      (click)="alternar('orderedList')"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M10 6h10M10 12h10M10 18h10M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      title="Citação"
+      aria-label="Citação"
+      [class.on]="ativo('blockquote')"
+      [attr.aria-pressed]="ativo('blockquote')"
+      (click)="alternar('blockquote')"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path
+          d="M7 7h4v6H5V9a2 2 0 0 1 2-2zM15 7h4v6h-6V9a2 2 0 0 1 2-2zM5 13c0 2 1 4 4 4M13 13c0 2 1 4 4 4"
+        />
+      </svg>
+    </button>
+    <span class="sep"></span>
+    <button
+      type="button"
+      title="Link (clique de novo para remover)"
+      aria-label="Link"
+      [class.on]="ativo('link')"
+      [attr.aria-pressed]="ativo('link')"
+      (click)="link()"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
+        <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
+      </svg>
+    </button>
+    @if (enviarImagem()) {
+      <button type="button" title="Imagem" aria-label="Inserir imagem" (click)="escolherImagem()">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </button>
+    }
     <button
       type="button"
       title="Limpar formatação"
@@ -63,5 +186,22 @@
 
   <div class="rte-ed rich" #area></div>
 
+  @if (popupLink()) {
+    <div class="rte-pop">
+      <label class="sr" for="endereco-link">Endereço do link</label>
+      <input
+        id="endereco-link"
+        type="url"
+        placeholder="https://…"
+        [value]="endereco()"
+        (input)="endereco.set($any($event.target).value)"
+        (keydown.enter)="$event.preventDefault(); confirmarLink()"
+      />
+      <button type="button" class="btn sm primary" (click)="confirmarLink()">Inserir link</button>
+      <button type="button" class="btn sm" (click)="popupLink.set(false)">
+        {{ t.comum.cancelar }}
+      </button>
+    </div>
+  }
   <input #arquivo type="file" accept="image/*" hidden (change)="arquivoEscolhido($event)" />
 </div>
