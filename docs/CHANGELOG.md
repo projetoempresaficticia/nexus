@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-23 — Base de dados de solicitações (com conversa), comentários com menções e anexos (arquivo até 20 MB ou link), com armazenamento privado de arquivos (T-07).
 - 2026-10-23 — Base de dados de projetos, tarefas e subtarefas (incl. tarefas sem projeto), vários responsáveis, checklist e dependências; cada membro vê só o que o envolve (T-06).
 - 2026-10-23 — Base de dados: pessoas, setores (com sub-setores) e vínculos, com regras de quem vê e altera o quê; líder pode criar sub-setores abaixo do seu (T-05).
 - 2026-10-23 — Verificação automática de cada PR e publicação automática do site em https://projetoempresaficticia.github.io/nexus/ (T-04).
