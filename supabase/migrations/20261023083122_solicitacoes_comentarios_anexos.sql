@@ -135,3 +135,21 @@ create policy anexos_insert on public.anexos for insert to authenticated
 create policy anexos_delete on public.anexos for delete to authenticated
   using (enviado_por = (select privado.meu_perfil_id())
          or (select i.setor_id from public.itens i where i.id = item_id) in (select privado.setores_administrados()));
+
+-- ---------------------------------------------------------------- Storage: bucket privado "anexos"
+-- Caminho: {setor_id}/{item_id}/{uuid}-{nome}. Download por URL assinada (Edge Function url-anexo, T-23).
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('anexos', 'anexos', false, 20971520)
+on conflict (id) do update set public = false, file_size_limit = 20971520;
+
+-- O 2.º segmento do caminho é o item: mesma regra de visibilidade dos itens.
+create policy anexos_storage_select on storage.objects for select to authenticated
+  using (bucket_id = 'anexos'
+         and (storage.foldername(name))[2]::uuid in (select privado.itens_visiveis()));
+create policy anexos_storage_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'anexos'
+              and (storage.foldername(name))[2]::uuid in (select privado.itens_visiveis()));
+create policy anexos_storage_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'anexos'
+         and (owner_id = (select auth.uid())::text
+              or (storage.foldername(name))[1]::uuid in (select privado.setores_administrados())));
