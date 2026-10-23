@@ -34,7 +34,8 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# Nexus: desligado até a T-05 criar as tabelas que o seed.sql usa (perfis, setores...). Religar na T-05.
+# Nexus: desligado até a T-08 (o seed.sql também usa `notificacoes`). Ao religar, os testes pgTAP não podem
+# depender de contagens globais (o `supabase db start` do CI também carrega o seed).
 enabled = false
 sql_paths = ["./seed.sql"]
 
