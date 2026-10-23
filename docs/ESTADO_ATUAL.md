@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-23 — T-01 a T-10 concluídas (modo autónomo). 150 testes pgTAP. Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-23 — T-01 a T-11 concluídas: banco completo (170 testes pgTAP). Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -17,13 +17,14 @@
 - **T-08**: migration `20261023193718_historico_notificacoes_views_realtime.sql` (historico + trigger de auditoria em itens/solicitacoes/vinculos/perfis, notificacoes + `privado.notificar`, `vw_itens`, `vw_produtividade`, Realtime em 8 tabelas) + 16 testes; seed religado (CI). Aplicada no nexus-dev. Advisor INFO "notificacoes sem política" é intencional (só service role).
 - **T-09**: migration `20261023195015_rpcs_itens.sql` (criar_item, atualizar_item, definir_responsaveis, mudar_status + recorrência, contar_descendentes, excluir_item, definir_dependencia) + 30 testes. **Ainda NÃO aplicada no nexus-dev** (confirmação recusada).
 - **T-10**: migration `20261023204848_rpcs_solicitacoes_comentarios.sql` (abrir/responder/cancelar solicitação, salvar_comentario com menções) + 25 testes. Por aplicar no nexus-dev.
+- **T-11**: migration `20261023213218_rpcs_painel_admin.sql` (carregar_inicial, resumo_painel, carga_trabalho, salvar_setor, salvar_vinculos, reatribuir_itens) + 20 testes; `core/models/database.types.ts` gerado pelo CI (job pgTAP gera e compara; artefato `database-types`); cliente Supabase tipado. Por aplicar no nexus-dev.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-11** — RPCs carregar_inicial, resumo_painel, carga_trabalho, salvar_setor, salvar_vinculos, reatribuir_itens; revisar seed; gerar database.types.ts.
+- **T-12** — Auth: Google OAuth, hook antes de criar usuário, trigger que liga `auth_id`, telas Login e Sem acesso, AuthService, guards. (Precisa das migrations aplicadas no nexus-dev para testar no navegador.)
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

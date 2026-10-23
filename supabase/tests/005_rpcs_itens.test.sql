@@ -85,11 +85,11 @@ select is(public.mudar_status((select id from t_ids where nome = 'tarefa'), 'a_f
 -- ---------------------------------------------------------------- recorrência
 insert into t_ids select 'rec', (public.criar_item(jsonb_build_object(
   'setor_id', '24000000-0000-0000-0000-0000000000aa', 'nivel', 1, 'nome', 'Semanal', 'recorrencia', 'semanal',
-  'prazo', (current_date - 1)::text, 'responsaveis', jsonb_build_array('14000000-0000-0000-0000-000000000002')))).id;
+  'prazo', ((now() at time zone 'Europe/Lisbon')::date - 1)::text, 'responsaveis', jsonb_build_array('14000000-0000-0000-0000-000000000002')))).id;
 insert into public.checklist_itens (item_id, texto, feito) values ((select id from t_ids where nome = 'rec'), 'passo', true);
 insert into t_ids select 'rec2', ((public.mudar_status((select id from t_ids where nome = 'rec'), 'concluida')
   -> 'novo_item_recorrente') ->> 'id')::uuid;
-select is((select prazo from public.itens where id = (select id from t_ids where nome = 'rec2')), current_date - 1 + 7,
+select is((select prazo from public.itens where id = (select id from t_ids where nome = 'rec2')), (now() at time zone 'Europe/Lisbon')::date - 1 + 7,
   'próxima ocorrência semanal = prazo + 7 dias');
 select is((select recorrencia from public.itens where id = (select id from t_ids where nome = 'rec')), null,
   'a concluída perde a recorrência');
@@ -99,7 +99,7 @@ select is((select cardinality(responsaveis) from public.vw_itens where id = (sel
   'responsáveis copiados');
 insert into t_ids select 'antiga', (public.criar_item(jsonb_build_object(
   'setor_id', '24000000-0000-0000-0000-0000000000aa', 'nivel', 1, 'nome', 'Antiga', 'recorrencia', 'semanal',
-  'prazo', (current_date - 30)::text))).id;
+  'prazo', ((now() at time zone 'Europe/Lisbon')::date - 30)::text))).id;
 -- semanal a partir de hoje-30: hoje-30+35 = hoje+5 (primeira data >= hoje)
 select is(public.mudar_status((select id from t_ids where nome = 'antiga'), 'concluida') #>> '{novo_item_recorrente,prazo}',
   ((now() at time zone 'Europe/Lisbon')::date - 30 + 35)::text,

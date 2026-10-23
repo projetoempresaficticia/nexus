@@ -45,6 +45,17 @@ Formato de cada entrada:
 - **Solução:** `[db.seed] enabled = false` no config.toml até a T-05 — **religar na T-05**.
 - **Data / tarefa:** 2026-10-23 · T-03
 
+## Teste de data falha só perto da meia-noite
+- **Sintoma:** teste de recorrência espera um dia a mais/menos; passa de dia e falha à noite.
+- **Causa:** o banco roda em UTC (`current_date`), mas o Nexus calcula "hoje" em Lisboa (`(now() at time zone 'Europe/Lisbon')::date`). Entre 23h e 0h UTC as duas datas diferem.
+- **Solução:** em SQL e testes, use sempre a data de Lisboa para "hoje"; nunca `current_date`.
+- **Data / tarefa:** 2026-10-24 · T-11 (teste da T-09)
+
+## Download de imagem Docker falha no CI com "toomanyrequests: Rate exceeded"
+- **Causa:** limite de pedidos do registo de imagens (ECR público) no runner do GitHub.
+- **Solução:** rodar de novo o job (`gh run rerun <id> --failed`). É temporário.
+- **Data / tarefa:** 2026-10-24 · T-11
+
 ## Herdados do v26 (para não repetir)
 ## Datas viram objetos Date e quebram as visões de semana/mês
 - **Sintoma:** prazos aparecem um dia antes/depois ou somem das visões.

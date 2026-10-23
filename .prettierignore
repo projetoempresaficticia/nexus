@@ -6,3 +6,4 @@ package-lock.json
 docs/
 referencias/
 supabase/
+src/app/core/models/database.types.ts

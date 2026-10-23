@@ -54,6 +54,21 @@ jobs:
       - name: Roda pgTAP
         if: steps.tem.outputs.sim == 'true'
         run: supabase test db
+      - name: Gera tipos TypeScript do banco
+        if: steps.tem.outputs.sim == 'true'
+        run: supabase gen types typescript --local --schema public > database.types.ts
+      - uses: actions/upload-artifact@v7
+        if: steps.tem.outputs.sim == 'true'
+        with:
+          name: database-types
+          path: database.types.ts
+      - name: Tipos commitados estão atualizados?
+        if: steps.tem.outputs.sim == 'true'
+        run: |
+          F=src/app/core/models/database.types.ts
+          if [ -f "$F" ] && ! diff -q "$F" database.types.ts >/dev/null; then
+            echo "::error::$F desatualizado — baixe o artefato database-types deste run e substitua o arquivo"; exit 1
+          fi
       - name: Sem testes de banco ainda
         if: steps.tem.outputs.sim != 'true'
         run: echo "Nenhum arquivo em supabase/tests — pgTAP entra a partir da T-05."
