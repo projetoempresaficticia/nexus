@@ -34,6 +34,17 @@ Formato de cada entrada:
 - **Solução:** regex agora procura o valor da chave (ver DECISOES). Se mesmo assim bloquear, confira a linha com `git diff --cached | grep -i service_role` — se for uma chave de verdade, **remova-a**.
 - **Data / tarefa:** 2026-10-22 · T-02
 
+## `supabase start` falha com DbConnectError / HealthCheckTimeoutError (PC com pouca RAM)
+- **Sintoma:** "failed to connect to postgres: Connection terminated unexpectedly" ou "supabase_storage_nexus container is not ready"; cada tentativa demora 10+ min.
+- **Causa:** PC com 6 GB de RAM no total; os ~12 contentores do Supabase completo fazem o Docker usar swap. O primeiro `initdb` levou ~13 min, e o CLI apaga o volume a cada falha (recomeça do zero).
+- **Solução:** `npm run db:start` (sobe só banco, auth, API e realtime) e `health_timeout = "10m"` no config.toml. Fechar outros programas pesados ajuda. Storage (anexos) e Studio ficam de fora até serem precisos (T-07/T-23): aí, `npx supabase start` completo ou mais RAM.
+- **Data / tarefa:** 2026-10-23 · T-03
+
+## `supabase start` falha com `relation "public.perfis" does not exist`
+- **Causa:** o seed.sql roda no start, mas as tabelas só nascem na T-05.
+- **Solução:** `[db.seed] enabled = false` no config.toml até a T-05 — **religar na T-05**.
+- **Data / tarefa:** 2026-10-23 · T-03
+
 ## Herdados do v26 (para não repetir)
 ## Datas viram objetos Date e quebram as visões de semana/mês
 - **Sintoma:** prazos aparecem um dia antes/depois ou somem das visões.
