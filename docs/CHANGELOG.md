@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Editor de texto com formatação, links, @menções e imagens, e limpeza de HTML para evitar código malicioso (T-15).
 - 2026-10-24 — Peças visuais comuns: etiquetas de status, avatares de vários responsáveis, janelas (modal), avisos (toast) e confirmação (T-14).
 - 2026-10-24 — Barra lateral que muda conforme o perfil (líder, membro, adm), contador de solicitações, "Meus setores", seletor de setor e tema claro/escuro (T-13).
 - 2026-10-24 — Tela de entrada com Google (só contas da empresa já cadastradas) e tela "Acesso não autorizado" (T-12).
