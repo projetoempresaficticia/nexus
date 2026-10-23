@@ -16,7 +16,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-07** Migration: `solicitacoes`, `solicitacao_mensagens`, `comentarios`, `mencoes`, `anexos`; bucket `anexos` + políticas Storage; RLS; pgTAP. — Dep.: T-06 · US-15..US-20
 - [x] **T-08** Migration: `historico` + triggers de auditoria; `notificacoes`; views `vw_itens` (com `responsaveis`, `meu_envolvimento`) e `vw_produtividade`; índices; publicação `supabase_realtime` + `replica identity full` nas tabelas de SCHEMA §Tempo real. — Dep.: T-07 · US-30, US-32, US-37
 - [x] **T-09** RPCs de itens: `criar_item` (inclui tarefa avulsa), `atualizar_item` (inclui título e mover avulsa ↔ projeto), `definir_responsaveis`, `mudar_status` (com recorrência), `contar_descendentes`, `excluir_item`, `definir_dependencia` + pgTAP. — Dep.: T-08 · US-08..US-14, US-34, US-35
-- [ ] **T-10** RPCs: `abrir_solicitacao`, `responder_solicitacao`, `cancelar_solicitacao`, `salvar_comentario` (menções + notificações) + pgTAP. — Dep.: T-09 · US-15, US-16, US-18, US-19
+- [x] **T-10** RPCs: `abrir_solicitacao`, `responder_solicitacao`, `cancelar_solicitacao`, `salvar_comentario` (menções + notificações) + pgTAP. — Dep.: T-09 · US-15, US-16, US-18, US-19
 - [ ] **T-11** RPCs `carregar_inicial`, `resumo_painel`, `carga_trabalho`, `salvar_setor`, `salvar_vinculos`, `reatribuir_itens`; revisar `supabase/seed.sql`; gerar `database.types.ts`. — Dep.: T-10 · US-26, US-28
 
 ## Fase 2 — Acesso
