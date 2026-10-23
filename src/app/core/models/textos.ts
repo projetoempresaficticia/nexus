@@ -53,6 +53,17 @@ export const TEXTOS = {
   },
   setor: { rotulo: 'Setor', todos: 'Todos os meus setores' },
   emBreve: 'Esta tela ainda está em construção.',
+  comum: {
+    carregando: 'Carregando…',
+    semResponsavel: 'Sem responsável',
+    fechar: 'Fechar',
+    cancelar: 'Cancelar',
+    salvar: 'Salvar',
+    criar: 'Criar',
+    excluir: 'Excluir',
+    confirmar: 'Confirmar',
+    maisPessoas: (n: number) => `+${n}`,
+  },
   erros: {
     sem_permissao: 'Você não tem permissão para fazer isto.',
     nao_encontrado: 'Não encontramos este item. Ele pode ter sido excluído.',

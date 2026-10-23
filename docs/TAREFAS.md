@@ -24,7 +24,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-13** Shell: barra lateral por perfil, contador de solicitações, Meus setores, seletor de Setor, tema claro/escuro, `AcessoStore` com `carregar_inicial`. — Dep.: T-12, T-11 · US-31
 
 ## Fase 3 — Funcionalidades
-- [ ] **T-14** `shared/ui`: botão, pill-status, nível, avatar, modal, confirmação, toast, vazio, carregando, kpi-card, barra; `textos.ts` e `rotulos.ts`. — Dep.: T-01
+- [x] **T-14** `shared/ui`: botão, pill-status, nível, avatar, modal, confirmação, toast, vazio, carregando, kpi-card, barra; `textos.ts` e `rotulos.ts`. — Dep.: T-01
 - [ ] **T-15** Editor rico (TipTap) com barra do protótipo, link em popup, @menção, colar imagem (gancho para upload); `html-seguro.pipe` com DOMPurify. — Dep.: T-14 · US-18
 - [ ] **T-16** Tarefas: `ItensService`, `ItensStore` (otimista + rollback), visão Lista (agrupada por projeto, com grupo "Sem projeto"), filtros (líder: "Só os meus" / "Toda a equipe"), modal Nova tarefa/subtarefa com projeto opcional e seletor de **vários responsáveis**. — Dep.: T-13, T-14, T-15 · US-08, US-21, US-34, US-35, US-36
 - [ ] **T-17** Projetos: grade de cartões com progresso, criar projeto. — Dep.: T-16 · US-07
