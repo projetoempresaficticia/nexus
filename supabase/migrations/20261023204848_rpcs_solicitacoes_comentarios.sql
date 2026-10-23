@@ -138,7 +138,86 @@ begin
 end;
 $$;
 
-revoke all on function public.abrir_solicitacao(uuid, uuid, public.tipo_solicitacao, text),
-  public.responder_solicitacao(uuid, public.status_solicitacao, text), public.cancelar_solicitacao(uuid) from public, anon;
-grant execute on function public.abrir_solicitacao(uuid, uuid, public.tipo_solicitacao, text),
-  public.responder_solicitacao(uuid, public.status_solicitacao, text), public.cancelar_solicitacao(uuid) to authenticated;
+-- ---------------------------------------------------------------- salvar_comentario
+-- id nulo = novo (precisa ver o item); com id = editar (só o autor). Menções vêm dos data-uid do HTML.
+-- Notifica: mencionados novos (mencao) e, em comentário novo, os responsáveis não mencionados (comentario).
+create function public.salvar_comentario(p_id uuid, p_item_id uuid, p_texto_html text)
+returns public.comentarios
+language plpgsql security definer
+set search_path = ''
+as $$
+declare
+  v_eu     uuid := privado.meu_perfil_id();
+  v_com    public.comentarios%rowtype;
+  v_nome   text;
+  v_citados uuid[];
+  v_novos  uuid[];
+  v_p      uuid;
+begin
+  if v_eu is null then
+    raise exception using errcode = 'P0001', message = 'sem_permissao';
+  end if;
+
+  if p_id is null then
+    if not privado.pode_ver_item(p_item_id) then
+      raise exception using errcode = 'P0001', message = 'nao_encontrado';
+    end if;
+    insert into public.comentarios (item_id, autor_id, texto_html) values (p_item_id, v_eu, p_texto_html)
+    returning * into v_com;
+  else
+    select * into v_com from public.comentarios where id = p_id;
+    if not found then
+      raise exception using errcode = 'P0001', message = 'nao_encontrado';
+    end if;
+    if v_com.autor_id <> v_eu then
+      raise exception using errcode = 'P0001', message = 'sem_permissao';
+    end if;
+    update public.comentarios set texto_html = p_texto_html, editado_em = now() where id = p_id
+    returning * into v_com;
+  end if;
+
+  -- data-uid="<uuid>" de perfis ativos (o editor rico grava assim as @menções)
+  select coalesce(array_agg(distinct p.id), '{}') into v_citados
+  from regexp_matches(p_texto_html, 'data-uid="([0-9a-fA-F-]{36})"', 'g') as m(g)
+  join public.perfis p on p.id = m.g[1]::uuid and p.ativo;
+
+  select coalesce(array_agg(x), '{}') into v_novos
+  from unnest(v_citados) as x
+  where not exists (select 1 from public.mencoes where comentario_id = v_com.id and perfil_id = x);
+
+  delete from public.mencoes where comentario_id = v_com.id and perfil_id <> all (v_citados);
+  insert into public.mencoes (comentario_id, perfil_id) select v_com.id, x from unnest(v_novos) as x;
+
+  select nome into v_nome from public.itens where id = v_com.item_id;
+  foreach v_p in array v_novos loop
+    perform privado.notificar('mencao', v_p, v_com.item_id,
+      jsonb_build_object('nome', v_nome, 'comentario_id', v_com.id));
+  end loop;
+
+  if p_id is null then
+    for v_p in
+      select r.perfil_id from public.item_responsaveis r
+      where r.item_id = v_com.item_id and r.perfil_id <> all (v_citados)
+    loop
+      perform privado.notificar('comentario', v_p, v_com.item_id,
+        jsonb_build_object('nome', v_nome, 'comentario_id', v_com.id));
+    end loop;
+  end if;
+
+  return v_com;
+end;
+$$;
+
+-- ---------------------------------------------------------------- permissões
+revoke all on function
+  public.abrir_solicitacao(uuid, uuid, public.tipo_solicitacao, text),
+  public.responder_solicitacao(uuid, public.status_solicitacao, text),
+  public.cancelar_solicitacao(uuid),
+  public.salvar_comentario(uuid, uuid, text)
+  from public, anon;
+grant execute on function
+  public.abrir_solicitacao(uuid, uuid, public.tipo_solicitacao, text),
+  public.responder_solicitacao(uuid, public.status_solicitacao, text),
+  public.cancelar_solicitacao(uuid),
+  public.salvar_comentario(uuid, uuid, text)
+  to authenticated;
