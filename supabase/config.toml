@@ -88,6 +88,12 @@ enable_manual_linking = false
 minimum_password_length = 8
 password_requirements = ""
 
+# Nexus: só cria conta para perfil ativo @estudeemportugal.org (migration T-12). No nexus-dev/produção ligar em
+# Authentication → Hooks → Before User Created → Postgres → public.auth_hook_antes_criar_usuario.
+[auth.hook.before_user_created]
+enabled = true
+uri = "pg-functions://postgres/public/auth_hook_antes_criar_usuario"
+
 [auth.rate_limit]
 email_sent = 2
 sms_sent = 30
