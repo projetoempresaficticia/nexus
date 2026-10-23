@@ -112,13 +112,13 @@ select is_empty('select 1 from storage.objects where bucket_id = ''anexos''', 's
 
 -- ---------------------------------------------------------------- apagar comentário
 reset role;
-select results_eq('select count(*)::int from public.comentarios', array[1], 'não-autor não apaga comentário');
+select results_eq($$select count(*)::int from public.comentarios where id = '52000000-0000-0000-0000-000000000001'$$, array[1], 'não-autor não apaga comentário');
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000c1","role":"authenticated"}';
 delete from public.comentarios where id = '52000000-0000-0000-0000-000000000001';
 reset role;
-select results_eq('select count(*)::int from public.comentarios', array[0], 'líder do setor apaga comentário');
-select results_eq('select count(*)::int from public.mencoes', array[0], 'menções vão junto com o comentário');
+select results_eq($$select count(*)::int from public.comentarios where id = '52000000-0000-0000-0000-000000000001'$$, array[0], 'líder do setor apaga comentário');
+select results_eq($$select count(*)::int from public.mencoes where comentario_id = '52000000-0000-0000-0000-000000000001'$$, array[0], 'menções vão junto com o comentário');
 
 select * from finish();
 rollback;

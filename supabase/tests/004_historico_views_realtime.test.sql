@@ -62,12 +62,12 @@ set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000d2","r
 select set_eq($$select id from public.vw_itens where setor_id = '23000000-0000-0000-0000-0000000000aa'$$,
   $$values ('33000000-0000-0000-0000-000000000001'::uuid), ('33000000-0000-0000-0000-000000000002'), ('33000000-0000-0000-0000-000000000003')$$,
   'vw_itens respeita a RLS (não mostra P2)');
-select results_eq($$select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000002'$$,
-  array[array['responsavel']], 'envolvimento de responsável');
-select results_eq($$select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000001'$$,
-  array[array['contexto']], 'projeto aparece como contexto');
-select results_eq($$select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000003'$$,
-  array['{}'::text[]], 'subtarefa da minha tarefa: visível, sem envolvimento direto');
+select is((select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000002'),
+  array['responsavel'], 'envolvimento de responsável');
+select is((select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000001'),
+  array['contexto'], 'projeto aparece como contexto');
+select is((select meu_envolvimento from public.vw_itens where id = '33000000-0000-0000-0000-000000000003'),
+  '{}'::text[], 'subtarefa da minha tarefa: visível, sem envolvimento direto');
 select results_eq($$select cardinality(responsaveis) from public.vw_itens where id = '33000000-0000-0000-0000-000000000002'$$,
   array[2], 'vários responsáveis em responsaveis[]');
 select results_eq($$select projeto_id from public.vw_itens where id = '33000000-0000-0000-0000-000000000003'$$,
