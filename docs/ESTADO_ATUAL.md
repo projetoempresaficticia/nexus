@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-23 — T-01 a T-05 concluídas. T-05: perfis, setores, vínculos, funções de acesso (schema `privado`), RLS e 24 testes pgTAP; migration aplicada no nexus-dev.
+2026-10-23 — T-01 a T-06 concluídas (modo autónomo: Germano testa no fim). T-06: itens e visibilidade "só o que me envolve", 56 testes pgTAP no total.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -12,13 +12,14 @@
 - **T-03b**: desenvolvimento aponta para o projeto Supabase **nexus-dev** na nuvem (`https://woroiluncnfscajlqoot.supabase.co`, Frankfurt).
 - **T-04**: `ci.yml` (lint, formatação, testes, build, chave secreta no bundle, pgTAP) — checks obrigatórios na `main`; `deploy.yml` → https://projetoempresaficticia.github.io/nexus/ (secrets `SUPABASE_URL`/`SUPABASE_ANON_KEY` = nexus-dev até a T-40).
 - **T-05**: migration `20261023075322_perfis_setores_vinculos.sql` (7 enums, `perfis`, `setores`, `vinculos`, funções em `privado`, trigger anti-ciclo, RLS + grants), `supabase/tests/001_perfis_setores_vinculos.test.sql` (24 testes, verdes no CI). Aplicada no nexus-dev; advisors de segurança sem alertas; API anônima recusada.
+- **T-06**: migration `20261023080619_itens_responsaveis_checklist_dependencias.sql` (itens + tarefa avulsa, responsáveis, checklist, dependências; triggers de nível/setor/status/ciclo; `itens_visiveis`/`pode_ver_item`/`pode_editar_item`; RLS) + 32 testes pgTAP. Aplicada no nexus-dev.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-06** — `itens`, `item_responsaveis`, `checklist_itens`, `dependencias`, triggers, `itens_envolvidos`/`pode_ver_item`/`pode_editar_item`, RLS e pgTAP (US-36). Pendência: "membro criador pode excluir item com filhos?" (padrão: não).
+- **T-07** — solicitações, mensagens, comentários, menções, anexos, bucket `anexos` + Storage; ampliar `itens_envolvidos` (solicitação/menção); religar seed.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
