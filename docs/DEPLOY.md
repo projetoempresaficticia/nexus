@@ -59,7 +59,7 @@ npx supabase functions deploy <nome>
 ## Checklist pré-publicação
 - [ ] CI verde (lint, unit, pgTAP, build).
 - [ ] `get_advisors` (segurança e desempenho) sem alertas críticos.
-- [ ] Nenhuma chave secreta no bundle (`grep -r service_role dist/` vazio).
+- [ ] Nenhuma chave secreta no bundle (`bash .github/scripts/sem-segredos.sh dist` — roda também no CI).
 - [ ] Migrations novas testadas localmente com `db reset`.
 - [ ] CHANGELOG.md atualizado.
 - [ ] Teste rápido em produção: login, criar tarefa, comentar, solicitação, e-mail recebido.
