@@ -188,6 +188,9 @@ Fila de e-mails. Inserida por triggers/RPCs; consumida pela Edge Function `envia
 | erro | text | |
 Regra: não notificar a própria pessoa que fez a ação.
 
+## Funções de acesso
+Ficam no schema `privado` (fora da API): `meu_perfil_id`, `eh_admin`, `setores_descendentes`, `setores_visiveis`, `setores_administrados`, `administra_setor`, e as próximas (`itens_envolvidos`, `pode_ver_item`, `pode_editar_item`). Trigger `setores_impede_ciclo`. Ver SEGURANCA.md §2.
+
 ## Views
 - `vw_itens` — itens + `responsaveis` (uuid[]), `projeto_id` (raiz, ou nulo se avulsa), `meu_envolvimento` (texto[]: responsavel, criador, aprovador, solicitacao, mencao, contexto), `atrasado` (prazo < hoje e status <> concluida), `dias_parado`, `qtd_filhos`, `qtd_comentarios`, `qtd_anexos`, `solicitacoes_pendentes`. `security_invoker = true` (respeita RLS).
 - `vw_produtividade` — uma linha por (item concluído × responsável), com `inicio`, `prazo`, `concluido_em`, `dias_ciclo`, `no_prazo`, `dias_parado_total`. `security_invoker = true`.
