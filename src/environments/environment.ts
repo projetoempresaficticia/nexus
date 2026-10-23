@@ -4,4 +4,5 @@ export const environment = {
   supabaseUrl: '',
   supabaseAnonKey: '',
   appUrl: '',
+  loginComSenha: false,
 };

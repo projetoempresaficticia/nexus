@@ -39,6 +39,7 @@ jobs:
             supabaseUrl: '${SUPABASE_URL}',
             supabaseAnonKey: '${SUPABASE_ANON_KEY}',
             appUrl: '${APP_URL}',
+            loginComSenha: false,
           };
           EOF
       - run: npx ng build --configuration production --base-href /${{ github.event.repository.name }}/

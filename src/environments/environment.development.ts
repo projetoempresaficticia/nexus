@@ -6,4 +6,6 @@ export const environment = {
   supabaseUrl: 'https://woroiluncnfscajlqoot.supabase.co',
   supabaseAnonKey: 'sb_publishable_EAKylOEwRPzaYAQSOM_yQw_P8fXoENm',
   appUrl: 'http://localhost:4200',
+  // Login por e-mail/senha só em desenvolvimento (NAO_FAZER #7).
+  loginComSenha: true,
 };
