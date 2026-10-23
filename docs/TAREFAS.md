@@ -7,6 +7,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 ## Fase 0 — Setup
 - [x] **T-01** Criar o projeto Angular (skill `angular-new-app`): standalone, strict, roteamento, SCSS desligado (CSS), Vitest, ESLint, Prettier; estrutura `core/shared/features/layout`; `src/styles/tokens.css` com os tokens de DESIGN.md; fontes Google. Criar repositório GitHub `nexus` com `main` protegida. — Dep.: — · US: —- [x] **T-02** Instalar skills (`npx skills add https://github.com/angular/skills` e `npx skills add supabase/agent-skills`), ativar hooks (`git config core.hooksPath .githooks`), configurar `.gitmessage`, criar labels do GitHub (COMMITS.md), ativar só "Squash and merge". — Dep.: T-01
 - [x] **T-03** Supabase local: `npx supabase init`, `config.toml` (Google + e-mail/senha só local, `site_url` localhost:4200), `core/supabase.client.ts`, `environments`. — Dep.: T-01
+- [x] **T-03b** Apontar o desenvolvimento para o projeto Supabase `nexus-dev` na nuvem (decisão de 2026-10-23, PC com pouca RAM). — Dep.: T-03
 - [ ] **T-04** GitHub Actions: `ci.yml` (lint, test, build, pgTAP com Supabase local) em todo PR; `deploy.yml` para GitHub Pages na `main` (`--base-href /nexus/`, copiar `index.html` → `404.html`). — Dep.: T-03
 
 ## Fase 1 — Banco de dados

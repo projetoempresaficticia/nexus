@@ -14,6 +14,7 @@ O dono do projeto tem experiência **básica** em programação: explique em lin
 ## Comandos
 ```bash
 npm install                     # instalar dependências
+# Dia a dia: o app usa o projeto Supabase "nexus-dev" na nuvem (environment.development.ts) — sem Docker.
 npx supabase start              # sobe o Supabase local completo (precisa do Docker)
 npm run db:start                # versão leve (PC com pouca RAM): banco, auth, API, realtime
 npx supabase db reset           # recria a base local com migrations + seed.sql
