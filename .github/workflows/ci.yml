@@ -1,0 +1,59 @@
+# CI — roda em todo PR para a main (e em push na main). Obrigatório verde antes do merge (COMMITS.md).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Lint, testes e build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npx ng test --watch=false
+      - run: npm run build
+      - name: Nenhuma chave secreta no bundle
+        run: |
+          if grep -rEl 'service_role|sb_secret_' dist/; then
+            echo "::error::Chave secreta encontrada no build"; exit 1
+          fi
+
+  banco:
+    name: Testes do banco (pgTAP)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Há testes de banco?
+        id: tem
+        run: |
+          if ls supabase/tests/*.sql >/dev/null 2>&1; then echo "sim=true" >> "$GITHUB_OUTPUT"; else echo "sim=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: supabase/setup-cli@v3
+        if: steps.tem.outputs.sim == 'true'
+        with:
+          version: 2.121.0
+      - name: Sobe o Postgres local com as migrations
+        if: steps.tem.outputs.sim == 'true'
+        run: supabase db start
+      - name: Roda pgTAP
+        if: steps.tem.outputs.sim == 'true'
+        run: supabase test db
+      - name: Sem testes de banco ainda
+        if: steps.tem.outputs.sim != 'true'
+        run: echo "Nenhum arquivo em supabase/tests — pgTAP entra a partir da T-05."
