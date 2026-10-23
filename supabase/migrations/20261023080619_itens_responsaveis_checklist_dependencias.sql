@@ -93,8 +93,8 @@ begin
     if not found then
       raise exception using errcode = 'P0001', message = 'nao_encontrado';
     end if;
-    -- tarefa só dentro de projeto; subtarefa só dentro de tarefa
-    if new.nivel is distinct from v_pai.nivel + 1 then
+    -- tarefa só dentro de projeto; subtarefa só dentro de tarefa; subtarefa não tem filhos
+    if v_pai.nivel >= 2 or new.nivel is distinct from v_pai.nivel + 1 then
       raise exception using errcode = 'P0001', message = 'nivel_invalido';
     end if;
     new.setor_id := v_pai.setor_id;
@@ -142,6 +142,7 @@ create trigger itens_antes_gravar
   for each row execute function privado.itens_antes_gravar();
 
 -- Depois de mudar o setor (ex.: tarefa avulsa movida para projeto de outro setor), os filhos acompanham.
+-- Sem "update of setor_id": o setor costuma ser trocado pelo trigger anterior, não pelo UPDATE em si.
 create function privado.itens_propagar_setor()
 returns trigger
 language plpgsql security definer
@@ -155,7 +156,7 @@ end;
 $$;
 
 create trigger itens_propagar_setor
-  after update of setor_id on public.itens
+  after update on public.itens
   for each row when (new.setor_id is distinct from old.setor_id)
   execute function privado.itens_propagar_setor();
 
