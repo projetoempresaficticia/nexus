@@ -147,3 +147,47 @@ revoke all on function privado.setores_impede_ciclo() from public, anon, authent
 create trigger setores_impede_ciclo
   before insert or update of pai_id on public.setores
   for each row execute function privado.setores_impede_ciclo();
+
+-- ---------------------------------------------------------------- RLS e permissões
+-- Tabelas novas não são expostas automaticamente na API: GRANT explícito + RLS decide as linhas.
+alter table public.perfis   enable row level security;
+alter table public.setores  enable row level security;
+alter table public.vinculos enable row level security;
+
+revoke all on public.perfis, public.setores, public.vinculos from anon, authenticated;
+grant select, insert, update, delete on public.perfis, public.setores, public.vinculos to authenticated;
+
+-- perfis: quem tem perfil ativo vê as pessoas ativas (para atribuir/mencionar); Adm vê e gere todas.
+create policy perfis_select on public.perfis for select to authenticated
+  using ((select privado.meu_perfil_id()) is not null and (ativo or (select privado.eh_admin())));
+create policy perfis_admin_insert on public.perfis for insert to authenticated
+  with check ((select privado.eh_admin()));
+create policy perfis_admin_update on public.perfis for update to authenticated
+  using ((select privado.eh_admin())) with check ((select privado.eh_admin()));
+create policy perfis_admin_delete on public.perfis for delete to authenticated
+  using ((select privado.eh_admin()));
+
+-- setores: cada um vê os seus setores visíveis. Adm gere tudo.
+-- Líder pode CRIAR sub-setor abaixo de um setor que administra — nunca na raiz nem acima (decisão 2026-10-23).
+create policy setores_select on public.setores for select to authenticated
+  using (id in (select privado.setores_visiveis()));
+create policy setores_insert on public.setores for insert to authenticated
+  with check (
+    (select privado.eh_admin())
+    or (pai_id in (select privado.setores_administrados())
+        and criado_por = (select privado.meu_perfil_id()))
+  );
+create policy setores_admin_update on public.setores for update to authenticated
+  using ((select privado.eh_admin())) with check ((select privado.eh_admin()));
+create policy setores_admin_delete on public.setores for delete to authenticated
+  using ((select privado.eh_admin()));
+
+-- vinculos: vê os dos setores visíveis e os próprios. Gerir: só Adm (SEGURANCA.md §3).
+create policy vinculos_select on public.vinculos for select to authenticated
+  using (setor_id in (select privado.setores_visiveis()) or perfil_id = (select privado.meu_perfil_id()));
+create policy vinculos_admin_insert on public.vinculos for insert to authenticated
+  with check ((select privado.eh_admin()));
+create policy vinculos_admin_update on public.vinculos for update to authenticated
+  using ((select privado.eh_admin())) with check ((select privado.eh_admin()));
+create policy vinculos_admin_delete on public.vinculos for delete to authenticated
+  using ((select privado.eh_admin()));
