@@ -1,0 +1,67 @@
+<div class="rte">
+  <div class="rte-bar" role="toolbar" aria-label="Formatação">
+    <button
+      type="button"
+      title="Negrito"
+      aria-label="Negrito"
+      [class.on]="ativo('bold')"
+      [attr.aria-pressed]="ativo('bold')"
+      (click)="alternar('bold')"
+    >
+      <b>B</b>
+    </button>
+    <button
+      type="button"
+      title="Itálico"
+      aria-label="Itálico"
+      [class.on]="ativo('italic')"
+      [attr.aria-pressed]="ativo('italic')"
+      (click)="alternar('italic')"
+    >
+      <i class="serif">I</i>
+    </button>
+    <button
+      type="button"
+      title="Sublinhado"
+      aria-label="Sublinhado"
+      [class.on]="ativo('underline')"
+      [attr.aria-pressed]="ativo('underline')"
+      (click)="alternar('underline')"
+    >
+      <u>U</u>
+    </button>
+    <button
+      type="button"
+      title="Tachado"
+      aria-label="Tachado"
+      [class.on]="ativo('strike')"
+      [attr.aria-pressed]="ativo('strike')"
+      (click)="alternar('strike')"
+    >
+      <s>S</s>
+    </button>
+    <button
+      type="button"
+      title="Limpar formatação"
+      aria-label="Limpar formatação"
+      (click)="limpar()"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M4 7V5h14v2M11 5l-3 14M6 19h6M16 15l5 5M21 15l-5 5" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="rte-ed rich" #area></div>
+
+  <input #arquivo type="file" accept="image/*" hidden (change)="arquivoEscolhido($event)" />
+</div>
