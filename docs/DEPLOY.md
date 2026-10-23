@@ -5,8 +5,8 @@
 |---|---|---|---|
 | desenvolvimento | `npm start` → localhost:4200 | projeto **nexus-dev** na nuvem (`woroiluncnfscajlqoot`, Frankfurt, plano free) | dia a dia do Germano (PC com pouca RAM) |
 | local / CI | `npm start` | `npx supabase start` (Docker) | testes pgTAP no CI; opcional em PC com RAM suficiente |
-| produção | GitHub Pages `https://<usuario>.github.io/nexus/` | projeto `nexus-prod` (região UE) | equipa |
-> ⚠️ A CONFIRMAR: conta/organização do GitHub (pessoal do Germano ou da empresa) e se haverá domínio próprio (ex.: `tarefas.preparaportugal.pt` via CNAME).
+| produção | GitHub Pages https://projetoempresaficticia.github.io/nexus/ | projeto `nexus-prod` (região UE) — **até a T-40 os secrets apontam para o nexus-dev** | equipa |
+> ⚠️ A CONFIRMAR: se haverá domínio próprio (ex.: `tarefas.preparaportugal.pt` via CNAME). Conta GitHub: `projetoempresaficticia` (confirmado).
 
 ## Variáveis
 ### Frontend (`src/environments/environment*.ts` — públicas)
@@ -40,7 +40,7 @@ Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e
 7. `npx supabase functions deploy` + `npx supabase secrets set ...` (**com confirmação**).
 8. Ativar `pg_cron` e `pg_net`; criar os jobs da migration de notificações.
 9. Inserir os 2 admins em `perfis` (Germano e Camila) com `is_admin = true`.
-10. GitHub: Settings → Pages → Source "GitHub Actions"; Secrets `SUPABASE_URL`, `SUPABASE_ANON_KEY`.
+10. GitHub: Pages já está em "GitHub Actions" (T-04). **Trocar** os secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` (hoje do nexus-dev) pelos do `nexus-prod`: `gh secret set SUPABASE_URL` / `gh secret set SUPABASE_ANON_KEY`.
 
 ## Publicação do frontend (automática)
 Merge na `main` → `deploy.yml`: `npm ci` → gera environment → `ng build --configuration production --base-href /nexus/` → copia `index.html` para `404.html` → `actions/deploy-pages`.
