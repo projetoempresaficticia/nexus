@@ -17,7 +17,8 @@ enabled = false
 [db]
 port = 54322
 shadow_port = 54320
-health_timeout = "2m"
+# Nexus: 10m em vez de 2m — em PCs com pouca RAM o primeiro initdb leva >10 min (ERROS_CONHECIDOS.md).
+health_timeout = "10m"
 major_version = 17
 orioledb_version = ""
 
@@ -33,7 +34,8 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-enabled = true
+# Nexus: desligado até a T-05 criar as tabelas que o seed.sql usa (perfis, setores...). Religar na T-05.
+enabled = false
 sql_paths = ["./seed.sql"]
 
 [db.network_restrictions]

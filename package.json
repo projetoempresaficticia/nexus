@@ -9,7 +9,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,css,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\"",
+    "db:start": "supabase start -x studio,logflare,vector,imgproxy,edge-runtime,mailpit,postgres-meta,supavisor,storage-api",
+    "db:stop": "supabase stop"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
