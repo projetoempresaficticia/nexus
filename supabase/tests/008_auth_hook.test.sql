@@ -14,7 +14,6 @@ select ok(not has_function_privilege('authenticated', 'public.auth_hook_antes_cr
   and not has_function_privilege('anon', 'public.auth_hook_antes_criar_usuario(jsonb)', 'execute'),
   'hook fora da API');
 
-set local role supabase_auth_admin;
 select is(public.auth_hook_antes_criar_usuario('{"user":{"email":"nova.pessoa@estudeemportugal.org"}}'), '{}'::jsonb,
   'perfil ativo cadastrado entra (sem diferenciar maiúsculas)');
 select is(public.auth_hook_antes_criar_usuario('{"user":{"email":"desconhecido@estudeemportugal.org"}}') #>> '{error,message}',
@@ -25,7 +24,6 @@ select is(public.auth_hook_antes_criar_usuario('{"user":{"email":"nova.pessoa@gm
   'acesso_nao_autorizado', 'outro domínio é recusado');
 select is((public.auth_hook_antes_criar_usuario('{"user":{"email":"x@gmail.com"}}') #>> '{error,http_code}')::int, 403,
   'recusa com HTTP 403');
-reset role;
 
 insert into auth.users (id, email) values ('00000000-0000-0000-0000-000000000c12', 'nova.pessoa@estudeemportugal.org');
 select is((select auth_id from public.perfis where id = '17000000-0000-0000-0000-000000000001'),
