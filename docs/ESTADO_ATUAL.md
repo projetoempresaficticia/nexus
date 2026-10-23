@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-13 concluídas (banco completo, login e shell). Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-14 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -20,13 +20,14 @@
 - **T-11**: migration `20261023213218_rpcs_painel_admin.sql` (carregar_inicial, resumo_painel, carga_trabalho, salvar_setor, salvar_vinculos, reatribuir_itens) + 20 testes; `core/models/database.types.ts` gerado pelo CI (job pgTAP gera e compara; artefato `database-types`); cliente Supabase tipado. Por aplicar no nexus-dev.
 - **T-12**: migration `20261023230649_auth_hook_e_ligacao_perfil.sql` (hook + trigger em auth.users) + 9 testes; `AuthService`, guards `autenticado`/`visitante`, telas Login e Sem acesso, `core/models/textos.ts`, estilos do protótipo em `src/styles/prototipo.css`, `src/testing/supabase-falso.ts`. Login com senha só em dev.
 - **T-13**: `AcessoStore` (carregar_inicial, papéis, filtro de setor) + `AcessoService`, `ErroApi`, `TemaService`, `ShellComponent` (menu por perfil, contador, Meus setores, tema, sair), `CabecalhoComponent` (seletor de setor), guards acesso/líder/admin, rotas com `EmBrevePage` para as telas ainda não feitas.
+- **T-14**: `shared/ui` (pill-status, nivel, avatar, avatares, barra, kpi-card, vazio, carregando, modal com CDK cdkTrapFocus, toast + ToastService, confirmacao + ConfirmacaoService) e `core/models/rotulos.ts`. Botões usam as classes `.btn` do protótipo (sem componente).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-14** — `shared/ui`: botão, pill-status, nível, avatar(es), modal, confirmação, toast, vazio, carregando, kpi-card, barra; `rotulos.ts`.
+- **T-15** — editor rico (TipTap) com barra do protótipo, link, @menção, colar imagem; `html-seguro.pipe` (DOMPurify).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
