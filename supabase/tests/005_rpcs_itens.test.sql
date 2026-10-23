@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(29);
+select plan(30);
 
 -- ---------------------------------------------------------------- dados
 -- SA: Ana (líder), Bruno, Gabriela ; PED: Diogo
@@ -100,8 +100,9 @@ select is((select cardinality(responsaveis) from public.vw_itens where id = (sel
 insert into t_ids select 'antiga', (public.criar_item(jsonb_build_object(
   'setor_id', '24000000-0000-0000-0000-0000000000aa', 'nivel', 1, 'nome', 'Antiga', 'recorrencia', 'semanal',
   'prazo', (current_date - 30)::text))).id;
-select ok((select (public.mudar_status((select id from t_ids where nome = 'antiga'), 'concluida')
-  #>> '{novo_item_recorrente,prazo}')::date between current_date and current_date + 6),
+-- semanal a partir de hoje-30: hoje-30+35 = hoje+5 (primeira data >= hoje)
+select is(public.mudar_status((select id from t_ids where nome = 'antiga'), 'concluida') #>> '{novo_item_recorrente,prazo}',
+  ((now() at time zone 'Europe/Lisbon')::date - 30 + 35)::text,
   'prazo muito no passado: próxima data é a primeira >= hoje');
 
 -- ---------------------------------------------------------------- atualizar e mover
