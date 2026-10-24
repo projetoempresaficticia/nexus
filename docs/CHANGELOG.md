@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Visões Árvore (projeto › tarefa › subtarefa com expandir/recolher, progresso e "Sem projeto") e Dependências (mapa "quem espera por quem" entre setores e cartões das solicitações abertas) (T-26).
 - 2026-10-24 — Visão Kanban em Tarefas: colunas por status, prioridade ou projeto, arrastar para mudar status/prioridade (Bloqueada pede motivo) e menu "Mover para…" pelo teclado; filtro "Só as minhas" (T-25).
 - 2026-10-24 — Abertura instantânea: ao voltar ao Nexus, menu, tarefas e solicitações aparecem na hora com os dados da última visita e se atualizam sozinhos; tudo é apagado ao sair (T-44).
 - 2026-10-24 — Tempo real: listas, item (comentários, checklist, dependências, anexos), solicitações e contador do menu atualizam sozinhos; indicador "Ao vivo / Reconectando…" e realce do item que um colega mudou (T-43).

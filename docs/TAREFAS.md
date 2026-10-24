@@ -38,7 +38,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-43** Tempo real: `RealtimeService` (um canal, Postgres Changes), merge nas stores por `id`/`atualizado_em`, indicador Ao vivo/Reconectando, recarga do que mudou ao reconectar, `setAuth` ao renovar sessão. — Dep.: T-24, T-22, T-08 · US-37
 - [x] **T-44** Abertura instantânea: `CacheLocalService` (IndexedDB por perfil), primeira pintura com o retrato e atualização em segundo plano; limpar no logout. — Dep.: T-43 · US-37
 - [x] **T-25** Visão Kanban (status/prioridade/projeto, CDK drag-drop, "Mover para…"). — Dep.: T-18 · US-22
-- [ ] **T-26** Visões Árvore e Dependências. — Dep.: T-19 · US-23, US-27
+- [x] **T-26** Visões Árvore e Dependências. — Dep.: T-19 · US-23, US-27
 - [ ] **T-27** Visões Agenda, Mês e Semana. — Dep.: T-16 · US-24
 - [ ] **T-28** Visão Linha do tempo. — Dep.: T-16 · US-25
 - [ ] **T-29** Visões Por pessoa e Carga de trabalho. — Dep.: T-16, T-11 · US-26
