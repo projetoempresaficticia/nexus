@@ -79,16 +79,14 @@ describe('AnexosItemComponent', () => {
 
   it('membro remove só o que enviou; links abrem em nova aba', async () => {
     const { el } = await montar('membro', {
-      listar: vi
-        .fn()
-        .mockResolvedValue([
-          anexo('1', 'p-eu'),
-          anexo('2', 'outro', {
-            caminho: null,
-            link_externo: 'https://drive.google.com/x',
-            nome: 'Drive',
-          }),
-        ]),
+      listar: vi.fn().mockResolvedValue([
+        anexo('1', 'p-eu'),
+        anexo('2', 'outro', {
+          caminho: null,
+          link_externo: 'https://drive.google.com/x',
+          nome: 'Drive',
+        }),
+      ]),
     });
     const linhas = [...el.querySelectorAll('.file')];
     expect(linhas[0].querySelector('[aria-label^="Remover"]')).toBeTruthy();
