@@ -178,10 +178,12 @@ create policy anexos_storage_delete on storage.objects for delete to authenticat
 | `anon` / publishable key | `src/environments/*.ts` (é pública por natureza) |
 | `service_role` / secret key | **só** em segredos das Edge Functions e no `.env` local de `scripts/` (nunca no Git) |
 | chave do provedor de e-mail | segredo das Edge Functions |
+| JSON da conta de serviço do Google (`GDRIVE_SERVICE_ACCOUNT_JSON`) | segredo das Edge Functions e secret do GitHub (backup) — nunca no Git |
 | credenciais Google (OAuth) | painel do Supabase |
 
 ## 6. Dados pessoais
 - Dados guardados: nome, e-mail corporativo, papéis, conteúdo de trabalho. Nada sensível (saúde, documentos pessoais) deve ir para descrições — aviso no GLOSSARIO_UI (texto de ajuda do anexo).
-- Anexos ficam na região UE do Supabase (escolher `eu-west`/Frankfurt ao criar o projeto).
+- Arquivos anexados ficam no **Google Drive partilhado da empresa** (T-52), numa pasta por setor. Quem vê o item no Nexus vê o link; o arquivo abre para **qualquer pessoa do domínio que tenha o link** (permissão `domain`, `allowFileDiscovery=false`) e para os membros do Drive partilhado. A RLS esconde o link de quem não vê o item, mas não protege o arquivo de quem recebeu o link por outro caminho. Imagens coladas no texto continuam no Storage (região UE).
+- `drive_id` só é gravado pela Edge Function (trigger); a lixeira do Drive só recebe arquivos da fila preenchida pelo banco — o navegador não consegue mandar para a lixeira um arquivo que não seja de um anexo apagado.
 - Desativar ≠ apagar: mantém autoria e histórico. Pedido de remoção total → Adm anonimiza `nome`/`email` manualmente (procedimento em DEPLOY.md).
 - HTML de usuários sempre sanitizado (DOMPurify) ao salvar e ao exibir; `href` só `https:`/`mailto:`.
