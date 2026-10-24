@@ -12,8 +12,12 @@ O plano gratuito do Supabase **não guarda backups**. Por isso, todos os dias à
 Se qualquer passo falhar, o job fica vermelho e o GitHub manda e-mail a quem editou o workflow por último.
 Também dá para rodar à mão: **Actions → Backup Supabase → Run workflow**.
 
-> **Não está no backup:** os **arquivos** dos anexos (ficam no Storage do Supabase, não no banco), as
-> configurações do painel (Auth/Google, URLs, hook) e as Edge Functions — estas estão no repositório.
+Os **arquivos dos anexos** (que ficam no Storage, não no banco) têm uma cópia **semanal**, aos domingos, no
+mesmo workflow (secção 8): `nexus-anexos-AAAA-MM-DD.tar.gpg`, guardando 8 semanas + o primeiro de cada mês por
+12 meses.
+
+> **Não está em nenhum backup:** as configurações do painel do Supabase (Auth/Google, URLs, hook) e os segredos
+> das Edge Functions. O código das funções e as migrations estão no repositório.
 
 ---
 
@@ -126,6 +130,40 @@ processo inteiro de vez em quando, para ninguém aprender no dia da emergência:
    backup.
 5. **Apague o projeto de teste** (Settings → General → Delete project) e os arquivos baixados.
 6. Anote a data do ensaio em DECISOES.md ou no ESTADO_ATUAL.md.
+
+## 8. Cópia semanal dos anexos (arquivos do Storage)
+Fica desligada até existirem os 4 secrets abaixo (enquanto isso o job só mostra um aviso amarelo).
+1. Supabase → projeto → **Storage → S3 Configuration** (ou Settings → Storage): copie o **Endpoint** e a
+   **Region**. Prefira o endereço `https://<ref>.storage.supabase.co/storage/v1/s3` (mais rápido para arquivos
+   grandes).
+2. Em **Access keys → New access key**, dê o nome `backup-github` e copie o **Access key ID** e o **Secret access
+   key** (o secret só aparece uma vez).
+   - ⚠️ Estas chaves dão acesso **total** ao Storage (não existe chave só de leitura). O workflow só lê, mas
+     guarde-as apenas no GitHub e apague-as no painel se deixarem de ser usadas.
+3. Crie no GitHub (Settings → Secrets and variables → Actions):
+
+   | Secret | O que colar |
+   |---|---|
+   | `SUPABASE_S3_ENDPOINT` | o endpoint do passo 1 |
+   | `SUPABASE_S3_REGION` | a região (ex.: `eu-central-1`) |
+   | `SUPABASE_S3_ACCESS_KEY_ID` | Access key ID do passo 2 |
+   | `SUPABASE_S3_SECRET_ACCESS_KEY` | Secret access key do passo 2 |
+4. Teste: **Actions → Backup Supabase → Run workflow** (faz o banco e os anexos) e confira os dois arquivos no Drive.
+5. Espaço: cada cópia tem o tamanho de todos os anexos (o plano gratuito do Supabase vai até 1 GB). Com ~20
+   cópias guardadas, reserve no Drive partilhado até ~20× esse tamanho.
+
+**Restaurar os anexos** (depois de restaurar o banco, secção 6 — os registros em `storage.objects` vêm do banco):
+1. Baixe `nexus-anexos-AAAA-MM-DD.tar.gpg` e desencripte com a **mesma passphrase**:
+   ```bash
+   gpg --output anexos.tar --decrypt nexus-anexos-AAAA-MM-DD.tar.gpg
+   tar -xf anexos.tar        # cria a pasta anexos/ com setor/item/arquivo
+   ```
+2. No projeto novo, crie chaves S3 (passos 1 e 2) e envie a pasta com o [rclone](https://rclone.org/install/):
+   ```bash
+   rclone copy anexos :s3:anexos --s3-provider Other --s3-endpoint "<endpoint>" --s3-region "<região>"      --s3-access-key-id "<id>" --s3-secret-access-key "<secret>" --s3-force-path-style
+   ```
+   (O bucket `anexos` já existe se as migrations ou o restauro do banco o criaram.)
+3. Abra um item com anexo no app e clique no arquivo para conferir. Apague `anexos.tar` e a pasta do computador.
 
 ## Quando o backup falhar
 - O e-mail do GitHub leva ao job: veja o passo vermelho.

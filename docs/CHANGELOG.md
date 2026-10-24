@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Infraestrutura
+- 2026-10-24 — Cópia semanal encriptada dos arquivos anexados para o Google Drive, com guia de restauro (T-50).
 - 2026-10-24 — E-mails automáticos passam a sair pelo Gmail da empresa (SMTP do Google Workspace com senha de app) (T-49).
 - 2026-10-24 — Site passa a ser publicado no Cloudflare Pages (a partir do repositório privado) e o banco ganha backup diário encriptado no Google Drive, com teste automático de restauro e guia de recuperação (T-48).
 
