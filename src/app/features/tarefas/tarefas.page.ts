@@ -15,6 +15,7 @@ import { AgendaComponent } from './visoes/agenda.component';
 import { ArvoreComponent } from './visoes/arvore.component';
 import { CalendarioComponent } from './visoes/calendario.component';
 import { DependenciasComponent } from './visoes/dependencias.component';
+import { GanttComponent } from './visoes/gantt.component';
 import { KanbanComponent } from './visoes/kanban.component';
 
 type Aba = keyof typeof TEXTOS.tarefas.abas;
@@ -52,6 +53,7 @@ interface Grupo {
     DependenciasComponent,
     AgendaComponent,
     CalendarioComponent,
+    GanttComponent,
     NgTemplateOutlet,
   ],
   templateUrl: './tarefas.page.html',

@@ -78,6 +78,10 @@
   >
     <ng-container [ngTemplateOutlet]="seletorQuem" />
   </app-calendario>
+} @else if (visao() === 'gantt') {
+  <app-gantt [itens]="itensArvore()" [interessa]="interessa()">
+    <ng-container [ngTemplateOutlet]="seletorQuem" />
+  </app-gantt>
 } @else if (visao() === 'deps') {
   <app-dependencias />
 } @else if (visao() !== 'lista') {
