@@ -48,7 +48,7 @@ Erros: as funções usam `raise exception using errcode = 'P0001', message = '<c
 | `resumo_painel(setores uuid[])` | | `{abertas, atrasadas, bloqueadas, aguardando, concluidas_mes, parados[]}` | administra todos os setores pedidos | US-28 |
 | `carga_trabalho(setores uuid[], de date, ate date)` | | `[{perfil_id, semana, qtd}]` | administra | US-26 |
 
-Admin (`eh_admin()`): `salvar_setor(p jsonb)`, `salvar_vinculos(perfil_id, vinculos jsonb)`, `reatribuir_itens(de_perfil, para_perfil, ids uuid[])`, `cadastrar_usuario(email, nome, vinculos jsonb)` → perfil (+ `boas_vindas`; erros `email_invalido`, `email_ja_cadastrado`, `nome_obrigatorio`), `desativar_usuario(id)` → itens abertos dela para reatribuir (erro `nao_desativa_a_si`), `reativar_usuario(id)` (T-33; substituem as Edge Functions previstas).
+Admin (`eh_admin()`): `salvar_setor(p jsonb)`, `salvar_vinculos(perfil_id, vinculos jsonb)`, `reatribuir_itens(de_perfil, para_perfil, ids uuid[])`, `cadastrar_usuario(email, nome, vinculos jsonb)` → perfil (+ `boas_vindas`; erros `email_invalido`, `email_ja_cadastrado`, `nome_obrigatorio`), `desativar_usuario(id)` → itens abertos dela para reatribuir (erro `nao_desativa_a_si`), `reativar_usuario(id)`, `excluir_setor(id)` (só setor vazio; erros `setor_com_subsetores`, `setor_com_itens`, `setor_com_pessoas` — T-51) (T-33; substituem as Edge Functions previstas).
 Todos: `pessoas_inativas()` → id, nome, iniciais de quem foi desativado (para mostrar o nome em comentários e histórico, US-04).
 
 ## Tempo real (Supabase Realtime)
