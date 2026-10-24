@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-24 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-24 e T-43 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -31,13 +31,14 @@
 - **T-22**: `ComentariosItemComponent` (listar, publicar sanitizado via `salvar_comentario`, editar só autor com "(editado)", apagar autor/líder com confirmação). Pendência: autor desativado aparece como "Pessoa removida" (a RLS de perfis só mostra ativos) — resolver na T-33 para cumprir US-04.
 - **T-23** (T-23a + T-23b): `AnexosService` (upload privado, link, URL assinada, imagem colada, limpar), `AnexosItemComponent`, diretiva `appImagensPrivadas`, editor com `data-caminho`, Edge Function `supabase/functions/limpar-anexos` (**por publicar no nexus-dev**).
 - **T-24** (T-24a + T-24b): `core/solicitacoes` (service, store, `permissoes-solicitacao.ts`), modal `NovaSolicitacaoModal` (sugere quem decide na Aprovação), `SolicitacoesItemComponent` na coluna lateral do item, `SolicitacoesPage` em `/solicitacoes?id=` (abas, lista, item de origem, conversa, aprovar/recusar/resolver/cancelar, mensagem).
+- **T-43**: `core/services/realtime.service.ts` (canal único `nexus`, 8 tabelas, estado Ao vivo/Reconectando, `ouvir`/`ouvirAqui`, `afetaItem`, `setAuth` ao renovar token) e `sincronizacao.service.ts` (liga canal → `ItensStore.sincronizar`, `SolicitacoesStore.sincronizar`, `AcessoStore.recontarPendentes`; offline; aba escondida > 10 min); shell abre/fecha o canal e mostra o indicador; blocos do item recarregam ao receber evento; realce de 1,5 s na `LinhaItem`.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-43** — Tempo real (`RealtimeService`, um canal, merge nas stores).
+- **T-44** — Abertura instantânea (`CacheLocalService`, IndexedDB por perfil).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

@@ -3,6 +3,7 @@ import { ToastService } from '../../shared/ui/toast.service';
 import { AcessoStore } from '../auth/acesso.store';
 import { ItensStore } from '../itens/itens.store';
 import { StatusSolicitacao, TipoSolicitacao } from '../models/rotulos';
+import { Evento } from '../services/realtime.service';
 import { Mensagem, Solicitacao, SolicitacoesService } from './solicitacoes.service';
 
 /**
@@ -47,6 +48,22 @@ export class SolicitacoesStore {
     }
   }
 
+  /** Tempo real (T-43): busca a solicitação com as mensagens; mensagem nova entra direto. */
+  async sincronizar(e: Evento | null): Promise<void> {
+    if (!this._carregado()) return;
+    if (!e) return this.carregar(true);
+    if (e.tabela === 'solicitacoes') {
+      const id = String((e.novo ?? e.antigo)?.['id'] ?? '');
+      if (e.tipo === 'DELETE') return this._lista.update((l) => l.filter((s) => s.id !== id));
+      return this.trazer(id);
+    }
+    const m = e.novo as Mensagem | null;
+    if (!m) return;
+    const sol = this.porId(m.solicitacao_id);
+    if (!sol) return this.trazer(m.solicitacao_id);
+    this.acrescentarMensagem(sol.id, m);
+  }
+
   async abrir(
     itemId: string,
     paraId: string,
@@ -55,7 +72,10 @@ export class SolicitacoesStore {
   ): Promise<boolean> {
     try {
       const r = await this.service.abrir(itemId, paraId, tipo, html);
-      this._lista.update((l) => [{ ...r.solicitacao, solicitacao_mensagens: [] }, ...l]);
+      this._lista.update((l) => [
+        { ...r.solicitacao, solicitacao_mensagens: [] },
+        ...l.filter((s) => s.id !== r.solicitacao.id),
+      ]);
       this.itens.aplicar(r.item);
       return true;
     } catch (e) {
@@ -110,9 +130,21 @@ export class SolicitacoesStore {
   private acrescentarMensagem(id: string, m: Mensagem): void {
     this._lista.update((l) =>
       l.map((s) =>
-        s.id === id ? { ...s, solicitacao_mensagens: [...s.solicitacao_mensagens, m] } : s,
+        // O evento do tempo real e a resposta do insert trazem a mesma mensagem: entra uma vez.
+        s.id === id && !s.solicitacao_mensagens.some((x) => x.id === m.id)
+          ? { ...s, solicitacao_mensagens: [...s.solicitacao_mensagens, m] }
+          : s,
       ),
     );
+  }
+
+  private async trazer(id: string): Promise<void> {
+    const nova = await this.service.obter(id).catch(() => undefined);
+    if (nova === undefined) return;
+    this._lista.update((l) => {
+      const sem = l.filter((s) => s.id !== id);
+      return nova ? [nova, ...sem] : sem;
+    });
   }
 
   /** Depois de responder, a mensagem e o status vêm do servidor. */

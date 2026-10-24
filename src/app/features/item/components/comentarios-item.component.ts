@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { AcessoStore } from '../../../core/auth/acesso.store';
 import { Item } from '../../../core/models/item.model';
 import { TEXTOS } from '../../../core/models/textos';
+import { RealtimeService, afetaItem } from '../../../core/services/realtime.service';
 import { HtmlSeguroPipe } from '../../../shared/pipes/html-seguro.pipe';
 import { AvatarComponent } from '../../../shared/ui/avatar.component';
 import { ConfirmacaoService } from '../../../shared/ui/confirmacao.service';
@@ -77,11 +78,27 @@ export class ComentariosItemComponent {
     effect(() => {
       const id = this.item().id;
       this.editandoId.set(null);
-      this.service.listarComentarios(id).then(
-        (lista) => this.comentarios.set(lista),
-        (e) => this.toast.erro(e),
-      );
+      this.carregar(id);
     });
+    // Comentário de um colega aparece sozinho (US-37)
+    inject(RealtimeService).ouvirAqui(['comentarios'], (e) => {
+      const id = this.item().id;
+      if (
+        afetaItem(
+          e,
+          id,
+          this.comentarios().map((c) => c.id),
+        )
+      )
+        this.carregar(id);
+    });
+  }
+
+  private carregar(id: string): void {
+    this.service.listarComentarios(id).then(
+      (lista) => this.comentarios.set(lista),
+      (e) => this.toast.erro(e),
+    );
   }
 
   protected autor(c: Comentario) {

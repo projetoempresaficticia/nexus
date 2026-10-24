@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Item } from '../../../core/models/item.model';
 import { TEXTOS } from '../../../core/models/textos';
+import { RealtimeService, afetaItem } from '../../../core/services/realtime.service';
 import { BarraComponent } from '../../../shared/ui/barra.component';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { ItemService, PassoChecklist } from '../item.service';
@@ -141,13 +142,25 @@ export class ChecklistItemComponent {
   );
 
   constructor() {
-    effect(() => {
+    effect(() => this.carregar(this.item().id));
+    inject(RealtimeService).ouvirAqui(['checklist_itens'], (e) => {
       const id = this.item().id;
-      this.service.listarChecklist(id).then(
-        (passos) => this.passos.set(passos),
-        (e) => this.toast.erro(e),
-      );
+      if (
+        afetaItem(
+          e,
+          id,
+          this.passos().map((p) => p.id),
+        )
+      )
+        this.carregar(id);
     });
+  }
+
+  private carregar(id: string): void {
+    this.service.listarChecklist(id).then(
+      (passos) => this.passos.set(passos),
+      (e) => this.toast.erro(e),
+    );
   }
 
   protected async marcar(passo: PassoChecklist, feito: boolean): Promise<void> {

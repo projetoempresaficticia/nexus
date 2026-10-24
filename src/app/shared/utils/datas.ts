@@ -13,6 +13,11 @@ export function hojeIso(agora: Date = new Date()): string {
   }).format(agora);
 }
 
+/** Milissegundos de um timestamptz da API ou do Realtime (aceita "2026-10-24 01:00:00.5+00"). */
+export function instante(ts: string): number {
+  return Date.parse(ts.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00'));
+}
+
 /** Soma dias a uma data AAAA-MM-DD (aritmética em UTC, sem efeito de horário de verão). */
 export function somarDias(iso: string, dias: number): string {
   const [a, m, d] = iso.split('-').map(Number);

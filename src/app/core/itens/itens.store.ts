@@ -1,7 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../shared/ui/toast.service';
+import { instante } from '../../shared/utils/datas';
 import { CamposEditaveis, Item, NovoItem } from '../models/item.model';
 import { StatusItem } from '../models/rotulos';
+import { Evento } from '../services/realtime.service';
 import { ItensService, ResultadoStatus } from './itens.service';
 
 /**
@@ -15,10 +17,13 @@ export class ItensStore {
   private readonly _itens = signal<ReadonlyMap<string, Item>>(new Map());
   private readonly _carregando = signal(false);
   private readonly _carregado = signal(false);
+  private readonly _realcados = signal<ReadonlySet<string>>(new Set());
 
   readonly carregando = this._carregando.asReadonly();
   readonly carregado = this._carregado.asReadonly();
   readonly todos = computed(() => [...this._itens().values()]);
+  /** Itens que um colega acabou de mudar (realce de 1,5 s — DESIGN.md). */
+  readonly realcados = this._realcados.asReadonly();
 
   porId(id: string): Item | undefined {
     return this._itens().get(id);
@@ -50,6 +55,42 @@ export class ItensStore {
       this.toast.erro(e);
     } finally {
       this._carregando.set(false);
+    }
+  }
+
+  /** Recarga silenciosa (ligação voltou): sem "Carregando…" e sem aviso de erro. */
+  async recarregar(): Promise<void> {
+    if (!this._carregado()) return;
+    try {
+      const itens = await this.service.listar();
+      this._itens.set(new Map(itens.map((i) => [i.id, i])));
+    } catch {
+      // continua com o que tem; a próxima reconexão tenta de novo
+    }
+  }
+
+  /**
+   * Tempo real (T-43): a linha de `itens` não traz responsáveis nem os campos calculados da vw_itens,
+   * então o item é buscado de novo; se deixou de ser visível, sai do cache. `null` = recarregar tudo.
+   */
+  async sincronizar(e: Evento | null): Promise<void> {
+    if (!e) return this.recarregar();
+    if (!this._carregado()) return;
+    const linha = e.novo ?? e.antigo ?? {};
+    const id = String((e.tabela === 'itens' ? linha['id'] : linha['item_id']) ?? '');
+    const atual = this.porId(id);
+    if (!id || (e.tipo === 'DELETE' && !atual)) return;
+    if (e.tabela === 'itens' && e.tipo === 'DELETE') return this.remover([id]);
+    // Já temos esta versão (ex.: a própria ação otimista): não busca nem "pisca".
+    const versao = e.tabela === 'itens' ? String(linha['atualizado_em'] ?? '') : '';
+    if (atual && versao && instante(atual.atualizado_em) >= instante(versao)) return;
+    try {
+      const item = await this.service.obter(id);
+      if (!item) return this.remover([id]);
+      this.aplicar(item);
+      this.realcar(id);
+    } catch {
+      // ignora: a reconexão recarrega
     }
   }
 
@@ -178,6 +219,17 @@ export class ItensStore {
       this.toast.erro(e);
       return null;
     }
+  }
+
+  private realcar(id: string): void {
+    this._realcados.update((s) => new Set(s).add(id));
+    setTimeout(() => {
+      this._realcados.update((s) => {
+        const copia = new Set(s);
+        copia.delete(id);
+        return copia;
+      });
+    }, 1500);
   }
 
   private mexer(alterar: (m: Map<string, Item>) => void): void {

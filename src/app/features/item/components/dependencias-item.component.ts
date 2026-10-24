@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ItensStore } from '../../../core/itens/itens.store';
 import { Item } from '../../../core/models/item.model';
 import { TEXTOS } from '../../../core/models/textos';
+import { RealtimeService, afetaItem } from '../../../core/services/realtime.service';
 import { PillStatusComponent } from '../../../shared/ui/pill-status.component';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { Dependencia, ItemService } from '../item.service';
@@ -116,6 +117,10 @@ export class DependenciasItemComponent {
     effect(() => {
       const id = this.item().id;
       void this.carregar(id);
+    });
+    // A chave de dependencias é (item_id, depende_de_id): o DELETE já diz qual item mudou.
+    inject(RealtimeService).ouvirAqui(['dependencias'], (e) => {
+      if (afetaItem(e, this.item().id)) void this.carregar(this.item().id);
     });
   }
 
