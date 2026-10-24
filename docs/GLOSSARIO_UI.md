@@ -61,6 +61,7 @@ Setor ("só os que você pode usar") · Projeto (opcional — "Sem projeto") · 
 | `ciclo_setor` | Um setor não pode ficar dentro de si mesmo. |
 | `ja_respondida` | Esta solicitação já foi respondida. |
 | `resposta_invalida` | Essa resposta não vale para este tipo de solicitação. |
+| `drive_falhou` | O Google Drive não recebeu o arquivo agora. Tente de novo em instantes. |
 | `arquivo_grande` | O arquivo passa de 20 MB. Cole um link do Drive em vez de enviar. |
 | `setor_obrigatorio` | Escolha o setor da tarefa. |
 | `responsavel_fora_do_setor` | Essa pessoa não faz parte do setor deste item. |
@@ -71,7 +72,7 @@ Setor ("só os que você pode usar") · Projeto (opcional — "Sem projeto") · 
 - Acesso não autorizado: "Acesso não autorizado. Sua conta ({email}) não está cadastrada ou está inativa. Fale com um administrador do sistema."
 
 ### Ajuda de anexos
-"Até 20 MB por arquivo. Para arquivos maiores, cole um link do Drive. Não anexe documentos pessoais sensíveis."
+"Os arquivos ficam no Google Drive da empresa, na pasta do setor (até 20 MB cada). Para arquivos maiores, cole um link do Drive. Não anexe documentos pessoais sensíveis."
 
 ## E-mails automáticos
 Remetente: "Nexus — Prepara Portugal". Rodapé: "Você recebeu este e-mail porque participa do Nexus. Abrir o Nexus: {link}".

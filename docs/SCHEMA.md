@@ -163,10 +163,20 @@ PK (checklist_id, perfil_id). Só leitura para o app: o trigger `checklist_itens
 | nome | text | sim | nome original |
 | caminho | text | não | caminho no bucket `anexos`: `{setor_id}/{item_id}/{uuid}-{nome}` |
 | link_externo | text | não | https:// — CHECK (caminho is not null) <> (link_externo is not null) |
+| drive_id | text | não | id do arquivo no Google Drive (T-52); UNIQUE; exige `link_externo`; **só a Edge Function `enviar-anexo` (service_role) grava** — trigger `anexos_proteger_drive_id` |
 | tamanho_bytes | bigint | não | CHECK <= 20971520 |
 | mime | text | não | |
 | enviado_por | uuid | sim | FK → perfis(id) |
 | criado_em | timestamptz | sim | default now() |
+
+Arquivo anexado → Google Drive (`link_externo` + `drive_id`); imagem colada no texto → Storage (`caminho`); link colado → só `link_externo`.
+
+### anexos_drive_lixeira
+| coluna | tipo | obrig. | notas |
+|---|---|---|---|
+| drive_id | text | sim | PK |
+| criado_em | timestamptz | sim | default now() |
+Fila dos arquivos do Drive a mandar para a lixeira. Preenchida pelo trigger `anexos_drive_lixeira` quando uma linha de `anexos` com `drive_id` é apagada (também em cascata); esvaziada pela Edge Function `limpar-anexos`. RLS ligada **sem políticas** e sem grants para `anon`/`authenticated`: só a service role lê e apaga.
 
 ### historico
 Preenchida **só por triggers** (auditoria simples de `itens`, `solicitacoes`, `vinculos`, `perfis`; e, desde a T-35, troca de responsável como `tabela='itens'`, `campo='responsaveis'`).
@@ -213,7 +223,7 @@ Ficam no schema `privado` (fora da API): `meu_perfil_id`, `eh_admin`, `setores_d
 - `notificacoes (criado_em) where enviado_em is null`
 
 ## Storage
-Bucket privado `anexos`, limite 20 MB, sem tipos executáveis. Primeiro segmento do caminho = `setor_id` (usado pelas políticas). Download por URL assinada (60 s) criada no navegador; imagens coladas em comentários/descrições guardam `<img data-caminho="{setor}/{item}/{arquivo}">` e recebem URL assinada ao exibir. Arquivos órfãos após excluir item: Edge Function `limpar-anexos`.
+Bucket privado `anexos`, limite 20 MB, sem tipos executáveis. Primeiro segmento do caminho = `setor_id` (usado pelas políticas). Download por URL assinada (60 s) criada no navegador; imagens coladas em comentários/descrições guardam `<img data-caminho="{setor}/{item}/{arquivo}">` e recebem URL assinada ao exibir. Arquivos órfãos após excluir item: Edge Function `limpar-anexos`. Desde a T-52 o bucket guarda só as imagens coladas no texto (e anexos enviados sem o Drive configurado, no desenvolvimento); os arquivos anexados vão para o Google Drive partilhado, numa pasta por setor.
 
 ## Tempo real
 Tabelas na publicação `supabase_realtime` (com `replica identity full` para o update trazer a linha inteira):

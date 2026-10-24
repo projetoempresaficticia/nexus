@@ -12,6 +12,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
 
 ### Adicionado
+- 2026-10-24 — Anexos vão para o Google Drive da empresa, numa pasta por setor; o Nexus guarda o link (abre para quem é da empresa) e, ao remover o anexo ou excluir o item, o arquivo vai para a lixeira do Drive (T-52).
 - 2026-10-24 — Setores para líderes: o líder abre a tela Setores e organiza os subsetores abaixo dele (renomear, mover, desativar, excluir vazio); o próprio setor e os de cima continuam só com o Adm (T-51b).
 - 2026-10-24 — Setores: excluir setor vazio (com o motivo quando não dá) e organizar a hierarquia arrastando um setor para dentro de outro ou para "setor principal" (T-51).
 - 2026-10-24 — E-mails automáticos: atribuição, menção, comentário, solicitação recebida e respondida, boas-vindas e lembrete "vence amanhã", com os textos do glossário; até 3 tentativas. Falta escolher o provedor e ligar os agendamentos na publicação (T-36).

@@ -132,6 +132,8 @@ processo inteiro de vez em quando, para ninguém aprender no dia da emergência:
 6. Anote a data do ensaio em DECISOES.md ou no ESTADO_ATUAL.md.
 
 ## 8. Cópia semanal dos anexos (arquivos do Storage)
+Desde a T-52 os **arquivos anexados ficam no Google Drive partilhado** (o próprio Drive guarda versões e a lixeira por 30 dias); o Storage guarda só as imagens coladas no texto. Esta cópia continua a valer para elas.
+
 Fica desligada até existirem os 4 secrets abaixo (enquanto isso o job só mostra um aviso amarelo).
 1. Supabase → projeto → **Storage → S3 Configuration** (ou Settings → Storage): copie o **Endpoint** e a
    **Region**. Prefira o endereço `https://<ref>.storage.supabase.co/storage/v1/s3` (mais rápido para arquivos

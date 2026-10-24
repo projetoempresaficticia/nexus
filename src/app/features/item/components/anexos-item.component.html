@@ -2,7 +2,7 @@
   <h3>{{ t.anexos.titulo }}</h3>
   @for (a of anexos(); track a.id) {
     <div class="file">
-      <span aria-hidden="true">{{ a.link_externo ? '🔗' : '📄' }}</span>
+      <span aria-hidden="true">{{ a.link_externo && !a.drive_id ? '🔗' : '📄' }}</span>
       @if (a.link_externo) {
         <a class="nome" [href]="a.link_externo" target="_blank" rel="noopener noreferrer">{{
           a.nome
@@ -17,7 +17,9 @@
           {{ a.nome }}
         </button>
       }
-      <span class="row-sub">{{ a.link_externo ? 'link' : tamanho(a.tamanho_bytes) }}</span>
+      <span class="row-sub">{{
+        a.link_externo && !a.drive_id ? 'link' : tamanho(a.tamanho_bytes)
+      }}</span>
       @if (podeRemover(a)) {
         <button
           type="button"

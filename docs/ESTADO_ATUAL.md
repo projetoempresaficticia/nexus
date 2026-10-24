@@ -55,6 +55,7 @@
 - **T-50**: job `anexos` no `backup-supabase.yml` (domingos; `rclone` com configuração por variáveis de ambiente; confere contagem; tar + GPG; retenção `nexus-anexos 8 12`). **Falta o Germano:** criar as chaves S3 do Storage e os 4 secrets `SUPABASE_S3_*` (BACKUP.md §8) — até lá o job só avisa.
 - **T-51**: migration `20261024155703_excluir_setor.sql` (**por aplicar no nexus-dev**: `npx supabase db push`) + pgTAP 014; tela Setores com Excluir e arrastar (CDK, `cdkDropListEnterPredicate` recusa o próprio setor e os de baixo).
 - **T-51b**: migration `20261024161250_lider_edita_subsetores.sql` (**por aplicar no nexus-dev**) + pgTAP 015; `privado.pode_editar_setor` (Adm, ou líder do setor de cima); a tela Setores abre para líderes e mostra só o que administram, com ações apenas nos subsetores.
+- **T-52**: migration `20261024162347_anexos_drive.sql` (**por aplicar no nexus-dev**) + pgTAP 016; Edge Function `enviar-anexo` e `limpar-anexos` atualizada (**por publicar**), `_shared/drive.ts` (conta de serviço por WebCrypto, testado no Vitest). **Falta:** pasta "Anexos do Nexus" no Drive partilhado + secrets `GDRIVE_SERVICE_ACCOUNT_JSON` e `GDRIVE_ANEXOS_FOLDER_ID` (DEPLOY.md 8b); até lá os anexos vão para o Storage.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
