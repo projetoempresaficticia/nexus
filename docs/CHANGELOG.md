@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Visões do líder: Por pessoa (uma coluna por pessoa, arrastar troca o responsável) e Carga de trabalho (barras por status e mapa de prazos das próximas 4 semanas). Todas as 10 visões de Tarefas estão prontas (T-29).
 - 2026-10-24 — Visão Linha do tempo: 10 semanas com barras do início ao prazo, projeto com o progresso, marco (losango) quando só há prazo, atrasados com contorno vermelho e a linha de hoje (T-28).
 - 2026-10-24 — Visões Agenda (abertos por prazo: Atrasados, Hoje, Amanhã…), Mês e Semana (calendário pelo prazo, arrastar para outro dia muda o prazo, próximas ocorrências das recorrentes tracejadas) (T-27).
 - 2026-10-24 — Checklist: marcar pessoas com @ no passo (a pessoa recebe aviso e passa a ver o item) e editar o texto com duplo clique ou pelo botão ✎ (T-47).

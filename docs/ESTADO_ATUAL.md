@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-28, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-29, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -40,13 +40,14 @@
 - **T-47** (T-47a + T-47b): migration `20261024035841_checklist_mencoes.sql` (**por aplicar no nexus-dev**) + pgTAP 010; `shared/ui/campo-mencao.component` (campo de uma linha com @) e `shared/utils/mencoes-texto.ts`; passo do checklist guardado como HTML escapado com menções; duplo clique / ✎ edita, Enter ou sair salva, Esc cancela.
 - **T-27**: `visoes/agenda.component` e `visoes/calendario.component` (modo mês/semana, referência compartilhada com a página, "+N mais" abre a Semana, CDK drag-drop muda `prazo`, ocorrências previstas via `ocorrencias()` em `datas.ts`).
 - **T-28**: `visoes/gantt.component` (70 dias a partir da segunda da semana passada, ‹ › de 14 dias, ordem da Árvore, marco em losango quando não há início).
+- **T-29**: `visoes/por-pessoa.component` (arrastar troca só a pessoa da coluna de origem; mantém os outros responsáveis) e `visoes/carga.component` (calculado no navegador a partir da store, sem chamar `carga_trabalho`); `visoes/equipe.ts` com utilitários comuns. Todas as visões de Tarefas prontas.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-29** — Visões Por pessoa e Carga de trabalho.
+- **T-30** — Painel (KPIs clicáveis + tabela de parados).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
