@@ -5,6 +5,7 @@ import { SUPABASE } from '../../core/supabase.client';
 
 export type PassoChecklist = Tables<'checklist_itens'>;
 export type Comentario = Tables<'comentarios'>;
+export type Historico = Tables<'historico'>;
 export interface Dependencia {
   item_id: string;
   depende_de_id: string;
@@ -57,6 +58,19 @@ export class ItemService {
       .from('dependencias')
       .select('item_id, depende_de_id')
       .or(`item_id.eq.${itemId},depende_de_id.eq.${itemId}`);
+    lancarSeErro(error);
+    return data ?? [];
+  }
+
+  /** Alterações do item, mais recentes primeiro (US-32). */
+  async listarHistorico(itemId: string): Promise<Historico[]> {
+    const { data, error } = await this.supabase
+      .from('historico')
+      .select('*')
+      .eq('tabela', 'itens')
+      .eq('registro_id', itemId)
+      .order('id', { ascending: false })
+      .limit(200);
     lancarSeErro(error);
     return data ?? [];
   }

@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Histórico no item: quem mudou o quê e quando (status, prazo, prioridade, responsáveis, título, descrição…), atualizado em tempo real (T-35).
 - 2026-10-24 — Tela Setores (Adm): árvore, criar, renomear, mover (o sistema recusa colocar um setor dentro dele mesmo) e desativar/reativar; na Equipe, o líder cria subsetores abaixo dos setores que administra. Todas as telas do menu estão prontas (T-34).
 - 2026-10-24 — Tela Usuários (Adm): cadastrar pessoa com o primeiro setor, editar setores e papéis, desativar (com reatribuição dos itens abertos) e reativar; comentários e histórico mostram o nome de quem saiu (T-33).
 - 2026-10-24 — Tela Equipe: a sua linha de decisão (a quem você responde em cada setor) e o organograma dos seus setores e dos de cima, com líder, pessoas, projetos e itens abertos (T-32).

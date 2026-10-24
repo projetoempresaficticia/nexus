@@ -169,7 +169,7 @@ PK (checklist_id, perfil_id). Só leitura para o app: o trigger `checklist_itens
 | criado_em | timestamptz | sim | default now() |
 
 ### historico
-Preenchida **só por triggers** (auditoria simples de `itens`, `solicitacoes`, `vinculos`, `perfis`).
+Preenchida **só por triggers** (auditoria simples de `itens`, `solicitacoes`, `vinculos`, `perfis`; e, desde a T-35, troca de responsável como `tabela='itens'`, `campo='responsaveis'`).
 | coluna | tipo | notas |
 |---|---|---|
 | id | bigint identity | PK |
