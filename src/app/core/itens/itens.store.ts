@@ -39,8 +39,20 @@ export class ItensStore {
     return this._itens().get(id);
   }
 
+  /** Índice pai → filhos, refeito uma vez por mudança (Kanban, Árvore e Painel pedem por cartão; T-37). */
+  private readonly filhosPorPai = computed(() => {
+    const mapa = new Map<string, Item[]>();
+    for (const i of this.todos()) {
+      if (!i.pai_id) continue;
+      const irmaos = mapa.get(i.pai_id);
+      if (irmaos) irmaos.push(i);
+      else mapa.set(i.pai_id, [i]);
+    }
+    return mapa;
+  });
+
   filhos(id: string): Item[] {
-    return this.todos().filter((i) => i.pai_id === id);
+    return this.filhosPorPai().get(id) ?? [];
   }
 
   /** Caminho do projeto até o pai (para "Projeto › Tarefa"). */
