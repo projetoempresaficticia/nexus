@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-26, T-43 a T-45 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-26, T-43 a T-46 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -36,13 +36,14 @@
 - **T-25**: `features/tarefas/visoes/kanban.component` (CDK drag-drop, colunas status/prioridade/projeto, menu "Mover para…", realce `.over`), `shared/ui/mudar-status.component` (motivo/aprovador/confirmação, usado pelo item e pelo Kanban), filtro "Todos / Só as minhas" nas visões além da Lista.
 - **T-26**: `visoes/arvore.component` (galhos = projetos/contexto, filtro por predicado `interessa`, pai fora do filtro vira raiz, "Sem projeto") e `visoes/dependencias.component` (pares setor do item → setor principal do destinatário das solicitações pendentes, SVG em elipse como no protótipo).
 - **T-45** (T-45a + T-45b): migration `20261024031708_so_autor_edita_exclui.sql` (**por aplicar no nexus-dev**) + pgTAP 009; comentários só o autor apaga; solicitação: Editar (pendente) e Excluir só para o autor; mensagens: Editar/Apagar as minhas; tempo real recebe UPDATE/DELETE de mensagens.
+- **T-46**: filtro "Pessoa" na barra de visões de Tarefas (só líder; pessoas com vínculo nos setores administrados dentro do setor do cabeçalho; filtra por responsável em Lista, Kanban e Árvore). ⚠️ membro não vê o filtro (a confirmar).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-46** — Filtro por pessoa nas visões (pedido do Germano); depois **T-47** — checklist com @menção e editar com duplo clique; depois T-27.
+- **T-47** — checklist com @menção e editar com duplo clique; depois T-27.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
