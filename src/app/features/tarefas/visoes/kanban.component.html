@@ -1,0 +1,118 @@
+<div class="bar-tools">
+  <div class="views" role="tablist" [attr.aria-label]="t.tarefas.kanban.agruparPor">
+    <span class="vgroup">{{ t.tarefas.kanban.agruparPor }}</span>
+    @for (g of grupos; track g[0]) {
+      <button
+        type="button"
+        role="tab"
+        [class.on]="grupo() === g[0]"
+        [attr.aria-selected]="grupo() === g[0]"
+        (click)="grupo.set(g[0])"
+      >
+        {{ g[1] }}
+      </button>
+    }
+  </div>
+  <ng-content />
+  <span class="hint">{{ t.tarefas.kanban.dicas[grupo()] }}</span>
+</div>
+
+<div class="kanban-wrap">
+  <div
+    class="kanban"
+    cdkDropListGroup
+    [style.grid-template-columns]="'repeat(' + (colunas().length || 1) + ', minmax(250px, 1fr))'"
+    [style.min-width.px]="colunas().length * 264"
+  >
+    @for (c of colunas(); track c.id) {
+      <section
+        class="kcol"
+        [class.over]="sobre() === c.id"
+        [style.--c]="c.cor"
+        [attr.aria-label]="c.nome"
+        cdkDropList
+        [cdkDropListData]="c.id"
+        [cdkDropListDisabled]="!c.aceita"
+        [cdkDropListSortingDisabled]="true"
+        (cdkDropListEntered)="sobre.set(c.id)"
+        (cdkDropListExited)="sobre.set(null)"
+        (cdkDropListDropped)="soltou($event)"
+      >
+        <div class="kcol-h">
+          <span class="dot" [style.background]="c.cor"></span>
+          <span class="nome">{{ c.nome }}</span>
+          <span class="n">{{ c.itens.length }}</span>
+        </div>
+        @if (c.sub) {
+          <div class="row-sub sub">{{ c.sub }}</div>
+        }
+        @for (i of c.itens; track i.id) {
+          <div
+            class="kcard"
+            role="button"
+            tabindex="0"
+            cdkDrag
+            [cdkDragData]="i"
+            [cdkDragDisabled]="!c.aceita || !podeMexer(i)"
+            (cdkDragStarted)="comecouArrastar()"
+            (click)="abrir(i, $event)"
+            (keydown.enter)="abrir(i, $event)"
+            (keydown.escape)="menuDe.set(null)"
+          >
+            <span class="topo">
+              <app-nivel [nivel]="i.nivel" />
+              @if (i.recorrencia; as r) {
+                <span class="rec">↻ {{ recorrencia[r] }}</span>
+              }
+              <span
+                class="dot prio"
+                [style.background]="prioridade[i.prioridade].cor"
+                [title]="'Prioridade ' + prioridade[i.prioridade].texto"
+              ></span>
+              @if (c.aceita && podeMexer(i)) {
+                <button
+                  type="button"
+                  class="btn sm ghost mover"
+                  aria-haspopup="menu"
+                  [attr.aria-expanded]="menuDe() === i.id"
+                  [attr.aria-label]="t.tarefas.kanban.moverItem(i.nome)"
+                  (click)="alternarMenu(i)"
+                >
+                  ⋯
+                </button>
+              }
+            </span>
+            @if (menuDe() === i.id) {
+              <div class="menu" role="menu" [attr.aria-label]="t.tarefas.kanban.moverPara">
+                <span class="vgroup">{{ t.tarefas.kanban.moverPara }}</span>
+                @for (d of destinos(i); track d.id) {
+                  <button type="button" role="menuitem" class="btn sm" (click)="mover(i, d.id)">
+                    <span class="dot" [style.background]="d.cor"></span>{{ d.nome }}
+                  </button>
+                }
+              </div>
+            }
+            <strong>{{ i.nome }}</strong>
+            <span class="row-sub caminho">{{ caminho(i) }}</span>
+            @if (progresso(i); as p) {
+              <app-barra [percentual]="p.percentual" />
+            }
+            <span class="kmeta">
+              <app-avatares [pessoas]="responsaveis(i)" [tamanho]="26" />
+              @if (progresso(i); as p) {
+                <span>{{ p.concluidos }}/{{ p.total }}</span>
+              }
+              <span class="prazo" [class.late]="i.atrasado">{{ prazo(i) }}</span>
+            </span>
+          </div>
+        } @empty {
+          <div class="kempty">
+            {{ c.aceita ? t.tarefas.kanban.arrasteAqui : t.tarefas.kanban.nadaAqui }}
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>
+
+<app-mudar-status />

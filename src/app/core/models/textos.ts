@@ -88,6 +88,21 @@ export const TEXTOS = {
         ? 'Há 1 solicitação esperando a sua resposta'
         : `Há ${n} solicitações esperando a sua resposta`,
     visao: 'Visualização',
+    deQuem: { rotulo: 'De quem', todos: 'Todos', minhas: 'Só as minhas' },
+    kanban: {
+      agruparPor: 'Agrupar por',
+      grupos: { status: 'Status', prioridade: 'Prioridade', projeto: 'Projeto' },
+      dicas: {
+        status: 'Arraste os cartões para mudar o status.',
+        prioridade: 'Arraste os cartões para mudar a prioridade.',
+        projeto: 'Cada coluna é um projeto.',
+      },
+      arrasteAqui: 'Arraste um item para cá',
+      nadaAqui: 'Nada aqui',
+      moverPara: 'Mover para…',
+      moverItem: (nome: string) => `Mover "${nome}" para…`,
+      prioridadeMudou: (nome: string, p: string) => `Prioridade de "${nome}": ${p}.`,
+    },
     visoes: {
       lista: 'Lista',
       kanban: 'Kanban',
