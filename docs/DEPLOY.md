@@ -36,6 +36,16 @@ Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e
 Se a opção não aparecer, o administrador do Workspace precisa permitir verificação em 2 passos/senhas de app.
 Recomendado: uma conta só para o sistema (ex.: `nexus@...`) em vez da conta de uma pessoa.
 
+### Segredos de uma vez (`scripts/configurar-segredos.mjs`)
+Os valores ficam num `segredos.json` **fora** do repositório (padrão `C:\Users\devel\nexus-segredos\`, com um
+`LEIA-ME.md` ao lado explicando cada campo) e o JSON da conta de serviço em `conta-servico.json` na mesma pasta.
+`node scripts/configurar-segredos.mjs [arquivo]` mostra só os **nomes** do que vai gravar, pede confirmação e grava
+nos secrets do GitHub (valor pela entrada padrão do `gh`) e do Supabase do projeto ligado (`.env` temporário apagado
+na hora). Com `SMTP_USUARIO`, `SMTP_SENHA_APP` e `APP_URL` preenchidos, também põe `EMAIL_PROVEDOR=smtp` e roda
+o `supabase/agendamentos.sql` com o mesmo `NOTIFICACOES_SEGREDO`. Recusa arquivo dentro da pasta do projeto.
+No nexus-dev (2026-10-24) o usuário `backup_leitura` já foi criado e a passphrase, a URL do banco, o id da pasta de
+backups, o endpoint/região S3 e o `NOTIFICACOES_SEGREDO` já foram gravados.
+
 ### Scripts locais (`.env`, fora do Git) — ver `.env.example`
 
 ## Configuração única de produção (T-40)
