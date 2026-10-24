@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Comentários no item com @menções (a pessoa mencionada recebe aviso), edição pelo autor e apagar pelo autor ou pelo líder (T-22).
 - 2026-10-24 — Tarefas recorrentes: escolher "Repetir" ao criar ou no item; ao concluir, nasce a próxima e aparece o aviso com a data (T-21).
 - 2026-10-24 — Excluir projeto, tarefa ou subtarefa com aviso de quantos itens abaixo serão apagados (T-20).
 - 2026-10-24 — Checklist e dependências entre tarefas na página do item (T-19).

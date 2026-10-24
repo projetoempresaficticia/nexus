@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-21 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-22 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -28,13 +28,14 @@
 - **T-19**: `features/item/item.service.ts` (checklist direto na tabela com RLS; dependências via RPC), `ChecklistItemComponent` (otimista), `DependenciasItemComponent` (espera por / bloqueia; ciclo → erro do glossário).
 - **T-20**: botão Excluir na página do item (líder/adm, ou criador sem filhos — ⚠️ regra a confirmar), confirmação com contagem (`contar_descendentes`), `ItensStore.excluir` tira o item e os descendentes do cache. Limpeza dos arquivos no Storage fica para a T-23 (caminhos já vêm do RPC).
 - **T-21**: recorrência ponta a ponta (RPC T-09 + modal + detalhes + selo ↻ + toast da próxima). ⚠️ "Diária" = +1 dia corrido (FLUXOS); protótipo usava dias úteis — a confirmar.
+- **T-22**: `ComentariosItemComponent` (listar, publicar sanitizado via `salvar_comentario`, editar só autor com "(editado)", apagar autor/líder com confirmação). Pendência: autor desativado aparece como "Pessoa removida" (a RLS de perfis só mostra ativos) — resolver na T-33 para cumprir US-04.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-22** — Comentários: listar, criar, editar, apagar, menções.
+- **T-23** — Anexos: upload até 20 MB, link externo, colar imagem no comentário, Edge Functions `url-anexo` e `limpar-anexos`.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
