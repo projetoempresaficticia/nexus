@@ -1,0 +1,108 @@
+<app-modal [titulo]="titulo()" [largura]="620" (fechar)="fechar.emit(null)">
+  @if (pai()) {
+    <div class="hint dentro">
+      {{ t.novoItem.dentroDe }} <strong>{{ caminhoPai() }}</strong>
+    </div>
+  } @else {
+    @if (nivel() === 1) {
+      <label class="fld">
+        {{ t.novoItem.projeto }}
+        <select (change)="projetoId.set($any($event.target).value)">
+          <option value="" [selected]="!projetoId()">{{ t.novoItem.semProjeto }}</option>
+          @for (p of projetos(); track p.id) {
+            <option [value]="p.id">{{ p.nome }}</option>
+          }
+        </select>
+      </label>
+    }
+    @if (nivel() === 0 || !projetoId()) {
+      <label class="fld">
+        {{ t.novoItem.setor }} <span class="hint">({{ t.novoItem.setorAjuda }})</span>
+        <select (change)="setorId.set($any($event.target).value)" [attr.aria-invalid]="erroSetor()">
+          @for (s of setores(); track s.id) {
+            <option [value]="s.id" [selected]="s.id === setorId()">{{ s.nome }}</option>
+          }
+        </select>
+      </label>
+      @if (erroSetor()) {
+        <p class="erro" role="alert">{{ t.erros.setor_obrigatorio }}</p>
+      }
+    }
+  }
+
+  <label class="fld">
+    {{ t.novoItem.nome }}
+    <input
+      type="text"
+      autocomplete="off"
+      maxlength="200"
+      [value]="nome()"
+      (input)="nome.set($any($event.target).value)"
+      [attr.aria-invalid]="erroNome()"
+    />
+  </label>
+  @if (erroNome()) {
+    <p class="erro" role="alert">{{ t.novoItem.nomeObrigatorio }}</p>
+  }
+
+  <div class="fld">
+    <span>{{ t.novoItem.descricao }}</span>
+    <app-editor-rico [(valor)]="descricao" [rotulo]="t.novoItem.descricaoAjuda" />
+  </div>
+
+  <div class="fld">
+    <span>{{ t.novoItem.responsaveis }}</span>
+    <app-seletor-pessoas
+      [opcoes]="pessoas()"
+      [(selecionados)]="responsaveis"
+      [euId]="euId()"
+      [rotulo]="t.novoItem.responsaveis"
+    />
+  </div>
+
+  <div class="fld-row">
+    <label class="fld">
+      {{ t.novoItem.inicio }}
+      <input type="date" [value]="inicio()" (change)="inicio.set($any($event.target).value)" />
+    </label>
+    <label class="fld">
+      {{ t.novoItem.prazo }}
+      <input
+        type="date"
+        [value]="prazo()"
+        (change)="prazo.set($any($event.target).value)"
+        [attr.aria-invalid]="erroPrazo()"
+      />
+    </label>
+    <label class="fld">
+      {{ t.novoItem.prioridade }}
+      <select (change)="prioridade.set($any($event.target).value)">
+        @for (p of prioridades; track p[0]) {
+          <option [value]="p[0]" [selected]="p[0] === prioridade()">{{ p[1].texto }}</option>
+        }
+      </select>
+    </label>
+  </div>
+  @if (erroPrazo()) {
+    <p class="erro" role="alert">{{ t.novoItem.prazoAntesInicio }}</p>
+  }
+
+  @if (nivel() > 0) {
+    <label class="fld">
+      {{ t.novoItem.repetir }}
+      <select (change)="recorrencia.set($any($event.target).value)">
+        <option value="">{{ semRecorrencia }}</option>
+        @for (r of recorrencias; track r[0]) {
+          <option [value]="r[0]">{{ r[1] }}</option>
+        }
+      </select>
+    </label>
+  }
+
+  <button rodape type="button" class="btn" (click)="fechar.emit(null)">
+    {{ t.comum.cancelar }}
+  </button>
+  <button rodape type="button" class="btn primary" [disabled]="salvando()" (click)="criar()">
+    {{ t.comum.criar }}
+  </button>
+</app-modal>

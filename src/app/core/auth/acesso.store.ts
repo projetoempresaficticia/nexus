@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { ordenarArvore, descendentes } from '../../shared/utils/arvore';
+import { ancestrais, descendentes, ordenarArvore } from '../../shared/utils/arvore';
 import { DadosIniciais, Papel } from '../models/acesso.model';
 import { ErroApi } from '../services/erro-api';
 import { AcessoService } from './acesso.service';
@@ -33,6 +33,26 @@ export class AcessoStore {
   readonly setores = computed(() => this._dados()?.setores ?? []);
   readonly pessoas = computed(() => this._dados()?.pessoas ?? []);
   readonly pendentes = this._pendentes.asReadonly();
+  readonly pessoaPorId = computed(() => new Map(this.pessoas().map((p) => [p.id, p])));
+  private readonly setorPorId = computed(() => new Map(this.setores().map((s) => [s.id, s])));
+
+  nomeSetor(id: string): string {
+    return this.setorPorId().get(id)?.nome ?? '—';
+  }
+
+  /** Quem pode ser responsável no setor: vínculo direto ou líder de um setor acima (= privado.perfil_no_setor). */
+  pessoasDoSetor(setorId: string) {
+    const acima = new Set(ancestrais(setorId, this.setores()).map((s) => s.id));
+    return this.pessoas().filter((p) =>
+      p.vinculos.some(
+        (v) => v.setor_id === setorId || (v.papel === 'lider' && acima.has(v.setor_id)),
+      ),
+    );
+  }
+
+  incrementarPendentes(delta: number): void {
+    this._pendentes.update((n) => Math.max(0, n + delta));
+  }
 
   /** Setores com vínculo direto, em ordem de árvore, com o papel (bloco "Meus setores"). */
   readonly meusSetores = computed(() => {

@@ -98,3 +98,23 @@ h3 {
     transition: none !important;
   }
 }
+
+/* Formulários: mensagem de erro de campo e caixa de contexto ("Dentro de: …") */
+.erro {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dentro {
+  background: var(--surface-2);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.fld textarea,
+.fld input[type='date'] {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
