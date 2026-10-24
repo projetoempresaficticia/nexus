@@ -25,8 +25,7 @@ export const routes: Routes = [
       {
         path: 'painel',
         canActivate: [liderGuard],
-        loadComponent: emBreve,
-        data: { titulo: m.painel },
+        loadComponent: () => import('./features/painel/painel.page').then((x) => x.PainelPage),
         title: m.painel,
       },
       {
