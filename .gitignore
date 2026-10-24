@@ -26,3 +26,7 @@ __screenshots__/
 # Python
 __pycache__/
 *.pyc
+
+# Segredos (ficam fora do repositório; isto é só uma rede de segurança)
+segredos*.json
+conta-servico*.json

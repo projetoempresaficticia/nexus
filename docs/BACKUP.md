@@ -68,6 +68,9 @@ Assim, se o secret vazar, ninguém consegue apagar nem alterar dados.
    (mesma URI do passo 2 com a senha do banco) e avise para ajustarmos as permissões.
 
 ## 5. Os 4 secrets no GitHub
+> Atalho: `node scripts/configurar-segredos.mjs` grava estes secrets (e os das Edge Functions) a partir de
+> um `segredos.json` guardado **fora** do repositório — ver DEPLOY.md §Segredos de uma vez.
+
 Repositório → **Settings → Secrets and variables → Actions → New repository secret**. Os nomes têm de ser
 exatamente estes:
 
