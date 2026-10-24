@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensStore } from '../../core/itens/itens.store';
 import { TEXTOS } from '../../core/models/textos';
+import { SolicitacoesStore } from '../../core/solicitacoes/solicitacoes.store';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { AvatarComponent } from '../../shared/ui/avatar.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
@@ -22,6 +23,7 @@ import {
   semanasDo,
   variacao,
 } from './produtividade.calculos';
+import { Espera, GraficosProdutividadeComponent } from './graficos.component';
 import { ProdutividadeService } from './produtividade.service';
 
 interface Kpi {
@@ -41,7 +43,12 @@ interface Kpi {
  */
 @Component({
   selector: 'app-produtividade-page',
-  imports: [CabecalhoComponent, AvatarComponent, CarregandoComponent],
+  imports: [
+    CabecalhoComponent,
+    AvatarComponent,
+    CarregandoComponent,
+    GraficosProdutividadeComponent,
+  ],
   templateUrl: './produtividade.page.html',
   styleUrl: './produtividade.page.css',
 })
@@ -49,6 +56,7 @@ export class ProdutividadePage {
   protected readonly acesso = inject(AcessoStore);
   private readonly itens = inject(ItensStore);
   private readonly service = inject(ProdutividadeService);
+  private readonly solicitacoes = inject(SolicitacoesStore);
   private readonly toast = inject(ToastService);
   protected readonly t = TEXTOS;
   protected readonly tipos = Object.entries(this.t.produtividade.periodos) as [
@@ -90,7 +98,7 @@ export class ProdutividadePage {
   );
 
   /** Entregas das pessoas escolhidas; para a equipe, um item conta uma vez. */
-  private readonly daSelecao = computed(() => {
+  protected readonly daSelecao = computed(() => {
     const l = this.entregas().filter((e) => this.ids().has(e.perfil_id));
     return this.pessoa() === 'todas' ? porItem(l) : l;
   });
@@ -165,6 +173,53 @@ export class ProdutividadePage {
 
   protected readonly semanas = computed(() => semanasDo(this.periodo()));
 
+  // ---------------------------------------------------------------- dados dos gráficos (T-31b)
+  protected readonly pessoasSelecao = computed(() =>
+    this.equipe().filter((p) => this.ids().has(p.id)),
+  );
+  /** Uma linha por responsável (para "Entregas por pessoa"). */
+  protected readonly doPeriodo = computed(() =>
+    this.entregas().filter(
+      (e) => this.ids().has(e.perfil_id) && noIntervalo(e, this.periodo().de, this.periodo().ate),
+    ),
+  );
+  /** Tarefas e subtarefas criadas por semana, das pessoas escolhidas, nos meus setores. */
+  protected readonly criadosPorSemana = computed(() => {
+    const setores = new Set(this.setores());
+    const dias = this.itens
+      .todos()
+      .filter(
+        (i) =>
+          i.nivel > 0 && setores.has(i.setor_id) && i.responsaveis.some((r) => this.ids().has(r)),
+      )
+      .map((i) => hojeIso(new Date(i.criado_em)));
+    return this.semanas().map((s) => dias.filter((d) => d >= s.de && d <= s.ate).length);
+  });
+  /** Pedidos da equipe a outros setores respondidos no período: média de dias até a resposta. */
+  protected readonly esperas = computed<Espera[]>(() => {
+    const setores = new Set(this.setores());
+    const { de, ate } = this.periodo();
+    const porSetor = new Map<string, number[]>();
+    for (const s of this.solicitacoes.lista()) {
+      if (s.status === 'pendente' || !s.respondido_em || !this.ids().has(s.de_id)) continue;
+      const item = this.itens.porId(s.item_id);
+      const setorPara = this.acesso.pessoaPorId().get(s.para_id)?.vinculos[0]?.setor_id;
+      const dia = hojeIso(new Date(s.respondido_em));
+      if (!item || !setores.has(item.setor_id) || !setorPara || setorPara === item.setor_id)
+        continue;
+      if (dia < de || dia > ate) continue;
+      const dias = (Date.parse(s.respondido_em) - Date.parse(s.criado_em)) / 86_400_000;
+      porSetor.set(setorPara, [...(porSetor.get(setorPara) ?? []), dias]);
+    }
+    return [...porSetor.entries()]
+      .map(([setor_id, l]) => ({
+        setor_id,
+        n: l.length,
+        media: l.reduce((a, b) => a + b, 0) / l.length,
+      }))
+      .sort((a, b) => b.media - a.media);
+  });
+
   /** Tabela da equipe: sempre todas as pessoas; a escolhida fica destacada. */
   protected readonly linhas = computed(() => {
     const adm = this.acesso.administrados();
@@ -202,6 +257,7 @@ export class ProdutividadePage {
 
   constructor() {
     void this.itens.carregar();
+    void this.solicitacoes.carregar();
     // Recarrega quando muda o período ou os setores (busca também o período anterior, para comparar)
     let pedido = 0;
     effect(() => {
