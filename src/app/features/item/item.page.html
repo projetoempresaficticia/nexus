@@ -1,0 +1,107 @@
+@if (item(); as it) {
+  <header class="head">
+    <div class="head-t">
+      <nav class="crumbs" [attr.aria-label]="t.item.caminho">
+        <span>{{ acesso.nomeSetor(it.setor_id) }}</span>
+        @for (c of caminho(); track c.id) {
+          <span aria-hidden="true">›</span>
+          <a [routerLink]="['/item', c.id]">{{ c.nome }}</a>
+        }
+        <span aria-hidden="true">›</span>
+        <span>{{ it.nome }}</span>
+      </nav>
+      <div class="selos">
+        <app-nivel [nivel]="it.nivel" />
+        <app-pill-status [status]="it.status" />
+        @if (it.recorrencia; as r) {
+          <span class="rec">↻ {{ recorrencia[r] }}</span>
+        }
+      </div>
+      <app-titulo-editavel
+        [texto]="it.nome"
+        [podeEditar]="podeEditar()"
+        (salvar)="salvarTitulo($event)"
+      />
+    </div>
+  </header>
+
+  @if (!podeEditar()) {
+    <div class="notice">{{ t.item.somenteLeitura }}</div>
+  }
+
+  <div class="item-grid">
+    <div class="item-col">
+      @if (it.status === 'bloqueada') {
+        <section class="blocked">
+          <div class="sec-h">
+            <span class="lbl">{{ t.item.motivo }}</span>
+            @if (podeEditar() && !editandoMotivo()) {
+              <button type="button" class="btn sm" (click)="abrirMotivo()">
+                {{ t.item.editar }}
+              </button>
+            }
+          </div>
+          @if (editandoMotivo()) {
+            <app-editor-rico
+              [(valor)]="motivo"
+              [rotulo]="t.item.motivoAjuda"
+              [pessoas]="pessoas()"
+            />
+            <div class="acoes">
+              <button type="button" class="btn sm" (click)="editandoMotivo.set(false)">
+                {{ t.comum.cancelar }}
+              </button>
+              <button type="button" class="btn sm primary" (click)="salvarMotivo()">
+                {{ t.item.salvarMotivo }}
+              </button>
+            </div>
+          } @else if (vazio(it.motivo_bloqueio_html)) {
+            <p class="sem-motivo">{{ t.item.semMotivo }}</p>
+          } @else {
+            <div class="rich" [innerHTML]="it.motivo_bloqueio_html | htmlSeguro"></div>
+          }
+        </section>
+      }
+
+      <section class="sec">
+        <div class="sec-h">
+          <h3>{{ t.item.descricao }}</h3>
+          @if (podeEditar() && !editandoDescricao()) {
+            <button type="button" class="btn sm" (click)="abrirDescricao()">
+              {{ t.item.editar }}
+            </button>
+          }
+        </div>
+        @if (editandoDescricao()) {
+          <app-editor-rico
+            [(valor)]="descricao"
+            [rotulo]="t.item.descricaoAjuda"
+            [pessoas]="pessoas()"
+          />
+          <div class="acoes">
+            <button type="button" class="btn sm" (click)="editandoDescricao.set(false)">
+              {{ t.comum.cancelar }}
+            </button>
+            <button type="button" class="btn sm primary" (click)="salvarDescricao()">
+              {{ t.item.salvarDescricao }}
+            </button>
+          </div>
+        } @else if (vazio(it.descricao_html)) {
+          <p class="muted sem">{{ t.item.semDescricao }}</p>
+        } @else {
+          <div class="rich" [innerHTML]="it.descricao_html | htmlSeguro"></div>
+        }
+      </section>
+    </div>
+
+    <div class="item-side">
+      <app-status-item [item]="it" [podeEditar]="podeEditar()" />
+    </div>
+  </div>
+} @else if (existe() === false) {
+  <section class="panel">
+    <app-vazio>{{ t.item.naoEncontrado }}</app-vazio>
+  </section>
+} @else {
+  <section class="panel"><app-carregando /></section>
+}

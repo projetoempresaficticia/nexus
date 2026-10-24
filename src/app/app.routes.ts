@@ -47,7 +47,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tarefas/tarefas.page').then((x) => x.TarefasPage),
         title: m.tarefas,
       },
-      { path: 'item/:id', loadComponent: emBreve, data: { titulo: 'Item' }, title: 'Item' },
+      {
+        path: 'item/:id',
+        loadComponent: () => import('./features/item/item.page').then((x) => x.ItemPage),
+        title: 'Item',
+      },
       {
         path: 'solicitacoes',
         loadComponent: emBreve,

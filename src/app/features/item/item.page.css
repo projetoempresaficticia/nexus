@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.crumbs a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.crumbs a:hover {
+  background: var(--accent-soft);
+}
+.selos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+.sec-h .lbl {
+  margin-right: auto;
+}
+.acoes {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.sem,
+.sem-motivo {
+  margin: 0;
+}
+.sem-motivo {
+  color: var(--bloq-fg);
+}

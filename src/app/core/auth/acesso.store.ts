@@ -50,6 +50,29 @@ export class AcessoStore {
     );
   }
 
+  /** Linha de decisão: líderes do setor e dos setores acima, do mais próximo à raiz (US-06). */
+  decisores(setorId: string): { setor: string; lideres: string[] }[] {
+    const cadeia = [this.setorPorId().get(setorId), ...ancestrais(setorId, this.setores())].filter(
+      (s) => !!s,
+    );
+    return cadeia.map((s) => ({
+      setor: s.nome,
+      lideres: this.pessoas()
+        .filter((p) => p.vinculos.some((v) => v.setor_id === s.id && v.papel === 'lider'))
+        .map((p) => p.nome),
+    }));
+  }
+
+  /** Caminho do setor: "Secretaria › Pedagógico › Sucesso do Aluno". */
+  caminhoSetor(setorId: string): string {
+    return [
+      ...ancestrais(setorId, this.setores())
+        .reverse()
+        .map((s) => s.nome),
+      this.nomeSetor(setorId),
+    ].join(' › ');
+  }
+
   incrementarPendentes(delta: number): void {
     this._pendentes.update((n) => Math.max(0, n + delta));
   }
