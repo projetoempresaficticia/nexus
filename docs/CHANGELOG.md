@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — E-mails automáticos: atribuição, menção, comentário, solicitação recebida e respondida, boas-vindas e lembrete "vence amanhã", com os textos do glossário; até 3 tentativas. Falta escolher o provedor e ligar os agendamentos na publicação (T-36).
 - 2026-10-24 — Histórico no item: quem mudou o quê e quando (status, prazo, prioridade, responsáveis, título, descrição…), atualizado em tempo real (T-35).
 - 2026-10-24 — Tela Setores (Adm): árvore, criar, renomear, mover (o sistema recusa colocar um setor dentro dele mesmo) e desativar/reativar; na Equipe, o líder cria subsetores abaixo dos setores que administra. Todas as telas do menu estão prontas (T-34).
 - 2026-10-24 — Tela Usuários (Adm): cadastrar pessoa com o primeiro setor, editar setores e papéis, desativar (com reatribuição dos itens abertos) e reativar; comentários e histórico mostram o nome de quem saiu (T-33).
