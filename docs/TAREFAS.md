@@ -42,7 +42,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-44** Abertura instantânea: `CacheLocalService` (IndexedDB por perfil), primeira pintura com o retrato e atualização em segundo plano; limpar no logout. — Dep.: T-43 · US-37
 - [x] **T-25** Visão Kanban (status/prioridade/projeto, CDK drag-drop, "Mover para…"). — Dep.: T-18 · US-22
 - [x] **T-26** Visões Árvore e Dependências. — Dep.: T-19 · US-23, US-27
-- [ ] **T-27** Visões Agenda, Mês e Semana. — Dep.: T-16 · US-24
+- [x] **T-27** Visões Agenda, Mês e Semana. — Dep.: T-16 · US-24
 - [ ] **T-28** Visão Linha do tempo. — Dep.: T-16 · US-25
 - [ ] **T-29** Visões Por pessoa e Carga de trabalho. — Dep.: T-16, T-11 · US-26
 - [ ] **T-30** Painel (KPIs clicáveis + tabela de parados). — Dep.: T-24 · US-28

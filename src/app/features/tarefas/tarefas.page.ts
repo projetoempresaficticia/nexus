@@ -9,8 +9,11 @@ import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { LinhaItemComponent } from '../../shared/ui/linha-item.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
+import { hojeIso } from '../../shared/utils/datas';
 import { NovoItemModal } from './novo-item.modal';
+import { AgendaComponent } from './visoes/agenda.component';
 import { ArvoreComponent } from './visoes/arvore.component';
+import { CalendarioComponent } from './visoes/calendario.component';
 import { DependenciasComponent } from './visoes/dependencias.component';
 import { KanbanComponent } from './visoes/kanban.component';
 
@@ -47,6 +50,8 @@ interface Grupo {
     KanbanComponent,
     ArvoreComponent,
     DependenciasComponent,
+    AgendaComponent,
+    CalendarioComponent,
     NgTemplateOutlet,
   ],
   templateUrl: './tarefas.page.html',
@@ -60,6 +65,8 @@ export class TarefasPage {
   protected readonly aba = signal<Aba>('todas');
   protected readonly visao = signal<Visao>('lista');
   protected readonly soMeus = signal(false);
+  /** Mês/semana mostrados no calendário; continua igual ao trocar entre Mês e Semana. */
+  protected readonly refCalendario = signal(hojeIso());
   /** Visões além da Lista: "Todos" ou "Só as minhas" (sou responsável). */
   protected readonly quem = signal<'todos' | 'minhas'>('todos');
   protected readonly deQuem = [
@@ -173,6 +180,12 @@ export class TarefasPage {
       grupos.push({ id: '', nome: this.t.tarefas.semProjeto, contexto: false, itens: avulsas });
     return grupos.map((g) => ({ ...g, itens: this.ordenar(g.itens) }));
   });
+
+  /** "+N mais" no Mês abre a Semana daquele dia. */
+  protected verSemana(iso: string): void {
+    this.refCalendario.set(iso);
+    this.visao.set('semana');
+  }
 
   constructor() {
     void this.itens.carregar();

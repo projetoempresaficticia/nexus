@@ -67,6 +67,17 @@
   <app-arvore [itens]="itensArvore()" [interessa]="interessa()">
     <ng-container [ngTemplateOutlet]="seletorQuem" />
   </app-arvore>
+} @else if (visao() === 'agenda') {
+  <app-agenda [itens]="itensVisao()"><ng-container [ngTemplateOutlet]="seletorQuem" /></app-agenda>
+} @else if (visao() === 'mes' || visao() === 'semana') {
+  <app-calendario
+    [itens]="itensVisao()"
+    [modo]="visao() === 'mes' ? 'mes' : 'semana'"
+    [(referencia)]="refCalendario"
+    (verSemana)="verSemana($event)"
+  >
+    <ng-container [ngTemplateOutlet]="seletorQuem" />
+  </app-calendario>
 } @else if (visao() === 'deps') {
   <app-dependencias />
 } @else if (visao() !== 'lista') {

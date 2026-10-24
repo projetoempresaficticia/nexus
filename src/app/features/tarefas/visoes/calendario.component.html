@@ -1,0 +1,116 @@
+<div class="bar-tools">
+  <div class="nav">
+    <button
+      type="button"
+      class="btn sm"
+      [attr.aria-label]="t.tarefas.calendario.anterior"
+      (click)="mover(-1)"
+    >
+      ‹
+    </button>
+    <button type="button" class="btn sm" (click)="irHoje()">{{ t.tarefas.calendario.hoje }}</button>
+    <button
+      type="button"
+      class="btn sm"
+      [attr.aria-label]="t.tarefas.calendario.proximo"
+      (click)="mover(1)"
+    >
+      ›
+    </button>
+  </div>
+  <h2 class="titulo">{{ titulo() }}</h2>
+  <ng-content />
+</div>
+
+<div class="cal-wrap">
+  <div class="cal" cdkDropListGroup>
+    @for (d of t.tarefas.calendario.diasSemana; track d) {
+      <div class="cal-dow">{{ d }}</div>
+    }
+    @for (dia of dias(); track dia.iso) {
+      <div
+        class="cal-day"
+        [class.out]="dia.fora"
+        [class.today]="dia.hoje"
+        [class.week]="modo() === 'semana'"
+        [class.over]="sobre() === dia.iso"
+        cdkDropList
+        [cdkDropListData]="dia.iso"
+        [cdkDropListSortingDisabled]="true"
+        (cdkDropListEntered)="sobre.set(dia.iso)"
+        (cdkDropListExited)="sobre.set(null)"
+        (cdkDropListDropped)="soltou($event)"
+      >
+        <span class="cal-n">{{ dia.numero }}</span>
+        @for (c of modo() === 'mes' ? dia.chips.slice(0, 3) : dia.chips; track $index) {
+          @if (c.previsto) {
+            <div
+              class="chip ghost"
+              [class.week]="modo() === 'semana'"
+              role="button"
+              tabindex="0"
+              [title]="t.tarefas.calendario.previsto(c.item.nome)"
+              (click)="abrir(c.item)"
+              (keydown.enter)="abrir(c.item)"
+            >
+              <span aria-hidden="true">↻</span><span class="t">{{ c.item.nome }}</span>
+            </div>
+          } @else {
+            <div
+              class="chip"
+              [class]="'chip ' + classe(c.item)"
+              [class.week]="modo() === 'semana'"
+              role="button"
+              tabindex="0"
+              cdkDrag
+              [cdkDragData]="c.item"
+              [cdkDragDisabled]="!podeMexer(c.item)"
+              [title]="c.item.nome"
+              (cdkDragStarted)="comecou()"
+              (click)="abrir(c.item)"
+              (keydown.enter)="abrir(c.item)"
+            >
+              @if (modo() === 'semana') {
+                <span class="quem">
+                  <span class="dot" [style.background]="prioridade[c.item.prioridade].cor"></span>
+                  <span>{{ nivel[c.item.nivel] }} · {{ primeiroNome(c.item) }}</span>
+                </span>
+              } @else {
+                <span class="dot" [style.background]="prioridade[c.item.prioridade].cor"></span>
+              }
+              <span class="t">{{ c.item.nome }}</span>
+            </div>
+          }
+        }
+        @if (modo() === 'mes' && dia.chips.length > 3) {
+          <button
+            type="button"
+            class="more"
+            [attr.aria-label]="t.tarefas.calendario.maisNoDia(dia.chips.length - 3, dia.iso)"
+            (click)="verSemana.emit(dia.iso)"
+          >
+            {{ t.tarefas.calendario.mais(dia.chips.length - 3) }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<div class="bar-tools hint legenda">
+  @for (s of status; track s) {
+    <app-pill-status [status]="s" />
+  }
+  <span>{{ t.tarefas.calendario.dica }}</span>
+  <span class="rec">↻</span>
+  <span>{{ t.tarefas.calendario.fantasma }}</span>
+</div>
+
+@if (semPrazo().length) {
+  <section class="sec">
+    <h3>{{ t.tarefas.calendario.semPrazo }}</h3>
+    @for (i of semPrazo(); track i.id) {
+      <app-linha-item [item]="i" />
+    }
+  </section>
+}

@@ -1,0 +1,25 @@
+/* .cal, .cal-day, .cal-n, .chip, .more vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titulo {
+  margin-right: auto;
+  font-size: 20px;
+}
+.chip .quem {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.legenda {
+  flex-wrap: wrap;
+}
