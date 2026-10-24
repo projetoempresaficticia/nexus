@@ -204,7 +204,7 @@ Ficam no schema `privado` (fora da API): `meu_perfil_id`, `eh_admin`, `setores_d
 - `notificacoes (criado_em) where enviado_em is null`
 
 ## Storage
-Bucket privado `anexos`, limite 20 MB, sem tipos executáveis. Primeiro segmento do caminho = `setor_id` (usado pelas políticas). Download por URL assinada (60 s).
+Bucket privado `anexos`, limite 20 MB, sem tipos executáveis. Primeiro segmento do caminho = `setor_id` (usado pelas políticas). Download por URL assinada (60 s) criada no navegador; imagens coladas em comentários/descrições guardam `<img data-caminho="{setor}/{item}/{arquivo}">` e recebem URL assinada ao exibir. Arquivos órfãos após excluir item: Edge Function `limpar-anexos`.
 
 ## Tempo real
 Tabelas na publicação `supabase_realtime` (com `replica identity full` para o update trazer a linha inteira):
