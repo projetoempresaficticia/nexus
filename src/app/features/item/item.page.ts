@@ -24,6 +24,7 @@ import { ChecklistItemComponent } from './components/checklist-item.component';
 import { DependenciasItemComponent } from './components/dependencias-item.component';
 import { DetalhesItemComponent } from './components/detalhes-item.component';
 import { FilhosItemComponent } from './components/filhos-item.component';
+import { HistoricoItemComponent } from './components/historico-item.component';
 import { SolicitacoesItemComponent } from './components/solicitacoes-item.component';
 import { StatusItemComponent } from './components/status-item.component';
 
@@ -47,6 +48,7 @@ import { StatusItemComponent } from './components/status-item.component';
     ComentariosItemComponent,
     AnexosItemComponent,
     SolicitacoesItemComponent,
+    HistoricoItemComponent,
     ImagensPrivadasDirective,
   ],
   templateUrl: './item.page.html',

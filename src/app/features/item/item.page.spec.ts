@@ -50,6 +50,7 @@ async function montarPagina(
           listarChecklist: vi.fn().mockResolvedValue([]),
           listarDependencias: vi.fn().mockResolvedValue([]),
           listarComentarios: vi.fn().mockResolvedValue([]),
+          listarHistorico: vi.fn().mockResolvedValue([]),
         },
       },
       { provide: SolicitacoesService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
