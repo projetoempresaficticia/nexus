@@ -51,6 +51,7 @@
 - **T-37** (desempenho): `core/services/paginar.ts` (`buscarTodas`, páginas de 1000 com ordem estável) em itens, solicitações e produtividade; `ItensStore.filhos` com índice pai → filhos. Medido no build: carga inicial **563 kB / ~140 kB transferidos** (meta < 3 s); editor TipTap (~121 kB) só ao abrir item. **Falta medir com o banco no ar** (T-39/T-40): tempo real < 2 s, reabertura < 500 ms, confirmação < 1 s, e `get_advisors` depois de aplicar as migrations.
 - **T-48**: `scripts/gerar-environment.mjs` + `npm run build:cloudflare` + `.nvmrc` + `public/_redirects` e `public/_headers` (Cloudflare Pages); `deploy.yml` do GitHub Pages só manual; `.github/workflows/backup-supabase.yml` + `scripts/backup/drive.py` + `docs/BACKUP.md`. **Falta o Germano:** ligar o Cloudflare (DEPLOY.md), criar a conta de serviço, o usuário `backup_leitura` e os 4 secrets (BACKUP.md), tornar o repositório privado.
 - **nexus-dev atualizado (2026-10-24):** as 13 migrations aplicadas pelo Germano com `supabase db push` e `limpar-anexos` publicada; RLS ativo em todas as tabelas; advisors só com os avisos esperados (funções RPC chamáveis por logados; `notificacoes` sem política de propósito).
+- **T-49**: `_shared/email.ts` com SMTP do Google (`nodemailer`, porta 465) e modo `nenhum`; segredos `SMTP_USUARIO`/`SMTP_SENHA_APP` (DEPLOY.md). **Teste real só depois de publicar `enviar-notificacoes` com os segredos.**
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
@@ -66,7 +67,7 @@ CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arq
 - **Todas as tabelas novas:** `grant` explícito a `authenticated` + RLS; funções de acesso em `privado`, chamadas como `(select privado.f())`.
 - **Seed no nexus-dev:** carregar o `supabase/seed.sql` foi recusado no pedido de confirmação (2026-10-23) — ⚠️ o Germano decide se carrega (dados fictícios; útil para testar as telas).
 - **Migrations no nexus-dev:** o `apply_migration` do MCP é recusado automaticamente nesta extensão (a janela de confirmação não aparece). Use `npx supabase db push` no terminal do Germano (BACKUP/DEPLOY).
-- **Edge Functions no nexus-dev:** `limpar-anexos` publicada; `enviar-notificacoes` por publicar (depende do SMTP, T-49).
+- **Edge Functions no nexus-dev:** `limpar-anexos` e `enviar-notificacoes` publicadas (esta sem segredos: responde 401 a qualquer chamada até configurar `NOTIFICACOES_SEGREDO`; sem agendamento).
 - **Para testar o login no nexus-dev** (o Germano, no painel): DEPLOY.md §Projeto nexus-dev passos 1–5 (URLs, desligar confirmação de e-mail, ligar o hook, seed, migrations).
 - **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 
@@ -77,7 +78,7 @@ Incluídos: tarefas sem projeto (US-34), vários responsáveis (US-35), título 
 - PC com 6 GB de RAM: resolvido usando o projeto nexus-dev na nuvem (DECISOES 2026-10-23).
 - Repositório é público: **nunca** commitar segredos nem dados reais (NAO_FAZER #1 e #6).
 - Um pedido de transferência do repo para `Germano-Silva` foi enviado e abandonado; expira sozinho (não aceitar o e-mail).
-- ⚠️ Provedor de e-mail (Resend vs SMTP Google Workspace) — necessário até T-36.
+- Provedor de e-mail: decidido — SMTP do Google Workspace (T-49). Falta criar a conta que envia e a senha de app (DEPLOY.md).
 - ⚠️ Domínio próprio — necessário até T-40.
 - ⚠️ Líder pode gerir **vínculos** do seu setor? (hoje só Adm). Membro criador pode excluir item com filhos? (SEGURANCA.md §3) — até T-20/T-33. Sub-setores: decidido (Líder cria abaixo do seu).
 - ⚠️ Aprovação aprovada leva a Concluída ou Em andamento? Concluir com subtarefas abertas? (FLUXOS.md) — necessário até T-09.

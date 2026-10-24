@@ -76,5 +76,5 @@ O handler entrega o evento à store certa, que faz *merge* por `id` (ignora even
 
 ## Integrações externas
 - **Google OAuth** (Auth do Supabase).
-- **E-mail:** Resend (plano gratuito, 3 000/mês) com domínio verificado. > ⚠️ A CONFIRMAR: usar Resend ou SMTP do Google Workspace (requer conta de serviço/senha de app). Toda a lógica fica atrás de `_shared/email.ts` para trocar fácil.
+- **E-mail:** SMTP do Google Workspace (`smtp.gmail.com:465`, SSL) com uma conta da empresa e **senha de app**; limite do Gmail ~2000 e-mails/dia por conta. As Edge Functions bloqueiam as portas 25 e 587. Toda a lógica fica em `supabase/functions/_shared/email.ts` (T-49).
 - **Importação v26:** `scripts/importar-v26.ts` lê CSVs exportados das abas (Usuarios, Setores, Vinculos, Itens, Solicitacoes, Mensagens, Comentarios, Anexos), faz upsert por `legacy_id` com a service role. Anexos do Drive **não** são copiados: viram `link_externo` apontando ao Drive.
