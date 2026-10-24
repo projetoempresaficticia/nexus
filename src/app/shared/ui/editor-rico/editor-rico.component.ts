@@ -17,6 +17,26 @@ import { TEXTOS } from '../../../core/models/textos';
 import { htmlVazio, sanitizar } from '../../utils/html-seguro';
 import { PessoaMencao, extensaoMencao } from './mencoes';
 
+export interface ImagemEnviada {
+  src: string;
+  caminho?: string;
+}
+
+/** Imagem com o caminho do bucket privado em data-caminho (a URL assinada expira; o caminho não). */
+const ImagemPrivada = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      caminho: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute('data-caminho'),
+        renderHTML: (a: Record<string, unknown>) =>
+          a['caminho'] ? { 'data-caminho': a['caminho'] } : {},
+      },
+    };
+  },
+});
+
 type Marca =
   | 'bold'
   | 'italic'
@@ -65,7 +85,8 @@ export class EditorRicoComponent implements OnDestroy {
   readonly valor = model('');
   readonly rotulo = input('Texto');
   readonly pessoas = input<PessoaMencao[]>([]);
-  readonly enviarImagem = input<((arquivo: File) => Promise<string>) | null>(null);
+  /** Upload da imagem: devolve o endereço para mostrar agora e o caminho privado no Storage. */
+  readonly enviarImagem = input<((arquivo: File) => Promise<ImagemEnviada>) | null>(null);
 
   private readonly area = viewChild.required<ElementRef<HTMLElement>>('area');
   private readonly arquivo = viewChild.required<ElementRef<HTMLInputElement>>('arquivo');
@@ -103,7 +124,7 @@ export class EditorRicoComponent implements OnDestroy {
             defaultProtocol: 'https',
           },
         }),
-        Image.configure({ allowBase64: false }),
+        ImagemPrivada.configure({ allowBase64: false }),
         Placeholder.configure({ placeholder: () => this.rotulo() }),
         extensaoMencao(() => this.pessoas()),
       ],
@@ -188,8 +209,16 @@ export class EditorRicoComponent implements OnDestroy {
   private async inserirImagem(f: File): Promise<void> {
     const enviar = this.enviarImagem();
     if (!enviar) return;
-    const url = await enviar(f);
-    this.editor?.chain().focus().setImage({ src: url, alt: f.name }).run();
+    try {
+      const { src, caminho } = await enviar(f);
+      this.editor
+        ?.chain()
+        .focus()
+        .insertContent({ type: 'image', attrs: { src, alt: f.name, caminho } })
+        .run();
+    } catch {
+      // o gancho já mostrou o erro (ex.: arquivo_grande)
+    }
   }
 
   ngOnDestroy(): void {

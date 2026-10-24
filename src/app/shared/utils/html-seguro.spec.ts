@@ -37,6 +37,14 @@ describe('sanitizar (US-18)', () => {
     expect(sanitizar('<table><tr><td>célula</td></tr></table>')).toBe('célula');
   });
 
+  it('imagem privada: guarda data-caminho válido e recusa caminho malicioso', () => {
+    expect(sanitizar('<img data-caminho="s1/i1/abc-foto.png" alt="f">')).toBe(
+      '<img data-caminho="s1/i1/abc-foto.png" alt="f">',
+    );
+    expect(sanitizar('<img data-caminho="../../segredo">')).toBe('');
+    expect(sanitizar('<p data-caminho="s1/i1/x.png">t</p>')).toBe('<p>t</p>');
+  });
+
   it('texto puro e vazio', () => {
     expect(textoPuro('<p>Olá <b>mundo</b></p>')).toBe('Olá mundo');
     expect(htmlVazio('<p></p><p><br></p>')).toBe(true);
