@@ -1,0 +1,25 @@
+/* .tree-row, .caret, .tree-name, .mini-bar vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.tree-name {
+  color: inherit;
+  text-decoration: none;
+}
+.tree-name .t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contexto .tree-name {
+  color: var(--muted);
+}
+.frac {
+  width: 44px;
+  font-variant-numeric: tabular-nums;
+}
+.sem-barra {
+  width: 148px;
+}
