@@ -1,0 +1,98 @@
+<div class="bar-tools">
+  <div class="nav">
+    <button
+      type="button"
+      class="btn sm"
+      [attr.aria-label]="t.tarefas.gantt.antes"
+      (click)="mover(-14)"
+    >
+      ‹
+    </button>
+    <button type="button" class="btn sm" (click)="mover(0)">{{ t.tarefas.calendario.hoje }}</button>
+    <button
+      type="button"
+      class="btn sm"
+      [attr.aria-label]="t.tarefas.gantt.depois"
+      (click)="mover(14)"
+    >
+      ›
+    </button>
+  </div>
+  <h2 class="titulo">{{ titulo() }}</h2>
+  <ng-content />
+</div>
+
+<div class="gantt-wrap">
+  <div class="gantt" [style.--days]="dias">
+    <div class="g-row g-head">
+      <div class="g-label cab">{{ t.tarefas.gantt.item }}</div>
+      <div class="g-track">
+        @for (s of semanas(); track s.iso) {
+          <span class="g-week" [class.cur]="s.atual" [style.left.px]="s.esquerda">{{
+            s.texto
+          }}</span>
+        }
+        @if (linhaHoje() !== null) {
+          <span class="g-today" [style.left.px]="linhaHoje()" aria-hidden="true"></span>
+        }
+      </div>
+    </div>
+    @for (l of linhas(); track l.item.id) {
+      <div class="g-row" [class.proj]="l.item.nivel === 0">
+        <a
+          class="g-label"
+          [routerLink]="['/item', l.item.id]"
+          [style.padding-left.px]="10 + l.item.nivel * 18"
+        >
+          <span class="dot" [style.background]="prioridade[l.item.prioridade].cor"></span>
+          <span class="t">{{ l.item.nome }}</span>
+        </a>
+        <div class="g-track">
+          @if (linhaHoje() !== null) {
+            <span class="g-today" [style.left.px]="linhaHoje()" aria-hidden="true"></span>
+          }
+          @if (l.semDatas) {
+            <span class="row-sub sem-datas">{{ t.tarefas.gantt.semDatas }}</span>
+          } @else if (l.barra; as b) {
+            @if (b.marco) {
+              <a
+                class="marco"
+                [class]="'marco ' + b.classe"
+                [style.left.px]="b.esquerda + 6"
+                [routerLink]="['/item', l.item.id]"
+                [title]="b.dica"
+                [attr.aria-label]="b.dica"
+              ></a>
+            } @else {
+              <a
+                class="gbar"
+                [class]="'gbar ' + b.classe"
+                [style.left.px]="b.esquerda"
+                [style.width.px]="b.largura"
+                [routerLink]="['/item', l.item.id]"
+                [title]="b.dica"
+                [attr.aria-label]="b.dica"
+              >
+                @if (b.percentual !== null) {
+                  <span [style.width.%]="b.percentual"></span>
+                } @else if (b.largura > 70) {
+                  {{ l.item.nome }}
+                }
+              </a>
+            }
+          }
+        </div>
+      </div>
+    } @empty {
+      <div class="empty">{{ t.tarefas.gantt.vazio }}</div>
+    }
+  </div>
+</div>
+
+<div class="bar-tools hint">
+  <span class="leg"><span class="hoje-leg"></span>{{ t.tarefas.gantt.legendaHoje }}</span>
+  <span>{{ t.tarefas.gantt.legendaProjeto }}</span>
+  <span>{{ t.tarefas.gantt.legendaAtraso }}</span>
+  <span>{{ t.tarefas.gantt.legendaMarco }}</span>
+  <span>{{ t.tarefas.gantt.legendaBarras }}</span>
+</div>

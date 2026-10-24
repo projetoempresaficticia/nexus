@@ -1,0 +1,55 @@
+/* .gantt, .g-row, .g-label, .g-track, .gbar, .g-today vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titulo {
+  margin-right: auto;
+  font-size: 20px;
+}
+.g-label {
+  color: inherit;
+  text-decoration: none;
+}
+.g-label.cab {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.gbar {
+  text-decoration: none;
+}
+.sem-datas {
+  position: absolute;
+  left: 8px;
+  top: 11px;
+}
+.marco {
+  position: absolute;
+  top: 13px;
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+.marco.late {
+  box-shadow: 0 0 0 2px var(--danger);
+}
+.leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hoje-leg {
+  width: 2px;
+  height: 14px;
+  background: var(--danger);
+}
