@@ -535,6 +535,10 @@ export const TEXTOS = {
   erros: {
     sem_permissao: 'Você não tem permissão para fazer isto.',
     texto_obrigatorio: 'Escreva o texto antes de salvar.',
+    email_invalido: 'Use um e-mail @estudeemportugal.org.',
+    email_ja_cadastrado: 'Este e-mail já está cadastrado.',
+    nome_obrigatorio: 'Escreva o nome da pessoa.',
+    nao_desativa_a_si: 'Você não pode desativar a sua própria conta.',
     nao_encontrado: 'Não encontramos este item. Ele pode ter sido excluído.',
     motivo_obrigatorio: 'Conte o motivo do bloqueio para a equipe entender.',
     aprovador_obrigatorio: 'Escolha quem vai aprovar.',

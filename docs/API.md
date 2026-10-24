@@ -48,7 +48,8 @@ Erros: as funções usam `raise exception using errcode = 'P0001', message = '<c
 | `resumo_painel(setores uuid[])` | | `{abertas, atrasadas, bloqueadas, aguardando, concluidas_mes, parados[]}` | administra todos os setores pedidos | US-28 |
 | `carga_trabalho(setores uuid[], de date, ate date)` | | `[{perfil_id, semana, qtd}]` | administra | US-26 |
 
-Admin (`eh_admin()`): `salvar_setor(p jsonb)`, `salvar_vinculos(perfil_id, vinculos jsonb)`, `reatribuir_itens(de_perfil, para_perfil, ids uuid[])`.
+Admin (`eh_admin()`): `salvar_setor(p jsonb)`, `salvar_vinculos(perfil_id, vinculos jsonb)`, `reatribuir_itens(de_perfil, para_perfil, ids uuid[])`, `cadastrar_usuario(email, nome, vinculos jsonb)` → perfil (+ `boas_vindas`; erros `email_invalido`, `email_ja_cadastrado`, `nome_obrigatorio`), `desativar_usuario(id)` → itens abertos dela para reatribuir (erro `nao_desativa_a_si`), `reativar_usuario(id)` (T-33; substituem as Edge Functions previstas).
+Todos: `pessoas_inativas()` → id, nome, iniciais de quem foi desativado (para mostrar o nome em comentários e histórico, US-04).
 
 ## Tempo real (Supabase Realtime)
 Um único canal por sessão, aberto pelo `RealtimeService` depois do login:
@@ -69,8 +70,6 @@ O handler entrega o evento à store certa, que faz *merge* por `id` (ignora even
 ## Edge Functions
 | função | chamada por | o que faz | auth |
 |---|---|---|---|
-| `cadastrar-usuario` | tela Usuários | valida admin; cria `perfis` + `vinculos`; enfileira `boas_vindas` | JWT do admin |
-| `desativar-usuario` | tela Usuários | valida admin; `ativo=false`; encerra sessões; devolve itens abertos para reatribuir | JWT do admin |
 | `url-anexo` | download de anexo | verifica `pode_ver_item`; devolve URL assinada (60 s) | JWT |
 | `limpar-anexos` | após `excluir_item` e anexo apagado | remove objetos do Storage | JWT + verifica que o registo já não existe |
 | `enviar-notificacoes` | pg_cron (2 min) | lê `notificacoes` pendentes (lote 50), monta e-mail (GLOSSARIO_UI §E-mails), envia, marca enviado/erro; máx. 3 tentativas | segredo do cron |
