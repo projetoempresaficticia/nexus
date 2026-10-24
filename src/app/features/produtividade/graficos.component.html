@@ -1,0 +1,168 @@
+@let r = ritmo();
+<section class="chart-sec">
+  <div class="sec-h">
+    <h2>{{ t.produtividade.ritmo.titulo }}</h2>
+  </div>
+  <p class="q">{{ t.produtividade.ritmo.ajuda }}</p>
+  <div class="legend">
+    <span><i class="c1"></i>{{ t.produtividade.ritmo.entregues }}</span>
+    <span><i class="c2"></i>{{ t.produtividade.ritmo.criados }}</span>
+  </div>
+  <div class="chart-scroll">
+    <svg
+      class="chart-svg"
+      [attr.viewBox]="'0 0 ' + W + ' ' + H"
+      role="img"
+      [attr.aria-label]="t.produtividade.ritmo.grafico"
+    >
+      @for (g of r.grade; track $index) {
+        <line
+          class="grade"
+          [attr.x1]="r.L"
+          [attr.x2]="r.fimGrade"
+          [attr.y1]="g.y"
+          [attr.y2]="g.y"
+        />
+        <text class="eixo" [attr.x]="r.L - 8" [attr.y]="g.y + 4" text-anchor="end">
+          {{ g.valor }}
+        </text>
+      }
+      @for (x of r.rotulos; track x.i) {
+        <text class="eixo" [attr.x]="x.x" [attr.y]="H - 10" text-anchor="middle">
+          {{ x.texto }}
+        </text>
+      }
+      @for (f of r.faixas; track $index) {
+        <rect
+          class="hb"
+          [attr.x]="f.x"
+          [attr.y]="r.topo"
+          [attr.width]="f.largura"
+          [attr.height]="r.altura"
+        >
+          <title>{{ f.dica }}</title>
+        </rect>
+      }
+      @for (s of r.series; track s.nome) {
+        <path class="serie" [attr.d]="s.d" [style.stroke]="s.cor" />
+        <circle class="ponto" [attr.cx]="s.fimX" [attr.cy]="s.fimY" r="4.5" [style.fill]="s.cor" />
+        <text class="fim" [attr.x]="s.fimX + 10" [attr.y]="s.fimY + 4 + s.ajuste">
+          {{ s.nome }}: {{ s.ultimo }}
+        </text>
+      }
+    </svg>
+  </div>
+  <details class="data">
+    <summary>{{ t.produtividade.verTabela }}</summary>
+    <div class="tbl-wrap">
+      <table class="heat">
+        <thead>
+          <tr>
+            <th>{{ t.produtividade.ritmo.semana }}</th>
+            <th>{{ t.produtividade.ritmo.entregues }}</th>
+            <th>{{ t.produtividade.ritmo.criados }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of r.tabela; track l.s.de) {
+            <tr>
+              <td>{{ dataCurta(l.s.de) }} a {{ dataCurta(l.s.ate) }}</td>
+              <td>{{ l.entregues }}</td>
+              <td>{{ l.criados }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<div class="charts-2">
+  <section class="chart-sec">
+    <div class="sec-h">
+      <h2>{{ t.produtividade.porPessoa.titulo }}</h2>
+    </div>
+    <p class="q">{{ t.produtividade.porPessoa.ajuda }}</p>
+    <div class="legend">
+      <span><i class="c1"></i>{{ t.produtividade.porPessoa.noPrazo }}</span>
+      <span><i class="atraso"></i>{{ t.produtividade.porPessoa.comAtraso }}</span>
+    </div>
+    @for (p of porPessoa(); track p.pessoa.id) {
+      <div class="hbar-row" [title]="p.dica">
+        <span class="quem">
+          <app-avatar [pessoa]="p.pessoa" [tamanho]="26" />
+          <span class="nome">{{ p.pessoa.nome }}</span>
+        </span>
+        <div class="hbar">
+          @if (p.noPrazo) {
+            <span class="c1" [style.width.%]="p.wOk"></span>
+          }
+          @if (p.atrasadas) {
+            <span class="atraso" [style.width.%]="p.wAtraso"></span>
+          }
+          @if (!p.total) {
+            <span class="vazio"></span>
+          }
+        </div>
+        <span class="row-sub num">
+          <strong>{{ p.total }}</strong> {{ t.produtividade.porPessoa.entregas }}<br />
+          <span class="ok">{{ t.produtividade.porPessoa.pctNoPrazo(p.pctNoPrazo) }}</span> ·
+          <span [class.ruim]="p.pctAtraso">{{
+            t.produtividade.porPessoa.pctAtraso(p.pctAtraso)
+          }}</span>
+        </span>
+      </div>
+    }
+  </section>
+
+  <section class="chart-sec">
+    <div class="sec-h">
+      <h2>{{ t.produtividade.seguram.titulo }}</h2>
+    </div>
+    <p class="q">{{ t.produtividade.seguram.ajuda }}</p>
+    @for (s of seguram(); track s.setor_id) {
+      <div class="hbar-row">
+        <span>{{ s.nome }}</span>
+        <div class="hbar">
+          <span class="c2" [style.width.%]="s.largura"></span>
+        </div>
+        <span class="row-sub num">{{ t.produtividade.seguram.linha(decimal(s.media), s.n) }}</span>
+      </div>
+    } @empty {
+      <p class="row-sub vazio-txt">{{ t.produtividade.seguram.vazio }}</p>
+    }
+  </section>
+</div>
+
+<section class="chart-sec">
+  <div class="sec-h">
+    <h2>{{ t.produtividade.porSetor.titulo }}</h2>
+  </div>
+  <p class="q">{{ t.produtividade.porSetor.ajuda }}</p>
+  <div class="tbl-wrap">
+    <table class="heat">
+      <thead>
+        <tr>
+          <th>{{ t.produtividade.porSetor.setor }}</th>
+          @for (s of semanas(); track s.de) {
+            <th class="sem">{{ dataCurta(s.de) }}</th>
+          }
+          <th>{{ t.produtividade.porSetor.total }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of porSetor(); track l.id) {
+          <tr>
+            <td class="setor">{{ l.setor }}</td>
+            @for (c of l.celulas; track $index) {
+              <td class="cell" [style.background]="c.fundo" [class.claro]="c.claro">
+                {{ c.c || '·' }}
+              </td>
+            }
+            <td class="forte">{{ l.total }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
