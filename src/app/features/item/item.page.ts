@@ -24,6 +24,7 @@ import { ChecklistItemComponent } from './components/checklist-item.component';
 import { DependenciasItemComponent } from './components/dependencias-item.component';
 import { DetalhesItemComponent } from './components/detalhes-item.component';
 import { FilhosItemComponent } from './components/filhos-item.component';
+import { SolicitacoesItemComponent } from './components/solicitacoes-item.component';
 import { StatusItemComponent } from './components/status-item.component';
 
 /** Página do item: duas colunas (conteúdo | painel lateral), como no protótipo (US-09, US-10). */
@@ -45,6 +46,7 @@ import { StatusItemComponent } from './components/status-item.component';
     DependenciasItemComponent,
     ComentariosItemComponent,
     AnexosItemComponent,
+    SolicitacoesItemComponent,
     ImagensPrivadasDirective,
   ],
   templateUrl: './item.page.html',
