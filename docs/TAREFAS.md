@@ -48,7 +48,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-30** Painel (KPIs clicáveis + tabela de parados). — Dep.: T-24 · US-28
 - [x] **T-31** Produtividade (período, pessoa, comparação). — Dep.: T-30 · US-29
 - [x] **T-32** Equipe (organograma + linha de decisão). — Dep.: T-13 · US-06
-- [ ] **T-33** Usuários (admin): lista, cadastrar, editar vínculos, desativar/reativar, reatribuir; RPCs `cadastrar_usuario`, `desativar_usuario`, `reativar_usuario` (substituem as Edge Functions). — Dep.: T-13 · US-03, US-04
+- [x] **T-33** Usuários (admin): lista, cadastrar, editar vínculos, desativar/reativar, reatribuir; RPCs `cadastrar_usuario`, `desativar_usuario`, `reativar_usuario` (substituem as Edge Functions). — Dep.: T-13 · US-03, US-04
 - [ ] **T-34** Setores (admin): árvore, criar, renomear, mover, desativar. — Dep.: T-13 · US-05
 - [ ] **T-35** Histórico no item. — Dep.: T-18 · US-32
 - [ ] **T-36** Notificações: Edge Function `enviar-notificacoes`, templates, pg_cron (2 min + lembrete diário 08:00 Lisboa). — Dep.: T-10 · US-30
