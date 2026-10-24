@@ -3,25 +3,31 @@
   [subtitulo]="t.setores.subtitulo(acesso.setores().length)"
   [mostrarSetor]="false"
 >
-  <button type="button" class="btn primary" (click)="criando.set('')">{{ t.setores.novo }}</button>
+  @if (acesso.ehAdmin()) {
+    <button type="button" class="btn primary" (click)="criando.set('')">
+      {{ t.setores.novo }}
+    </button>
+  }
 </app-cabecalho>
 
 <p class="hint">{{ t.setores.dicaArrastar }}</p>
 
 <section class="panel" cdkDropListGroup>
-  <div
-    class="principal"
-    [class.over]="sobre() === ''"
-    cdkDropList
-    cdkDropListData=""
-    [cdkDropListSortingDisabled]="true"
-    [cdkDropListEnterPredicate]="podeSoltar"
-    (cdkDropListEntered)="sobre.set('')"
-    (cdkDropListExited)="sobre.set(null)"
-    (cdkDropListDropped)="soltou($event)"
-  >
-    {{ t.setores.soltarPrincipal }}
-  </div>
+  @if (acesso.ehAdmin()) {
+    <div
+      class="principal"
+      [class.over]="sobre() === ''"
+      cdkDropList
+      cdkDropListData=""
+      [cdkDropListSortingDisabled]="true"
+      [cdkDropListEnterPredicate]="podeSoltar"
+      (cdkDropListEntered)="sobre.set('')"
+      (cdkDropListExited)="sobre.set(null)"
+      (cdkDropListDropped)="soltou($event)"
+    >
+      {{ t.setores.soltarPrincipal }}
+    </div>
+  }
   @for (l of linhas(); track l.setor.id) {
     <div
       class="tree-row setor"
@@ -36,10 +42,12 @@
       (cdkDropListExited)="sobre.set(null)"
       (cdkDropListDropped)="soltou($event)"
     >
-      <span class="arrasto" cdkDrag [cdkDragData]="l.setor.id">
+      <span class="arrasto" cdkDrag [cdkDragData]="l.setor.id" [cdkDragDisabled]="!l.editavel">
         <button
           type="button"
           class="btn sm ghost alca"
+          [class.escondida]="!l.editavel"
+          [disabled]="!l.editavel"
           cdkDragHandle
           [attr.aria-label]="t.setores.arrastar(l.setor.nome)"
         >
@@ -68,35 +76,39 @@
           <span class="row-sub">{{ t.setores.pessoas(l.pessoas) }}</span>
         </span>
       }
-      <label class="mover">
-        <span class="row-sub">{{ t.setores.moverPara }}</span>
-        <select
-          class="inline-sel"
-          [attr.aria-label]="t.setores.moverSetor(l.setor.nome)"
-          (change)="mover(l.setor.id, l.setor.nome, $any($event.target))"
-        >
-          <option value="" [selected]="!l.setor.pai_id">{{ t.setores.principal }}</option>
-          @for (d of l.destinos; track d.id) {
-            <option [value]="d.id" [selected]="d.id === l.setor.pai_id">{{ d.nome }}</option>
-          }
-        </select>
-      </label>
-      <button type="button" class="btn sm" (click)="comecarRenomear(l.setor.id, l.setor.nome)">
-        {{ t.setores.renomear }}
-      </button>
+      @if (l.editavel) {
+        <label class="mover">
+          <span class="row-sub">{{ t.setores.moverPara }}</span>
+          <select
+            class="inline-sel"
+            [attr.aria-label]="t.setores.moverSetor(l.setor.nome)"
+            (change)="mover(l.setor.id, l.setor.nome, $any($event.target))"
+          >
+            <option value="" [selected]="!l.setor.pai_id">{{ t.setores.principal }}</option>
+            @for (d of l.destinos; track d.id) {
+              <option [value]="d.id" [selected]="d.id === l.setor.pai_id">{{ d.nome }}</option>
+            }
+          </select>
+        </label>
+        <button type="button" class="btn sm" (click)="comecarRenomear(l.setor.id, l.setor.nome)">
+          {{ t.setores.renomear }}
+        </button>
+      }
       <button type="button" class="btn sm" (click)="criando.set(l.setor.id)">
         {{ t.setores.subsetor }}
       </button>
-      <button
-        type="button"
-        class="btn sm"
-        (click)="alternarAtivo(l.setor.id, l.setor.nome, l.setor.ativo)"
-      >
-        {{ l.setor.ativo ? t.setores.desativar : t.setores.reativar }}
-      </button>
-      <button type="button" class="btn sm danger" (click)="excluir(l.setor.id, l.setor.nome)">
-        {{ t.setores.excluir }}
-      </button>
+      @if (l.editavel) {
+        <button
+          type="button"
+          class="btn sm"
+          (click)="alternarAtivo(l.setor.id, l.setor.nome, l.setor.ativo)"
+        >
+          {{ l.setor.ativo ? t.setores.desativar : t.setores.reativar }}
+        </button>
+        <button type="button" class="btn sm danger" (click)="excluir(l.setor.id, l.setor.nome)">
+          {{ t.setores.excluir }}
+        </button>
+      }
     </div>
   }
 </section>

@@ -153,6 +153,44 @@ describe('SetoresPage — excluir e arrastar (T-51)', () => {
   });
 });
 
+describe('SetoresPage — líder (T-51b)', () => {
+  async function montarLider() {
+    const lider = dadosIniciais(
+      [{ setor_id: SETORES.pedagogico, papel: 'lider' }],
+      [SETORES.pedagogico, SETORES.sucesso],
+    );
+    await preparar(lider, {});
+    const fixture = TestBed.createComponent(SetoresPage);
+    await estabilizar(fixture);
+    return { fixture, comp: fixture.componentInstance as unknown as Record<string, unknown> };
+  }
+
+  it('vê só o que lidera; ações só nos subsetores abaixo dele', async () => {
+    const { fixture } = await montarLider();
+    const el = fixture.nativeElement as HTMLElement;
+    const linhas = [...el.querySelectorAll('.tree-row')];
+    expect(linhas.map((l) => l.querySelector('.nome strong')?.textContent?.trim())).toEqual([
+      'Pedagógico',
+      'Sucesso do Aluno',
+    ]);
+    const textos = (l: Element) =>
+      [...l.querySelectorAll('button')].map((b) => b.textContent?.trim());
+    expect(textos(linhas[0])).not.toContain('Excluir');
+    expect(linhas[0].querySelector('select')).toBeNull();
+    expect(textos(linhas[1])).toContain('Excluir');
+    expect(el.querySelector('.principal')).toBeNull();
+    expect(textos(el).includes('+ Novo setor')).toBe(false);
+  });
+
+  it('arrastar só para dentro do que administra, nunca para setor principal', async () => {
+    const { comp } = await montarLider();
+    const pode = comp['podeSoltar'] as (a: { data: string }, b: { data: string }) => boolean;
+    expect(pode({ data: SETORES.sucesso }, { data: SETORES.pedagogico })).toBe(true);
+    expect(pode({ data: SETORES.sucesso }, { data: SETORES.financeiro })).toBe(false);
+    expect(pode({ data: SETORES.sucesso }, { data: '' })).toBe(false);
+  });
+});
+
 describe('NovoSetorModal', () => {
   it('líder só cria dentro do que administra (sem "setor principal")', async () => {
     const criar = vi.fn().mockResolvedValue(undefined);

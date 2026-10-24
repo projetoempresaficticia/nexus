@@ -16,7 +16,11 @@ import { descendentes, ordenarArvore } from '../../shared/utils/arvore';
 import { NovoSetorModal } from './novo-setor.modal';
 import { SetoresService } from './setores.service';
 
-/** Setores (só o Adm, US-05): árvore, criar, renomear, mover (lista ou arrastar), (des)ativar e excluir vazio. */
+/**
+ * Setores (US-05): árvore, criar, renomear, mover (lista ou arrastar), (des)ativar e excluir vazio.
+ * O Adm mexe em tudo; o líder só nos subsetores ABAIXO dos que lidera e só os move para dentro do que
+ * administra (T-51b — o banco confere de novo em salvar_setor/excluir_setor).
+ */
 @Component({
   selector: 'app-setores-page',
   imports: [
@@ -45,20 +49,34 @@ export class SetoresPage {
   /** Setor sob o arraste (contorno tracejado). '' = faixa "setor principal". */
   protected readonly sobre = signal<string | null>(null);
 
+  /** O Adm vê todos; o líder, os que administra (o seu e os de baixo). */
+  private readonly visiveis = computed(() => {
+    const adm = this.acesso.administrados();
+    return this.acesso.setores().filter((s) => this.acesso.ehAdmin() || adm.has(s.id));
+  });
+
   protected readonly linhas = computed(() => {
     const setores = this.acesso.setores();
-    return ordenarArvore(setores).map(({ no, nivel }) => {
+    return ordenarArvore(this.visiveis()).map(({ no, nivel }) => {
       const abaixo = descendentes(no.id, setores);
       return {
         setor: no,
         nivel,
         pessoas: this.acesso.pessoas().filter((p) => p.vinculos.some((v) => v.setor_id === no.id))
           .length,
-        // Para onde pode ir: qualquer setor fora dele e dos subsetores dele
-        destinos: setores.filter((s) => !abaixo.has(s.id)),
+        editavel: this.podeEditar(no.id),
+        // Para onde pode ir: fora dele e dos de baixo; para o líder, só dentro do que administra
+        destinos: this.visiveis().filter((s) => !abaixo.has(s.id)),
       };
     });
   });
+
+  /** Espelho de privado.pode_editar_setor, só para esconder botões. */
+  protected podeEditar(id: string): boolean {
+    if (this.acesso.ehAdmin()) return true;
+    const pai = this.acesso.setores().find((s) => s.id === id)?.pai_id;
+    return !!pai && this.acesso.administrados().has(pai);
+  }
 
   protected comecarRenomear(id: string, nome: string): void {
     this.rascunho.set(nome);
@@ -86,8 +104,11 @@ export class SetoresPage {
   ): boolean => {
     const id = arrasto.data;
     const destino = alvo.data;
-    if (!destino) return !!this.acesso.setores().find((s) => s.id === id)?.pai_id;
-    return !descendentes(id, this.acesso.setores()).has(destino);
+    if (!destino) {
+      return this.acesso.ehAdmin() && !!this.acesso.setores().find((s) => s.id === id)?.pai_id;
+    }
+    const permitido = this.acesso.ehAdmin() || this.acesso.administrados().has(destino);
+    return permitido && !descendentes(id, this.acesso.setores()).has(destino);
   };
 
   protected async soltou(e: CdkDragDrop<string, string, string>): Promise<void> {

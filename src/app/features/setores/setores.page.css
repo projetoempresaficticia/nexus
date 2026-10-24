@@ -50,3 +50,6 @@
   font-weight: 600;
   box-shadow: var(--shadow);
 }
+.alca.escondida {
+  visibility: hidden;
+}
