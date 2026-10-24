@@ -53,6 +53,19 @@ export class ItensStore {
     }
   }
 
+  /** Garante o item no cache (link direto para um item); false se não existe ou não é visível. */
+  async garantir(id: string): Promise<boolean> {
+    await this.carregar();
+    if (this.porId(id)) return true;
+    try {
+      const item = await this.service.obter(id);
+      if (item) this.aplicar(item);
+      return !!item;
+    } catch {
+      return false;
+    }
+  }
+
   /** Merge: só substitui se a versão recebida for igual ou mais nova. */
   aplicar(item: Item): void {
     const atual = this._itens().get(item.id);
