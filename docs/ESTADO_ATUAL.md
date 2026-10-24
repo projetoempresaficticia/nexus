@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-33, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-34, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -45,13 +45,14 @@
 - **T-31** (T-31a + T-31b): `features/produtividade` (calculos puros testados, service de `vw_produtividade`, página com KPIs e Equipe, `graficos.component` com SVG próprio). Fora: Fluxo do trabalho e por motivo (⚠️ DECISOES).
 - **T-32**: `features/equipe` (linha de decisão por vínculo, organograma recursivo com `ng-template`, setores só-caminho esmaecidos; só "Minha árvore").
 - **T-33** (T-33a + T-33b): migration `20261024100959_usuarios_admin.sql` (**por aplicar no nexus-dev**) + pgTAP 011; `features/usuarios` (lista, busca, inativos, modais Novo usuário / Setores / Reatribuir); `AcessoStore` busca `pessoas_inativas()` (nomes de quem saiu) e tem `recarregar()`. Resolve a pendência "Pessoa removida" da T-22.
+- **T-34**: `features/setores` (página do Adm, `NovoSetorModal` compartilhado com a Equipe, `SetoresService`: criar por insert com RLS, alterar por `salvar_setor`); `EmBrevePage` removida (todas as rotas têm tela).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-34** — Setores (admin): árvore, criar, renomear, mover, desativar.
+- **T-35** — Histórico no item.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

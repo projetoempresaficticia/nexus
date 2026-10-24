@@ -1,0 +1,27 @@
+/* .tree-row e .inline-sel vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.nome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.nome-edit {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.mover {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.setor.inativo .nome strong {
+  color: var(--muted);
+}
