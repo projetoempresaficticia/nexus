@@ -17,7 +17,7 @@
                   {{ t.comentarios.editar }}
                 </button>
               }
-              @if (podeApagar(c)) {
+              @if (ehAutor(c)) {
                 <button type="button" class="btn sm ghost" (click)="apagar(c)">
                   {{ t.comentarios.apagar }}
                 </button>

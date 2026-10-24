@@ -110,10 +110,6 @@ export class ComentariosItemComponent {
     return c.autor_id === this.eu();
   }
 
-  protected podeApagar(c: Comentario): boolean {
-    return this.ehAutor(c) || this.acesso.administrados().has(this.item().setor_id);
-  }
-
   protected async publicar(): Promise<void> {
     if (htmlVazio(this.novo())) {
       this.toast.falha(this.t.comentarios.vazioNaoEnvia);
