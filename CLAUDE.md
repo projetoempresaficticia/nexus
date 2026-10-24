@@ -7,7 +7,7 @@ O dono do projeto tem experiência **básica** em programação: explique em lin
 ## Stack
 - **Frontend:** Angular (versão estável mais recente, componentes standalone, signals, `inject()`), TypeScript estrito, CSS próprio com tokens (sem biblioteca de UI). Angular CDK só para drag-and-drop e overlays.
 - **Backend:** Supabase — Postgres com RLS, Auth (Google, restrito a `@estudeemportugal.org`), Storage (anexos), **Realtime** (telas atualizam sozinhas), Edge Functions em TypeScript/Deno (e-mails, cadastro de usuário), pg_cron.
-- **Hospedagem:** GitHub Pages, com deploy automático por GitHub Actions a cada merge na `main`.
+- **Hospedagem:** Cloudflare Pages (repositório privado), com build e publicação automáticos a cada merge na `main` (`npm run build:cloudflare`). Backup diário encriptado do banco para o Google Drive por GitHub Actions (docs/BACKUP.md).
 - **Testes:** Vitest (serviços), pgTAP (RLS e funções SQL), Playwright (1 fluxo e2e).
 - Não existe servidor Node próprio. O Node é usado só como ferramenta (Angular CLI, build, testes, scripts).
 
@@ -77,6 +77,7 @@ e2e/             Playwright
 | [docs/GLOSSARIO_UI.md](docs/GLOSSARIO_UI.md) | Textos de botões, mensagens, e-mails |
 | [docs/COMMITS.md](docs/COMMITS.md) | **Antes de cada commit, branch ou PR** |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Publicação e variáveis |
+| [docs/BACKUP.md](docs/BACKUP.md) | Backup diário e como restaurar |
 | [docs/DECISOES.md](docs/DECISOES.md) | Por que cada escolha foi feita |
 | [docs/NAO_FAZER.md](docs/NAO_FAZER.md) | Proibições |
 | [docs/ERROS_CONHECIDOS.md](docs/ERROS_CONHECIDOS.md) | Antes de depurar algo estranho |

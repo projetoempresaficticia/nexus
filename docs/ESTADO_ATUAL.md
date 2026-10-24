@@ -49,6 +49,8 @@
 - **T-35**: migration `20261024103800_historico_responsaveis.sql` (**por aplicar no nexus-dev**; trigger em `item_responsaveis`) + pgTAP 012; `HistoricoItemComponent` na página do item.
 - **T-36** (T-36a + T-36b): migration `20261024105531_notificacoes_autor_lembretes.sql` (**por aplicar no nexus-dev**) + pgTAP 013; Edge Function `enviar-notificacoes` (**por publicar**), `_shared/modelos-email.ts` (testado pelo Vitest — `angular.json` inclui `../supabase/functions/**/*.spec.ts`), `_shared/email.ts` (`EMAIL_PROVEDOR=nenhum|resend`), `supabase/agendamentos.sql` (rodar à mão por projeto). ⚠️ Provedor de e-mail a confirmar.
 - **T-37** (desempenho): `core/services/paginar.ts` (`buscarTodas`, páginas de 1000 com ordem estável) em itens, solicitações e produtividade; `ItensStore.filhos` com índice pai → filhos. Medido no build: carga inicial **563 kB / ~140 kB transferidos** (meta < 3 s); editor TipTap (~121 kB) só ao abrir item. **Falta medir com o banco no ar** (T-39/T-40): tempo real < 2 s, reabertura < 500 ms, confirmação < 1 s, e `get_advisors` depois de aplicar as migrations.
+- **T-48**: `scripts/gerar-environment.mjs` + `npm run build:cloudflare` + `.nvmrc` + `public/_redirects` e `public/_headers` (Cloudflare Pages); `deploy.yml` do GitHub Pages só manual; `.github/workflows/backup-supabase.yml` + `scripts/backup/drive.py` + `docs/BACKUP.md`. **Falta o Germano:** ligar o Cloudflare (DEPLOY.md), criar a conta de serviço, o usuário `backup_leitura` e os 4 secrets (BACKUP.md), tornar o repositório privado.
+- **nexus-dev atualizado (2026-10-24):** as 13 migrations aplicadas pelo Germano com `supabase db push` e `limpar-anexos` publicada; RLS ativo em todas as tabelas; advisors só com os avisos esperados (funções RPC chamáveis por logados; `notificacoes` sem política de propósito).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
@@ -63,8 +65,8 @@ CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arq
 ## Lembretes para as próximas tarefas
 - **Todas as tabelas novas:** `grant` explícito a `authenticated` + RLS; funções de acesso em `privado`, chamadas como `(select privado.f())`.
 - **Seed no nexus-dev:** carregar o `supabase/seed.sql` foi recusado no pedido de confirmação (2026-10-23) — ⚠️ o Germano decide se carrega (dados fictícios; útil para testar as telas).
-- **Migrations pendentes no nexus-dev** (o `apply_migration` foi recusado na confirmação, provavelmente por ausência): a partir de `20261023195015_rpcs_itens.sql`. Aplicar em lote quando o Germano estiver presente (MCP `apply_migration`, por ordem de nome).
-- **Edge Functions por publicar no nexus-dev**: `limpar-anexos` (MCP `deploy_edge_function` ou `npx supabase functions deploy`).
+- **Migrations no nexus-dev:** o `apply_migration` do MCP é recusado automaticamente nesta extensão (a janela de confirmação não aparece). Use `npx supabase db push` no terminal do Germano (BACKUP/DEPLOY).
+- **Edge Functions no nexus-dev:** `limpar-anexos` publicada; `enviar-notificacoes` por publicar (depende do SMTP, T-49).
 - **Para testar o login no nexus-dev** (o Germano, no painel): DEPLOY.md §Projeto nexus-dev passos 1–5 (URLs, desligar confirmação de e-mail, ligar o hook, seed, migrations).
 - **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 
