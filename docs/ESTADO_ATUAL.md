@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-20 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-21 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -27,13 +27,14 @@
 - **T-18** (T-18a + T-18b): `features/item` — ItemPage (caminho, `app-titulo-editavel`, descrição, bloqueio, só leitura), `StatusItemComponent`, `DetalhesItemComponent` (responsáveis, prioridade, repetir, datas, projeto, setor, decide, progresso), `FilhosItemComponent`; `core/itens/permissoes.ts`.
 - **T-19**: `features/item/item.service.ts` (checklist direto na tabela com RLS; dependências via RPC), `ChecklistItemComponent` (otimista), `DependenciasItemComponent` (espera por / bloqueia; ciclo → erro do glossário).
 - **T-20**: botão Excluir na página do item (líder/adm, ou criador sem filhos — ⚠️ regra a confirmar), confirmação com contagem (`contar_descendentes`), `ItensStore.excluir` tira o item e os descendentes do cache. Limpeza dos arquivos no Storage fica para a T-23 (caminhos já vêm do RPC).
+- **T-21**: recorrência ponta a ponta (RPC T-09 + modal + detalhes + selo ↻ + toast da próxima). ⚠️ "Diária" = +1 dia corrido (FLUXOS); protótipo usava dias úteis — a confirmar.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-21** — Recorrência no modal e no item; toast da próxima ocorrência (boa parte já existe: RPC, modal, detalhes e toast).
+- **T-22** — Comentários: listar, criar, editar, apagar, menções.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
@@ -56,4 +57,5 @@ Incluídos: tarefas sem projeto (US-34), vários responsáveis (US-35), título 
 - ⚠️ Domínio próprio — necessário até T-40.
 - ⚠️ Líder pode gerir **vínculos** do seu setor? (hoje só Adm). Membro criador pode excluir item com filhos? (SEGURANCA.md §3) — até T-20/T-33. Sub-setores: decidido (Líder cria abaixo do seu).
 - ⚠️ Aprovação aprovada leva a Concluída ou Em andamento? Concluir com subtarefas abertas? (FLUXOS.md) — necessário até T-09.
+- ⚠️ Recorrência "Diária": dias corridos (implementado) ou dias úteis (protótipo)? (FLUXOS.md §4)
 - ⚠️ Data-alvo da virada e se outras equipas entram no MVP (PRD.md).
