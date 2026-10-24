@@ -1,0 +1,172 @@
+# Backup diário do Supabase para o Google Drive partilhado (docs/BACKUP.md).
+# 1. dump oficial do Supabase (pg_dump na mesma versão do servidor): usuários, estrutura e dados;
+# 2. TESTA o restauro num Supabase local e compara as linhas de cada tabela;
+# 3. comprime (gzip) e encripta (GPG simétrico AES256);
+# 4. envia ao Drive e aplica a retenção (30 diários + o 1.º de cada mês por 12 meses).
+# Qualquer erro falha o job — o GitHub avisa por e-mail quem editou este arquivo por último.
+name: Backup Supabase
+
+on:
+  schedule:
+    # 03:00 em Lisboa: 02:00 UTC no verão, 03:00 UTC no inverno. Roda nos dois horários
+    # e o passo "Hoje já tem backup?" deixa passar só o primeiro depois das 3h de Lisboa.
+    - cron: '0 2 * * *'
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-supabase
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Conferir segredos e esconder a senha do banco nos logs
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          for nome in SUPABASE_DB_URL BACKUP_PASSPHRASE GDRIVE_SERVICE_ACCOUNT_JSON GDRIVE_FOLDER_ID; do
+            if [ -z "${!nome}" ]; then echo "::error::Secret $nome não configurado (ver docs/BACKUP.md)"; exit 1; fi
+          done
+          # A URL inteira já é mascarada pelo GitHub; a senha sozinha também precisa ser.
+          senha="${SUPABASE_DB_URL#*://*:}"; senha="${senha%%@*}"
+          echo "::add-mask::$senha"
+          # Pastas temporárias do runner (fora do repositório), para os passos seguintes
+          echo "TRABALHO=$RUNNER_TEMP/backup" >> "$GITHUB_ENV"
+          echo "GDRIVE_SA_ARQUIVO=$RUNNER_TEMP/conta-servico.json" >> "$GITHUB_ENV"
+          TRABALHO="$RUNNER_TEMP/backup"; GDRIVE_SA_ARQUIVO="$RUNNER_TEMP/conta-servico.json"
+          umask 077
+          mkdir -p "$TRABALHO"
+          printf '%s' "$GDRIVE_SERVICE_ACCOUNT_JSON" > "$GDRIVE_SA_ARQUIVO"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Instalar dependências do envio ao Drive
+        run: pip install --quiet -r scripts/backup/requirements.txt
+
+      - name: Hoje já tem backup?
+        id: guarda
+        run: |
+          set -euo pipefail
+          dia=$(TZ=Europe/Lisbon date +%F)
+          hora=$(TZ=Europe/Lisbon date +%-H)
+          nome="nexus-backup-$dia.sql.gz.gpg"
+          echo "nome=$nome" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "$hora" -lt 3 ]; then
+              echo "Ainda não são 3h em Lisboa ($hora h); a execução seguinte faz o backup."
+              echo "fazer=nao" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+            if [ "$(python scripts/backup/drive.py existe "$nome")" = "sim" ]; then
+              echo "O backup de $dia já está no Drive."
+              echo "fazer=nao" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
+          echo "fazer=sim" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar cliente PostgreSQL 17 (mesma versão do servidor)
+        if: steps.guarda.outputs.fazer == 'sim'
+        run: |
+          set -euo pipefail
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 > /dev/null
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - uses: supabase/setup-cli@v3
+        if: steps.guarda.outputs.fazer == 'sim'
+        with:
+          version: 2.121.0
+
+      - name: Dump do banco (usuários, estrutura e dados)
+        if: steps.guarda.outputs.fazer == 'sim'
+        run: |
+          set -euo pipefail
+          cd "$TRABALHO"
+          # O CLI roda o pg_dump num container da mesma versão do Postgres do projeto
+          supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f roles.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f data.sql
+          # Um único arquivo que se restaura com um psql (passo a passo em docs/BACKUP.md)
+          {
+            cat roles.sql
+            cat schema.sql
+            echo 'SET session_replication_role = replica;'
+            cat data.sql
+          } > nexus.sql
+          rm roles.sql schema.sql data.sql
+          # Linhas por tabela no banco de origem, para comparar depois do restauro
+          psql "$SUPABASE_DB_URL" -X -A -t -v ON_ERROR_STOP=1 -c "
+            select format('select %L || ''|'' || count(*) from %I.%I;', schemaname || '.' || relname, schemaname, relname)
+            from pg_stat_user_tables where schemaname = 'public' order by 1" > contagem.sql
+          psql "$SUPABASE_DB_URL" -X -A -t -v ON_ERROR_STOP=1 -f contagem.sql > origem.txt
+          echo "Dump: $(du -h nexus.sql | cut -f1), $(wc -l < origem.txt) tabelas em public."
+
+      - name: Testar o restauro num Supabase local
+        if: steps.guarda.outputs.fazer == 'sim'
+        run: |
+          set -euo pipefail
+          mkdir -p "$TRABALHO/teste" && cd "$TRABALHO/teste"
+          supabase init > /dev/null
+          supabase db start
+          local_url='postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+          psql "$local_url" -X -q --single-transaction -v ON_ERROR_STOP=1 -f "$TRABALHO/nexus.sql" > /dev/null
+          psql "$local_url" -X -A -t -v ON_ERROR_STOP=1 -f "$TRABALHO/contagem.sql" > "$TRABALHO/restaurado.txt"
+          # Só nomes de tabelas e números: nada de conteúdo
+          if ! diff -u "$TRABALHO/origem.txt" "$TRABALHO/restaurado.txt"; then
+            echo "::warning::Linhas diferentes entre origem e restauro (escritas durante o backup?). Ver acima."
+          fi
+          faltam=$(join -v1 <(cut -d'|' -f1 "$TRABALHO/origem.txt" | sort) <(cut -d'|' -f1 "$TRABALHO/restaurado.txt" | sort) || true)
+          if [ -n "$faltam" ]; then echo "::error::Tabelas que não voltaram no restauro: $faltam"; exit 1; fi
+          perfis=$(grep '^public.perfis|' "$TRABALHO/restaurado.txt" | cut -d'|' -f2)
+          if [ "${perfis:-0}" -eq 0 ]; then echo "::error::Restauro sem pessoas em public.perfis"; exit 1; fi
+          echo "Restauro OK: $(wc -l < "$TRABALHO/restaurado.txt") tabelas, $perfis pessoas."
+
+      - name: Comprimir e encriptar (GPG AES256)
+        if: steps.guarda.outputs.fazer == 'sim'
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          NOME: ${{ steps.guarda.outputs.nome }}
+        run: |
+          set -euo pipefail
+          cd "$TRABALHO"
+          gzip -9 nexus.sql
+          # A passphrase entra por um descritor de arquivo: não aparece na linha de comando nem no log
+          gpg --batch --yes --quiet --pinentry-mode loopback --passphrase-fd 3 \
+              --symmetric --cipher-algo AES256 --compress-algo none \
+              --output "$NOME" nexus.sql.gz 3<<< "$BACKUP_PASSPHRASE"
+          # Confere que a passphrase abre o arquivo antes de enviar
+          gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --decrypt "$NOME" 3<<< "$BACKUP_PASSPHRASE" \
+            | gzip -t
+          rm nexus.sql.gz
+          echo "Arquivo pronto: $NOME ($(du -h "$NOME" | cut -f1))"
+
+      - name: Enviar ao Google Drive e aplicar a retenção
+        if: steps.guarda.outputs.fazer == 'sim'
+        env:
+          NOME: ${{ steps.guarda.outputs.nome }}
+        run: |
+          set -euo pipefail
+          python scripts/backup/drive.py enviar "$TRABALHO/$NOME"
+          python scripts/backup/drive.py retencao 30 12
+
+      # O runner é descartado no fim, mas o dump e a credencial saem já do disco
+      - name: Limpar arquivos temporários
+        if: always()
+        run: rm -rf "$TRABALHO" "$GDRIVE_SA_ARQUIVO"
