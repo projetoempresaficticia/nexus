@@ -41,9 +41,15 @@
   gap: 8px;
   justify-content: flex-end;
 }
-.acoes .inicio {
-  margin-right: auto;
-}
 .hint {
   margin: 0;
+}
+.inicio-acoes {
+  justify-content: flex-start;
+}
+.msg-acoes {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 4px;
 }

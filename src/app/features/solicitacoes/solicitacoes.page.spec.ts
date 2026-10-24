@@ -153,17 +153,18 @@ describe('SolicitacoesPage', () => {
     expect(botao('Aprovar')).toBeDefined();
     expect(botao('Recusar')).toBeDefined();
     expect(botao('Marcar como resolvida')).toBeUndefined();
-    expect(botao('Cancelar solicitação')).toBeUndefined();
+    expect(botao('Excluir solicitação')).toBeUndefined();
+    expect(botao('Editar')).toBeUndefined();
   });
 
-  it('autor vê Cancelar mas não Marcar como resolvida; cancelar pede confirmação', async () => {
+  it('autor vê Excluir mas não Marcar como resolvida; excluir pede confirmação', async () => {
     const cancelar = vi.fn().mockResolvedValue({ item: item({ id: 't' }) });
     const { botao, estabilizar } = await montar(LISTA, { id: 'enviada', servico: { cancelar } });
     expect(botao('Marcar como resolvida')).toBeUndefined();
     const confirmacao = TestBed.inject(ConfirmacaoService);
-    botao('Cancelar solicitação')!.click();
+    botao('Excluir solicitação')!.click();
     await estabilizar();
-    expect(confirmacao.pedido()?.titulo).toBe('Cancelar solicitação?');
+    expect(confirmacao.pedido()?.titulo).toBe('Excluir solicitação?');
     confirmacao.responder(true);
     await estabilizar();
     expect(cancelar).toHaveBeenCalledWith('enviada');
@@ -199,5 +200,65 @@ describe('SolicitacoesPage', () => {
     await estabilizar();
     expect(el.querySelector('.erro')?.textContent).toContain('Escreva a mensagem');
     expect(enviarMensagem).not.toHaveBeenCalled();
+  });
+
+  it('autor edita o texto da pendente (T-45)', async () => {
+    const editada = solicitacao({ id: 'enviada', para_id: 'p-fin', texto_html: '<p>Nova</p>' });
+    const editar = vi.fn().mockResolvedValue({
+      solicitacao: { ...editada, editado_em: '2026-10-24T10:00:00Z' },
+      item: item({ id: 't' }),
+    });
+    const { fixture, el, botao, estabilizar } = await montar(LISTA, {
+      id: 'enviada',
+      servico: { editar },
+    });
+    botao('Editar')!.click();
+    await estabilizar();
+    (fixture.componentInstance as unknown as { rascunho: WritableSignal<string> }).rascunho.set(
+      '<p>Nova</p>',
+    );
+    botao('Salvar')!.click();
+    await estabilizar();
+    expect(editar).toHaveBeenCalledWith('enviada', '<p>Nova</p>');
+    expect(el.querySelector('.cab')?.textContent).toContain('Nova');
+    expect(el.querySelector('.cab')?.textContent).toContain('(editado)');
+  });
+
+  it('líder não exclui nem edita solicitação de outra pessoa', async () => {
+    const { botao } = await montar(LISTA, { papel: 'lider', id: 'recebida' });
+    expect(botao('Excluir solicitação')).toBeUndefined();
+    expect(botao('Editar')).toBeUndefined();
+  });
+
+  it('só as minhas mensagens têm Editar e Apagar', async () => {
+    const msg = (id: string, autor: string) => ({
+      id,
+      solicitacao_id: 'recebida',
+      autor_id: autor,
+      texto_html: `<p>${id}</p>`,
+      criado_em: '2026-10-23T11:00:00Z',
+      editado_em: null,
+    });
+    const apagarMensagem = vi.fn().mockResolvedValue(undefined);
+    const lista = [
+      solicitacao({
+        id: 'recebida',
+        de_id: 'p-bruno',
+        para_id: 'p-eu',
+        solicitacao_mensagens: [msg('dele', 'p-bruno'), msg('minha', 'p-eu')],
+      }),
+    ];
+    const { el, estabilizar } = await montar(lista, {
+      id: 'recebida',
+      servico: { apagarMensagem },
+    });
+    const bolhas = [...el.querySelectorAll('.bubble')];
+    expect(bolhas[0].querySelector('[aria-label="Apagar mensagem"]')).toBeNull();
+    (bolhas[1].querySelector('[aria-label="Apagar mensagem"]') as HTMLButtonElement).click();
+    await estabilizar();
+    TestBed.inject(ConfirmacaoService).responder(true);
+    await estabilizar();
+    expect(apagarMensagem).toHaveBeenCalledWith('minha');
+    expect(el.querySelectorAll('.bubble')).toHaveLength(1);
   });
 });

@@ -77,10 +77,12 @@ export class SolicitacoesStore {
       if (e.tipo === 'DELETE') return this._lista.update((l) => l.filter((s) => s.id !== id));
       return this.trazer(id);
     }
+    if (e.tipo === 'DELETE') return this.tirarMensagem(String(e.antigo?.['id'] ?? ''));
     const m = e.novo as Mensagem | null;
     if (!m) return;
     const sol = this.porId(m.solicitacao_id);
     if (!sol) return this.trazer(m.solicitacao_id);
+    if (e.tipo === 'UPDATE') return this.trocarMensagem(sol.id, m);
     this.acrescentarMensagem(sol.id, m);
   }
 
@@ -122,6 +124,39 @@ export class SolicitacoesStore {
     }
   }
 
+  async editar(id: string, html: string): Promise<boolean> {
+    try {
+      const r = await this.service.editar(id, html);
+      this._lista.update((l) => l.map((s) => (s.id === id ? { ...s, ...r.solicitacao } : s)));
+      this.itens.aplicar(r.item);
+      return true;
+    } catch (e) {
+      this.toast.erro(e);
+      return false;
+    }
+  }
+
+  async editarMensagem(solicitacaoId: string, id: string, html: string): Promise<boolean> {
+    try {
+      this.trocarMensagem(solicitacaoId, await this.service.editarMensagem(id, html));
+      return true;
+    } catch (e) {
+      this.toast.erro(e);
+      return false;
+    }
+  }
+
+  async apagarMensagem(solicitacaoId: string, id: string): Promise<boolean> {
+    try {
+      await this.service.apagarMensagem(id);
+      this.tirarMensagem(id);
+      return true;
+    } catch (e) {
+      this.toast.erro(e);
+      return false;
+    }
+  }
+
   async cancelar(id: string): Promise<boolean> {
     try {
       const r = await this.service.cancelar(id);
@@ -153,6 +188,30 @@ export class SolicitacoesStore {
         // O evento do tempo real e a resposta do insert trazem a mesma mensagem: entra uma vez.
         s.id === id && !s.solicitacao_mensagens.some((x) => x.id === m.id)
           ? { ...s, solicitacao_mensagens: [...s.solicitacao_mensagens, m] }
+          : s,
+      ),
+    );
+  }
+
+  private trocarMensagem(solicitacaoId: string, m: Mensagem): void {
+    this._lista.update((l) =>
+      l.map((s) =>
+        s.id === solicitacaoId
+          ? {
+              ...s,
+              solicitacao_mensagens: s.solicitacao_mensagens.map((x) => (x.id === m.id ? m : x)),
+            }
+          : s,
+      ),
+    );
+  }
+
+  /** DELETE do tempo real só traz o id: procura em todas as conversas. */
+  private tirarMensagem(id: string): void {
+    this._lista.update((l) =>
+      l.map((s) =>
+        s.solicitacao_mensagens.some((x) => x.id === id)
+          ? { ...s, solicitacao_mensagens: s.solicitacao_mensagens.filter((x) => x.id !== id) }
           : s,
       ),
     );

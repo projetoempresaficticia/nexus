@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
@@ -5,7 +6,11 @@ import { ItensStore } from '../../core/itens/itens.store';
 import { podeEditarItem } from '../../core/itens/permissoes';
 import { NIVEL, StatusSolicitacao } from '../../core/models/rotulos';
 import { TEXTOS } from '../../core/models/textos';
-import { podeCancelar, podeResponder } from '../../core/solicitacoes/permissoes-solicitacao';
+import {
+  podeCancelar,
+  podeEditarSolicitacao,
+  podeResponder,
+} from '../../core/solicitacoes/permissoes-solicitacao';
 import { Solicitacao } from '../../core/solicitacoes/solicitacoes.service';
 import { SolicitacoesStore } from '../../core/solicitacoes/solicitacoes.store';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
@@ -32,6 +37,7 @@ type Aba = keyof typeof TEXTOS.solicitacoes.abas;
     PillStatusComponent,
     EditorRicoComponent,
     HtmlSeguroPipe,
+    NgTemplateOutlet,
   ],
   templateUrl: './solicitacoes.page.html',
   styleUrl: './solicitacoes.page.css',
@@ -50,6 +56,9 @@ export class SolicitacoesPage {
   readonly id = input<string>();
   protected readonly aba = signal<Aba>('recebidas');
   protected readonly resposta = signal('');
+  /** Edição em curso: o texto da solicitação ('texto') ou uma mensagem (id). */
+  protected readonly editando = signal<string | null>(null);
+  protected readonly rascunho = signal('');
   protected readonly erro = signal<string | null>(null);
   protected readonly enviando = signal(false);
 
@@ -139,7 +148,8 @@ export class SolicitacoesPage {
           quando: dataHora(m.criado_em),
         })),
       responder: podeResponder(s, setorItem, eu, adm),
-      cancelar: podeCancelar(s, setorItem, eu, adm),
+      editar: podeEditarSolicitacao(s, eu),
+      cancelar: podeCancelar(s, eu),
     };
   });
 
@@ -164,6 +174,7 @@ export class SolicitacoesPage {
       this.id();
       this.resposta.set('');
       this.erro.set(null);
+      this.editando.set(null);
     });
   }
 
@@ -195,6 +206,43 @@ export class SolicitacoesPage {
     if (!ok) return;
     this.resposta.set('');
     this.toast.sucesso(this.t.solicitacoes.respondida);
+  }
+
+  protected comecarEdicao(alvo: string, html: string): void {
+    this.rascunho.set(html);
+    this.editando.set(alvo);
+    this.erro.set(null);
+  }
+
+  /** Salva o texto da solicitação ou de uma mensagem minha (só o autor — T-45). */
+  protected async salvarEdicao(solicitacaoId: string): Promise<void> {
+    const alvo = this.editando();
+    if (!alvo) return;
+    if (htmlVazio(this.rascunho())) {
+      this.erro.set(this.t.erros.texto_obrigatorio);
+      return;
+    }
+    this.enviando.set(true);
+    const html = sanitizar(this.rascunho());
+    const ok =
+      alvo === 'texto'
+        ? await this.store.editar(solicitacaoId, html)
+        : await this.store.editarMensagem(solicitacaoId, alvo, html);
+    this.enviando.set(false);
+    if (!ok) return;
+    this.editando.set(null);
+    this.erro.set(null);
+    if (alvo === 'texto') this.toast.sucesso(this.t.solicitacoes.editada);
+  }
+
+  protected async apagarMensagem(solicitacaoId: string, id: string): Promise<void> {
+    const sim = await this.confirmacao.perguntar({
+      titulo: this.t.solicitacoes.apagarMensagemTitulo,
+      mensagem: this.t.solicitacoes.apagarMensagemTexto,
+      confirmar: this.t.solicitacoes.apagar,
+      perigo: true,
+    });
+    if (sim) await this.store.apagarMensagem(solicitacaoId, id);
   }
 
   protected async cancelar(id: string): Promise<void> {

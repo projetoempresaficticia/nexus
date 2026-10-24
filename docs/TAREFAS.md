@@ -36,8 +36,9 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-23** Anexos: upload (≤ 20 MB), link externo, colar imagem no comentário, Edge Functions `url-anexo` e `limpar-anexos`. — Dep.: T-22 · US-20
 - [x] **T-24** Solicitações: bloco no item, tela com abas e conversa, responder/aprovar/recusar/cancelar, contador e aviso em Tarefas. — Dep.: T-18 · US-15, US-16, US-17
 - [x] **T-43** Tempo real: `RealtimeService` (um canal, Postgres Changes), merge nas stores por `id`/`atualizado_em`, indicador Ao vivo/Reconectando, recarga do que mudou ao reconectar, `setAuth` ao renovar sessão. — Dep.: T-24, T-22, T-08 · US-37
-- [ ] **T-45** Só o autor edita e exclui: comentários (líder deixa de apagar), solicitações (editar texto pendente, excluir) e mensagens da conversa — banco (T-45a) e telas (T-45b). — Dep.: T-24, T-22 · US-19, US-38
+- [x] **T-45** Só o autor edita e exclui: comentários (líder deixa de apagar), solicitações (editar texto pendente, excluir) e mensagens da conversa — banco (T-45a) e telas (T-45b). — Dep.: T-24, T-22 · US-19, US-38
 - [ ] **T-46** Filtro por pessoa nas visões de Tarefas, conforme a hierarquia do líder. — Dep.: T-26 · US-39
+- [ ] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40
 - [x] **T-44** Abertura instantânea: `CacheLocalService` (IndexedDB por perfil), primeira pintura com o retrato e atualização em segundo plano; limpar no logout. — Dep.: T-43 · US-37
 - [x] **T-25** Visão Kanban (status/prioridade/projeto, CDK drag-drop, "Mover para…"). — Dep.: T-18 · US-22
 - [x] **T-26** Visões Árvore e Dependências. — Dep.: T-19 · US-23, US-27

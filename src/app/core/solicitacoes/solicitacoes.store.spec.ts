@@ -156,4 +156,25 @@ describe('SolicitacoesStore — tempo real', () => {
     });
     expect(store.porId('sol-1')).toBeUndefined();
   });
+
+  it('mensagem editada ou apagada por quem escreveu muda na conversa', async () => {
+    const store = criar({
+      listar: vi.fn().mockResolvedValue([solicitacao({ solicitacao_mensagens: [mensagem] })]),
+    });
+    await store.carregar();
+    await store.sincronizar({
+      tabela: 'solicitacao_mensagens',
+      tipo: 'UPDATE',
+      novo: { ...mensagem, texto_html: '<p>oi!</p>' },
+      antigo: { id: 'm1' },
+    });
+    expect(store.porId('sol-1')!.solicitacao_mensagens[0].texto_html).toBe('<p>oi!</p>');
+    await store.sincronizar({
+      tabela: 'solicitacao_mensagens',
+      tipo: 'DELETE',
+      novo: null,
+      antigo: { id: 'm1' },
+    });
+    expect(store.porId('sol-1')!.solicitacao_mensagens).toHaveLength(0);
+  });
 });

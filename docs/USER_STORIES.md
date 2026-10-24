@@ -31,6 +31,7 @@ Perfis: **Adm** (adm do sistema), **Líder** (de um setor, herda sub-setores), *
 - **US-18** — Como Usuário, quero comentar num item com texto formatado e @menções, para conversar no contexto.
 - **US-19** — Como autor, quero editar ou apagar o meu comentário (só o autor pode — pedido do Germano em 2026-10-24).
 - **US-38** — Como autor de uma solicitação, quero editar o texto (enquanto pendente) e excluí-la, e editar ou apagar as minhas mensagens da conversa; ninguém mais pode.
+- **US-40** — Como responsável, quero marcar uma pessoa com @ num passo do checklist e editar o texto do passo com duplo clique.
 - **US-39** — Como Líder, quero filtrar as visões de Tarefas por uma pessoa dos setores que administro (e dos setores abaixo), para ver o trabalho de cada um.
 - **US-20** — Como Usuário, quero anexar arquivos (até 20 MB) ou colar um link a itens e comentários, e colar imagens direto no comentário, para juntar evidências.
 

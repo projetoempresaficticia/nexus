@@ -50,11 +50,46 @@
           <app-pill-status [status]="d.sol.tipo" tipo="tipo-solicitacao" />
           <app-pill-status [status]="d.sol.status" tipo="solicitacao" />
         </div>
-        <div class="rich" [innerHTML]="d.sol.texto_html | htmlSeguro"></div>
+        @if (editando() === 'texto') {
+          <app-editor-rico
+            [(valor)]="rascunho"
+            [rotulo]="t.solicitacoes.descreva"
+            [pessoas]="acesso.pessoas()"
+          />
+          <ng-container [ngTemplateOutlet]="salvarCancelar" [ngTemplateOutletContext]="{ d }" />
+        } @else {
+          <div class="rich" [innerHTML]="d.sol.texto_html | htmlSeguro"></div>
+        }
         <div class="row-sub">
           <strong>{{ d.de.nome }}</strong> ({{ d.de.setor }}) →
           <strong>{{ d.para.nome }}</strong> ({{ d.para.setor }}) · {{ d.quando }}
+          @if (d.sol.editado_em) {
+            {{ t.solicitacoes.editado }}
+          }
         </div>
+        @if ((d.editar || d.cancelar) && editando() !== 'texto') {
+          <div class="acoes inicio-acoes">
+            @if (d.editar) {
+              <button
+                type="button"
+                class="btn sm"
+                (click)="comecarEdicao('texto', d.sol.texto_html)"
+              >
+                {{ t.solicitacoes.editar }}
+              </button>
+            }
+            @if (d.cancelar) {
+              <button
+                type="button"
+                class="btn sm danger"
+                [disabled]="enviando()"
+                (click)="cancelar(d.sol.id)"
+              >
+                {{ t.solicitacoes.cancelar }}
+              </button>
+            }
+          </div>
+        }
       </div>
 
       @if (d.item; as it) {
@@ -91,13 +126,55 @@
           <div class="msg" [class.me]="m.eu">
             <div class="bubble">
               <div class="who">
-                {{ m.autor.nome }} <span>· {{ m.autor.setor }} · {{ m.quando }}</span>
+                {{ m.autor.nome }}
+                <span
+                  >· {{ m.autor.setor }} · {{ m.quando }}
+                  @if (m.editado_em) {
+                    {{ t.solicitacoes.editado }}
+                  }
+                </span>
               </div>
-              <div class="rich" [innerHTML]="m.texto_html | htmlSeguro"></div>
+              @if (editando() === m.id) {
+                <app-editor-rico
+                  [(valor)]="rascunho"
+                  [rotulo]="t.solicitacoes.responderAjuda"
+                  [pessoas]="acesso.pessoas()"
+                />
+                <ng-container
+                  [ngTemplateOutlet]="salvarCancelar"
+                  [ngTemplateOutletContext]="{ d }"
+                />
+              } @else {
+                <div class="rich" [innerHTML]="m.texto_html | htmlSeguro"></div>
+                @if (m.eu) {
+                  <div class="msg-acoes">
+                    <button
+                      type="button"
+                      class="btn sm ghost"
+                      [attr.aria-label]="t.solicitacoes.editarMensagem"
+                      (click)="comecarEdicao(m.id, m.texto_html)"
+                    >
+                      {{ t.solicitacoes.editar }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn sm ghost"
+                      [attr.aria-label]="t.solicitacoes.apagarMensagem"
+                      (click)="apagarMensagem(d.sol.id, m.id)"
+                    >
+                      {{ t.solicitacoes.apagar }}
+                    </button>
+                  </div>
+                }
+              }
             </div>
           </div>
         }
       </div>
+
+      @if (editando() && erro(); as e) {
+        <p class="erro" role="alert">{{ e }}</p>
+      }
 
       @if (d.sol.status === 'pendente') {
         <app-editor-rico
@@ -105,20 +182,10 @@
           [rotulo]="t.solicitacoes.responderAjuda"
           [pessoas]="acesso.pessoas()"
         />
-        @if (erro(); as e) {
+        @if (!editando() && erro(); as e) {
           <p class="erro" role="alert">{{ e }}</p>
         }
         <div class="acoes">
-          @if (d.cancelar) {
-            <button
-              type="button"
-              class="btn ghost inicio"
-              [disabled]="enviando()"
-              (click)="cancelar(d.sol.id)"
-            >
-              {{ t.solicitacoes.cancelar }}
-            </button>
-          }
           @if (d.responder) {
             @if (d.sol.tipo === 'aprovacao') {
               <button
@@ -165,3 +232,19 @@
     }
   </section>
 </div>
+
+<ng-template #salvarCancelar let-d="d">
+  <div class="acoes">
+    <button type="button" class="btn sm" (click)="editando.set(null)">
+      {{ t.comum.cancelar }}
+    </button>
+    <button
+      type="button"
+      class="btn sm primary"
+      [disabled]="enviando()"
+      (click)="salvarEdicao(d.sol.id)"
+    >
+      {{ t.solicitacoes.salvar }}
+    </button>
+  </div>
+</ng-template>
