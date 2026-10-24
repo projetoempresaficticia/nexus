@@ -1,0 +1,97 @@
+<app-cabecalho [titulo]="t.painel.titulo" [subtitulo]="subtitulo()" />
+
+@if (!subtitulo()) {
+  <div class="notice">{{ t.painel.naoAdministra }}</div>
+} @else if (itens.carregando() && !itens.carregado()) {
+  <section class="panel"><app-carregando /></section>
+} @else {
+  <section class="kpis" [attr.aria-label]="t.painel.indicadores">
+    @for (k of kpis(); track k.id) {
+      <app-kpi-card
+        [rotulo]="k.rotulo"
+        [valor]="k.valor"
+        [subtitulo]="k.sub"
+        [cor]="k.cor"
+        (abrir)="abrirKpi(k.aba)"
+      />
+    }
+  </section>
+
+  <section class="panel">
+    <div class="panel-h">
+      <h2>{{ t.painel.parados }}</h2>
+      <span class="row-sub">{{ t.painel.paradosAjuda }}</span>
+    </div>
+    @if (parados().length) {
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ t.painel.colunas.item }}</th>
+              <th>{{ t.painel.colunas.setor }}</th>
+              <th>{{ t.painel.colunas.status }}</th>
+              <th>{{ t.painel.colunas.motivo }}</th>
+              <th>{{ t.painel.colunas.dependeDe }}</th>
+              <th class="dir">{{ t.painel.colunas.paradoHa }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of parados(); track p.item.id) {
+              <tr tabindex="0" (click)="abrirItem(p.item)" (keydown.enter)="abrirItem(p.item)">
+                <td>
+                  <span class="lvl">{{ nivel[p.item.nivel] }}</span>
+                  <div class="nome">{{ p.item.nome }}</div>
+                </td>
+                <td class="muted">
+                  {{ acesso.nomeSetor(p.item.setor_id) }}<br /><span class="pequeno">{{
+                    p.caminho
+                  }}</span>
+                </td>
+                <td><app-pill-status [status]="p.item.status" /></td>
+                <td class="muted motivo">{{ p.motivo }}</td>
+                <td>
+                  @if (p.pessoa) {
+                    {{ p.pessoa }}<br /><span class="setor-pessoa" [class.fora]="p.outroSetor"
+                      >{{ p.setorPessoa
+                      }}{{ p.outroSetor ? ' · ' + t.painel.outroSetor : '' }}</span
+                    >
+                  } @else {
+                    —
+                  }
+                </td>
+                <td class="dir dias" [class.muito]="p.dias >= 5">{{ t.painel.dias(p.dias) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty">{{ t.painel.nadaParado }}</div>
+    }
+  </section>
+
+  @if (projetos().length) {
+    <section class="sec">
+      <h2>{{ t.painel.projetos }}</h2>
+      @for (p of projetos(); track p.item.id) {
+        <a class="child projeto" [routerLink]="['/item', p.item.id]">
+          <span class="linha">
+            <strong>{{ p.item.nome }}</strong>
+            <span class="row-sub">{{ p.setor }}</span>
+            @if (p.responsavel; as r) {
+              <span class="person"><app-avatar [pessoa]="r" [tamanho]="22" />{{ r.nome }}</span>
+            }
+            <span class="row-sub num">{{
+              t.painel.progressoProjeto(
+                p.progresso.concluidos,
+                p.progresso.total,
+                p.progresso.percentual
+              )
+            }}</span>
+          </span>
+          <app-barra [percentual]="p.progresso.percentual" />
+        </a>
+      }
+    </section>
+  }
+}

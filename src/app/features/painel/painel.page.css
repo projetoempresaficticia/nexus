@@ -1,0 +1,63 @@
+/* .kpis, .panel, table, .child vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.panel-h h2 {
+  margin-right: auto;
+}
+.nome {
+  font-weight: 600;
+  margin-top: 4px;
+}
+.pequeno {
+  font-size: 13px;
+}
+.motivo {
+  max-width: 240px;
+}
+.setor-pessoa {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.setor-pessoa.fora {
+  color: var(--info-fg);
+}
+.dir {
+  text-align: right;
+}
+.dias {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.dias.muito {
+  color: var(--danger);
+}
+.projeto {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  border: 0;
+  padding: 10px 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+.person {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.num {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
