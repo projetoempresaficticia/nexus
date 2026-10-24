@@ -15,6 +15,8 @@ import { TituloEditavelComponent } from '../../shared/ui/titulo-editavel.compone
 import { ToastService } from '../../shared/ui/toast.service';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { htmlVazio, sanitizar } from '../../shared/utils/html-seguro';
+import { ChecklistItemComponent } from './components/checklist-item.component';
+import { DependenciasItemComponent } from './components/dependencias-item.component';
 import { DetalhesItemComponent } from './components/detalhes-item.component';
 import { FilhosItemComponent } from './components/filhos-item.component';
 import { StatusItemComponent } from './components/status-item.component';
@@ -34,6 +36,8 @@ import { StatusItemComponent } from './components/status-item.component';
     StatusItemComponent,
     DetalhesItemComponent,
     FilhosItemComponent,
+    ChecklistItemComponent,
+    DependenciasItemComponent,
   ],
   templateUrl: './item.page.html',
   styleUrl: './item.page.css',

@@ -11,6 +11,7 @@ import { Item } from '../../core/models/item.model';
 import { ConfirmacaoService } from '../../shared/ui/confirmacao.service';
 import { TituloEditavelComponent } from '../../shared/ui/titulo-editavel.component';
 import { ItemPage } from './item.page';
+import { ItemService } from './item.service';
 
 const ITENS: Item[] = [
   item({ id: 'p', nivel: 0, nome: 'Turmas', meu_envolvimento: ['contexto'], criado_por: 'outro' }),
@@ -39,6 +40,13 @@ async function montarPagina(
             .fn()
             .mockResolvedValue(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }])),
           contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
+        },
+      },
+      {
+        provide: ItemService,
+        useValue: {
+          listarChecklist: vi.fn().mockResolvedValue([]),
+          listarDependencias: vi.fn().mockResolvedValue([]),
         },
       },
       {
