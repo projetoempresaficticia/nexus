@@ -22,3 +22,7 @@ __screenshots__/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Python
+__pycache__/
+*.pyc

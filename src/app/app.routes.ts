@@ -70,7 +70,7 @@ export const routes: Routes = [
       },
       {
         path: 'setores',
-        canActivate: [adminGuard],
+        canActivate: [liderGuard],
         loadComponent: () => import('./features/setores/setores.page').then((x) => x.SetoresPage),
         title: m.setores,
       },

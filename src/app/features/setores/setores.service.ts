@@ -4,7 +4,8 @@ import { SUPABASE } from '../../core/supabase.client';
 
 /**
  * Setores (US-05). Criar é insert direto: a RLS deixa o Adm criar em qualquer lugar e o líder só
- * abaixo de um setor que administra. Renomear, mover e (des)ativar: RPC salvar_setor, só o Adm.
+ * abaixo de um setor que administra. Renomear, mover, (des)ativar e excluir:
+ * RPCs salvar_setor/excluir_setor — o Adm em tudo, o líder nos subsetores abaixo dele (T-51b).
  */
 @Injectable({ providedIn: 'root' })
 export class SetoresService {

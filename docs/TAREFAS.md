@@ -40,6 +40,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-46** Filtro por pessoa nas visões de Tarefas, conforme a hierarquia do líder. — Dep.: T-26 · US-39
 - [x] **T-48** Hospedagem no Cloudflare Pages (repositório privado) e backup diário encriptado do Supabase para o Google Drive, com restauro testado (docs/BACKUP.md). — Pedido do Germano
 - [x] **T-51** Setores: excluir setor vazio e organizar a hierarquia arrastando. — Pedido do Germano · US-05
+- [x] **T-51b** Líder renomeia, move, desativa e exclui os subsetores abaixo dele (nunca o próprio setor nem os de cima). — Dep.: T-51 · Pedido do Germano · US-05
 - [x] **T-50** Cópia semanal dos arquivos dos anexos (Storage) para o Google Drive, encriptada, com guia de restauro (BACKUP.md §8). — Dep.: T-48
 - [x] **T-49** E-mail pelo SMTP do Google Workspace em `_shared/email.ts` (senha de app; porta 465). — Dep.: T-36
 - [x] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40

@@ -69,8 +69,10 @@ export class ShellComponent {
       { rota: '/equipe', texto: m.equipe },
     ];
     if (this.acesso.ehAdmin()) {
-      itens.push({ rota: '/usuarios', texto: m.usuarios }, { rota: '/setores', texto: m.setores });
+      itens.push({ rota: '/usuarios', texto: m.usuarios });
     }
+    // Líder organiza os subsetores abaixo dele (T-51b); o Adm, todos
+    itens.push({ rota: '/setores', texto: m.setores });
     return itens;
   });
 
