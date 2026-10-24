@@ -139,6 +139,21 @@ export const TEXTOS = {
       semPrazo: 'Sem prazo',
       prazoMudou: (nome: string, dia: string) => `Prazo de "${nome}" mudou para ${dia}.`,
     },
+    gantt: {
+      antes: 'Duas semanas antes',
+      depois: 'Duas semanas depois',
+      periodo: (de: string, ate: string) => `${de} a ${ate}`,
+      item: 'Item',
+      semDatas: 'Sem datas',
+      dica: (nome: string, de: string, ate: string, status: string) =>
+        `${nome} · ${de} a ${ate} · ${status}`,
+      legendaHoje: 'Hoje',
+      legendaProjeto: 'Barra cinza com preenchimento: projeto e o seu progresso',
+      legendaAtraso: 'Contorno vermelho: atrasado',
+      legendaMarco: 'Losango: só tem prazo (marco)',
+      legendaBarras: 'As barras vão da data de início ao prazo.',
+      vazio: 'Nenhum projeto nos setores selecionados.',
+    },
     deps: {
       titulo: 'Quem espera por quem',
       ajuda:
