@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { AcessoStore } from '../../../core/auth/acesso.store';
 import { Item } from '../../../core/models/item.model';
 import { TEXTOS } from '../../../core/models/textos';
+import { RealtimeService, afetaItem } from '../../../core/services/realtime.service';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { dataHora } from '../../../shared/utils/datas';
 import { Anexo, AnexosService } from '../anexos.service';
@@ -75,13 +76,25 @@ export class AnexosItemComponent {
   private readonly eu = computed(() => this.acesso.perfil()?.id ?? null);
 
   constructor() {
-    effect(() => {
+    effect(() => this.carregar(this.item().id));
+    inject(RealtimeService).ouvirAqui(['anexos'], (e) => {
       const id = this.item().id;
-      this.service.listar(id).then(
-        (l) => this.anexos.set(l),
-        (e) => this.toast.erro(e),
-      );
+      if (
+        afetaItem(
+          e,
+          id,
+          this.anexos().map((a) => a.id),
+        )
+      )
+        this.carregar(id);
     });
+  }
+
+  private carregar(id: string): void {
+    this.service.listar(id).then(
+      (l) => this.anexos.set(l),
+      (e) => this.toast.erro(e),
+    );
   }
 
   protected podeRemover(a: Anexo): boolean {

@@ -4,6 +4,8 @@ import { item } from '../../../../testing/item';
 import { AcessoService } from '../../../core/auth/acesso.service';
 import { AcessoStore } from '../../../core/auth/acesso.store';
 import { Papel } from '../../../core/models/acesso.model';
+import { RealtimeService } from '../../../core/services/realtime.service';
+import { mudanca } from '../../../../testing/tempo-real';
 import { ConfirmacaoService } from '../../../shared/ui/confirmacao.service';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { Comentario, ItemService } from '../item.service';
@@ -115,5 +117,20 @@ describe('ComentariosItemComponent', () => {
     await fixture.whenStable();
     expect(apagarComentario).toHaveBeenCalledWith('2');
     expect(el.querySelectorAll('.com').length).toBe(0);
+  });
+
+  it('comentário de um colega aparece sozinho (tempo real, US-37)', async () => {
+    const listarComentarios = vi
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([com('9', 'p-bruno', '<p>Novo</p>')]);
+    const { fixture, el } = await montar('membro', { listarComentarios });
+    const realtime = TestBed.inject(RealtimeService);
+    realtime.entregar('comentarios', mudanca('INSERT', { id: '8', item_id: 'outro' }));
+    expect(listarComentarios).toHaveBeenCalledTimes(1);
+    realtime.entregar('comentarios', mudanca('INSERT', { id: '9', item_id: 't' }));
+    await new Promise((r) => setTimeout(r));
+    await fixture.whenStable();
+    expect(el.textContent).toContain('Novo');
   });
 });
