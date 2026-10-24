@@ -9,6 +9,7 @@ import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { LinhaItemComponent } from '../../shared/ui/linha-item.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { NovoItemModal } from './novo-item.modal';
+import { KanbanComponent } from './visoes/kanban.component';
 
 type Aba = keyof typeof TEXTOS.tarefas.abas;
 type Visao = keyof typeof TEXTOS.tarefas.visoes;
@@ -40,6 +41,7 @@ interface Grupo {
     VazioComponent,
     CarregandoComponent,
     NovoItemModal,
+    KanbanComponent,
   ],
   templateUrl: './tarefas.page.html',
   styleUrl: './tarefas.page.css',
@@ -52,6 +54,12 @@ export class TarefasPage {
   protected readonly aba = signal<Aba>('todas');
   protected readonly visao = signal<Visao>('lista');
   protected readonly soMeus = signal(false);
+  /** Visões além da Lista: "Todos" ou "Só as minhas" (sou responsável). */
+  protected readonly quem = signal<'todos' | 'minhas'>('todos');
+  protected readonly deQuem = [
+    ['todos', this.t.tarefas.deQuem.todos],
+    ['minhas', this.t.tarefas.deQuem.minhas],
+  ] as const;
   protected readonly novo = signal(false);
 
   protected readonly abas = Object.entries(this.t.tarefas.abas) as [Aba, string][];
@@ -77,6 +85,12 @@ export class TarefasPage {
           (filtro === 'todos' || setores.has(i.setor_id)) &&
           (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))),
       );
+  });
+  protected readonly itensVisao = computed(() => {
+    const eu = this.acesso.perfil()?.id ?? '';
+    return this.quem() === 'minhas'
+      ? this.base().filter((i) => i.responsaveis.includes(eu))
+      : this.base();
   });
   protected readonly abertos = computed(
     () => this.base().filter((i) => i.status !== 'concluida').length,

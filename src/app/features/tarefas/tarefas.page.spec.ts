@@ -129,4 +129,20 @@ describe('TarefasPage', () => {
       'Você ainda não tem nada atribuído',
     );
   });
+
+  it('Kanban usa os dados já carregados e "Só as minhas" filtra (US-21, US-22)', async () => {
+    const { fixture, el } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    const listar = TestBed.inject(ItensService).listar as ReturnType<typeof vi.fn>;
+    const clicar = async (txt: string) => {
+      [...el.querySelectorAll('button')].find((b) => b.textContent?.trim() === txt)!.click();
+      await fixture.whenStable();
+    };
+    await clicar('Kanban');
+    expect(listar).toHaveBeenCalledTimes(1);
+    expect(el.querySelectorAll('.kcard')).toHaveLength(4);
+    await clicar('Só as minhas');
+    expect(textos(el, '.kcard strong')).toEqual(['Calendário']);
+  });
 });
