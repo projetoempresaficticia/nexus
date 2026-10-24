@@ -56,3 +56,13 @@ create trigger anexos_drive_lixeira
   after delete on public.anexos
   for each row when (old.drive_id is not null)
   execute function privado.anexos_drive_para_lixeira();
+
+-- ---------------------------------------------------------------- permissões da service_role
+-- Projetos Supabase novos (e o Supabase local recente) não dão permissões automáticas nas tabelas
+-- novas, nem à service_role. As Edge Functions passam a ter só o que usam, de forma explícita.
+grant select, update, delete on public.anexos to service_role;
+grant select, delete on public.anexos_drive_lixeira to service_role;
+grant select on public.itens, public.perfis, public.setores, public.vinculos, public.item_responsaveis,
+  public.comentarios, public.checklist_itens, public.solicitacoes, public.solicitacao_mensagens
+  to service_role;
+grant select, update on public.notificacoes to service_role;
