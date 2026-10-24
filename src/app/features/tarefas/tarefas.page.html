@@ -82,12 +82,12 @@
   <app-gantt [itens]="itensArvore()" [interessa]="interessa()">
     <ng-container [ngTemplateOutlet]="seletorQuem" />
   </app-gantt>
+} @else if (visao() === 'pessoa') {
+  <app-por-pessoa [itens]="itensEquipe()" [pessoas]="pessoasEquipe()" />
+} @else if (visao() === 'carga') {
+  <app-carga [itens]="itensEquipe()" [pessoas]="pessoasEquipe()" />
 } @else if (visao() === 'deps') {
   <app-dependencias />
-} @else if (visao() !== 'lista') {
-  <section class="panel">
-    <app-vazio>{{ t.emBreve }}</app-vazio>
-  </section>
 } @else {
   <section class="panel">
     <div class="tabs" role="tablist">

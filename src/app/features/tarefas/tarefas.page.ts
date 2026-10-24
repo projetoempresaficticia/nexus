@@ -15,7 +15,9 @@ import { AgendaComponent } from './visoes/agenda.component';
 import { ArvoreComponent } from './visoes/arvore.component';
 import { CalendarioComponent } from './visoes/calendario.component';
 import { DependenciasComponent } from './visoes/dependencias.component';
+import { CargaComponent } from './visoes/carga.component';
 import { GanttComponent } from './visoes/gantt.component';
+import { PorPessoaComponent } from './visoes/por-pessoa.component';
 import { KanbanComponent } from './visoes/kanban.component';
 
 type Aba = keyof typeof TEXTOS.tarefas.abas;
@@ -54,6 +56,8 @@ interface Grupo {
     AgendaComponent,
     CalendarioComponent,
     GanttComponent,
+    PorPessoaComponent,
+    CargaComponent,
     NgTemplateOutlet,
   ],
   templateUrl: './tarefas.page.html',
@@ -146,6 +150,16 @@ export class TarefasPage {
       (!soMeus || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
       (!minhas || i.responsaveis.includes(eu));
   });
+  /** Por pessoa / Carga: abertos dos setores que administro, e a equipe do filtro "Pessoa". */
+  protected readonly itensEquipe = computed(() => {
+    const adm = this.acesso.administrados();
+    return this.base().filter((i) => i.status !== 'concluida' && adm.has(i.setor_id));
+  });
+  protected readonly pessoasEquipe = computed(() =>
+    this.pessoa()
+      ? this.pessoasFiltro().filter((p) => p.id === this.pessoa())
+      : this.pessoasFiltro(),
+  );
   protected readonly abertos = computed(
     () => this.base().filter((i) => i.status !== 'concluida').length,
   );
