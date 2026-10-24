@@ -4,6 +4,8 @@
 # 3. comprime (gzip) e encripta (GPG simétrico AES256);
 # 4. envia ao Drive e aplica a retenção (30 diários + o 1.º de cada mês por 12 meses).
 # Qualquer erro falha o job — o GitHub avisa por e-mail quem editou este arquivo por último.
+# Job "anexos": aos domingos, copia os arquivos do Storage (bucket anexos) → tar + GPG → Drive
+# (8 semanas + 1 por mês por 12 meses). Opcional: sem os secrets SUPABASE_S3_* só avisa.
 name: Backup Supabase
 
 on:
@@ -164,9 +166,117 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/backup/drive.py enviar "$TRABALHO/$NOME"
-          python scripts/backup/drive.py retencao 30 12
+          python scripts/backup/drive.py retencao nexus-backup 30 12
 
       # O runner é descartado no fim, mas o dump e a credencial saem já do disco
       - name: Limpar arquivos temporários
         if: always()
         run: rm -rf "$TRABALHO" "$GDRIVE_SA_ARQUIVO"
+
+  # Arquivos dos anexos (Storage) — semanal, aos domingos (docs/BACKUP.md §8).
+  # Opcional: sem os 4 secrets SUPABASE_S3_* o job só avisa e não falha.
+  anexos:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+      # rclone lê a configuração do remoto "supa" destas variáveis (nada é gravado em arquivo)
+      RCLONE_CONFIG_SUPA_TYPE: s3
+      RCLONE_CONFIG_SUPA_PROVIDER: Other
+      RCLONE_CONFIG_SUPA_ENDPOINT: ${{ secrets.SUPABASE_S3_ENDPOINT }}
+      RCLONE_CONFIG_SUPA_REGION: ${{ secrets.SUPABASE_S3_REGION }}
+      RCLONE_CONFIG_SUPA_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_ACCESS_KEY_ID }}
+      RCLONE_CONFIG_SUPA_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET_ACCESS_KEY }}
+      RCLONE_CONFIG_SUPA_FORCE_PATH_STYLE: 'true'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Configurado e é dia de cópia?
+        id: guarda
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          for nome in RCLONE_CONFIG_SUPA_ENDPOINT RCLONE_CONFIG_SUPA_REGION RCLONE_CONFIG_SUPA_ACCESS_KEY_ID RCLONE_CONFIG_SUPA_SECRET_ACCESS_KEY; do
+            if [ -z "${!nome}" ]; then
+              echo "::warning::Cópia dos anexos desligada: faltam os secrets SUPABASE_S3_* (docs/BACKUP.md §8)."
+              echo "fazer=nao" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          done
+          for nome in BACKUP_PASSPHRASE GDRIVE_SERVICE_ACCOUNT_JSON GDRIVE_FOLDER_ID; do
+            if [ -z "${!nome}" ]; then echo "::error::Secret $nome não configurado (ver docs/BACKUP.md)"; exit 1; fi
+          done
+          dia=$(TZ=Europe/Lisbon date +%F)
+          echo "nome=nexus-anexos-$dia.tar.gpg" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # Só aos domingos, a partir das 3h de Lisboa (a execução das 02:00 UTC no inverno não conta)
+            if [ "$(TZ=Europe/Lisbon date +%u)" != "7" ] || [ "$(TZ=Europe/Lisbon date +%-H)" -lt 3 ]; then
+              echo "fazer=nao" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
+          umask 077
+          echo "TRABALHO=$RUNNER_TEMP/anexos" >> "$GITHUB_ENV"
+          echo "GDRIVE_SA_ARQUIVO=$RUNNER_TEMP/conta-servico.json" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/anexos"
+          printf '%s' "$GDRIVE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/conta-servico.json"
+          echo "fazer=sim" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v6
+        if: steps.guarda.outputs.fazer == 'sim'
+        with:
+          python-version: '3.12'
+
+      - name: Já tem a cópia desta semana?
+        id: existe
+        if: steps.guarda.outputs.fazer == 'sim'
+        env:
+          NOME: ${{ steps.guarda.outputs.nome }}
+        run: |
+          set -euo pipefail
+          pip install --quiet -r scripts/backup/requirements.txt
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(python scripts/backup/drive.py existe "$NOME")" = "sim" ]; then
+            echo "A cópia de hoje já está no Drive."; echo "fazer=nao" >> "$GITHUB_OUTPUT"
+          else
+            echo "fazer=sim" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Copiar o bucket anexos e conferir
+        if: steps.existe.outputs.fazer == 'sim'
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y -qq rclone > /dev/null
+          rclone copy supa:anexos "$TRABALHO/anexos" --transfers 4 --checkers 8 --stats-log-level NOTICE
+          origem=$(rclone size supa:anexos --json | python -c 'import json,sys; print(json.load(sys.stdin)["count"])')
+          copiados=$(find "$TRABALHO/anexos" -type f | wc -l)
+          echo "Arquivos no Storage: $origem · copiados: $copiados ($(du -sh "$TRABALHO/anexos" | cut -f1))"
+          if [ "$copiados" -lt "$origem" ]; then echo "::error::Faltam arquivos na cópia"; exit 1; fi
+
+      - name: Empacotar e encriptar (GPG AES256)
+        if: steps.existe.outputs.fazer == 'sim'
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          NOME: ${{ steps.guarda.outputs.nome }}
+        run: |
+          set -euo pipefail
+          cd "$TRABALHO"
+          # PDFs e imagens já vêm comprimidos: só tar, sem gzip
+          tar -cf - anexos | gpg --batch --yes --quiet --pinentry-mode loopback --passphrase-fd 3 \
+              --symmetric --cipher-algo AES256 --compress-algo none --output "$NOME" 3<<< "$BACKUP_PASSPHRASE"
+          gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --decrypt "$NOME" 3<<< "$BACKUP_PASSPHRASE" \
+            | tar -tf - > /dev/null
+          rm -rf anexos
+          echo "Arquivo pronto: $NOME ($(du -h "$NOME" | cut -f1))"
+
+      - name: Enviar ao Google Drive e aplicar a retenção
+        if: steps.existe.outputs.fazer == 'sim'
+        env:
+          NOME: ${{ steps.guarda.outputs.nome }}
+        run: |
+          set -euo pipefail
+          python scripts/backup/drive.py enviar "$TRABALHO/$NOME"
+          python scripts/backup/drive.py retencao nexus-anexos 8 12
+
+      - name: Limpar arquivos temporários
+        if: always()
+        run: rm -rf "${TRABALHO:-/nao-existe}" "${GDRIVE_SA_ARQUIVO:-/nao-existe}"

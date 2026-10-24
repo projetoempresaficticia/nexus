@@ -52,6 +52,7 @@
 - **T-48**: `scripts/gerar-environment.mjs` + `npm run build:cloudflare` + `.nvmrc` + `public/_redirects` e `public/_headers` (Cloudflare Pages); `deploy.yml` do GitHub Pages só manual; `.github/workflows/backup-supabase.yml` + `scripts/backup/drive.py` + `docs/BACKUP.md`. **Falta o Germano:** ligar o Cloudflare (DEPLOY.md), criar a conta de serviço, o usuário `backup_leitura` e os 4 secrets (BACKUP.md), tornar o repositório privado.
 - **nexus-dev atualizado (2026-10-24):** as 13 migrations aplicadas pelo Germano com `supabase db push` e `limpar-anexos` publicada; RLS ativo em todas as tabelas; advisors só com os avisos esperados (funções RPC chamáveis por logados; `notificacoes` sem política de propósito).
 - **T-49**: `_shared/email.ts` com SMTP do Google (`nodemailer`, porta 465) e modo `nenhum`; segredos `SMTP_USUARIO`/`SMTP_SENHA_APP` (DEPLOY.md). **Teste real só depois de publicar `enviar-notificacoes` com os segredos.**
+- **T-50**: job `anexos` no `backup-supabase.yml` (domingos; `rclone` com configuração por variáveis de ambiente; confere contagem; tar + GPG; retenção `nexus-anexos 8 12`). **Falta o Germano:** criar as chaves S3 do Storage e os 4 secrets `SUPABASE_S3_*` (BACKUP.md §8) — até lá o job só avisa.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
