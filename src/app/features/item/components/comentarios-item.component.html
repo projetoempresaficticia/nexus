@@ -1,0 +1,56 @@
+<section class="sec">
+  <h3>{{ t.comentarios.titulo }}</h3>
+  @for (c of comentarios(); track c.id) {
+    <div class="com">
+      <app-avatar [pessoa]="autor(c)" />
+      <div class="com-b">
+        <div class="cab">
+          <strong>{{ autor(c).nome }}</strong>
+          <span class="muted">· {{ dataHora(c.criado_em) }}</span>
+          @if (c.editado_em) {
+            <span class="muted">{{ t.comentarios.editado }}</span>
+          }
+          @if (editandoId() !== c.id) {
+            <span class="acoes">
+              @if (ehAutor(c)) {
+                <button type="button" class="btn sm ghost" (click)="editar(c)">
+                  {{ t.comentarios.editar }}
+                </button>
+              }
+              @if (podeApagar(c)) {
+                <button type="button" class="btn sm ghost" (click)="apagar(c)">
+                  {{ t.comentarios.apagar }}
+                </button>
+              }
+            </span>
+          }
+        </div>
+        @if (editandoId() === c.id) {
+          <app-editor-rico
+            [(valor)]="edicao"
+            [rotulo]="t.comentarios.ajuda"
+            [pessoas]="pessoas()"
+          />
+          <div class="rodape">
+            <button type="button" class="btn sm" (click)="editandoId.set(null)">
+              {{ t.comum.cancelar }}
+            </button>
+            <button type="button" class="btn sm primary" (click)="salvarEdicao(c)">
+              {{ t.comentarios.salvar }}
+            </button>
+          </div>
+        } @else {
+          <div class="rich" [innerHTML]="c.texto_html | htmlSeguro"></div>
+        }
+      </div>
+    </div>
+  } @empty {
+    <p class="muted vazio">{{ t.comentarios.vazio }}</p>
+  }
+  <app-editor-rico [(valor)]="novo" [rotulo]="t.comentarios.ajuda" [pessoas]="pessoas()" />
+  <div class="rodape">
+    <button type="button" class="btn primary" [disabled]="enviando()" (click)="publicar()">
+      {{ t.comentarios.comentar }}
+    </button>
+  </div>
+</section>
