@@ -93,7 +93,7 @@ PK (item_id, perfil_id). Alterada só pelo RPC `definir_responsaveis` (gera noti
 |---|---|---|---|
 | id | uuid | sim | PK |
 | item_id | uuid | sim | FK → itens(id) on delete cascade |
-| texto | text | sim | |
+| texto | text | sim | | texto do passo; pode ter menções `<span class="mention" data-uid>` (T-47) |
 | feito | boolean | sim | default false |
 | ordem | integer | sim | default 0 |
 
@@ -146,6 +146,13 @@ PK (item_id, depende_de_id); CHECK item_id <> depende_de_id; trigger impede cicl
 | comentario_id | uuid | sim | FK → comentarios(id) on delete cascade |
 | perfil_id | uuid | sim | FK → perfis(id) |
 PK (comentario_id, perfil_id). Preenchida pelo RPC `salvar_comentario` a partir dos `data-uid` do HTML.
+
+### checklist_mencoes
+| coluna | tipo | obrig. | notas |
+|---|---|---|---|
+| checklist_id | uuid | sim | FK → checklist_itens(id) on delete cascade |
+| perfil_id | uuid | sim | FK → perfis(id) |
+PK (checklist_id, perfil_id). Só leitura para o app: o trigger `checklist_itens_mencoes` preenche a partir dos `data-uid` do texto do passo e avisa (`mencao`) quem foi marcado (T-47).
 
 ### anexos
 | coluna | tipo | obrig. | notas |

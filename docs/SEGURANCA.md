@@ -20,7 +20,7 @@ Ficam no schema **`privado`** (não exposto na API; `execute` só para `authenti
 | `setores_visiveis()` | admin: todos; senão setores com vínculo direto ∪ descendentes dos setores em que é líder |
 | `setores_administrados()` | admin: todos; senão descendentes (inclusive) dos setores em que é líder |
 | `administra_setor(s uuid)` | `s in setores_administrados()` |
-| `itens_envolvidos()` | setof uuid — itens em que a pessoa está **diretamente envolvida**: responsável (`item_responsaveis`), criadora, aprovadora, `de_id`/`para_id` de solicitação do item, ou mencionada num comentário do item |
+| `itens_envolvidos()` | setof uuid — itens em que a pessoa está **diretamente envolvida**: responsável (`item_responsaveis`), criadora, aprovadora, `de_id`/`para_id` de solicitação do item, ou mencionada num comentário ou num passo do checklist do item (T-47) |
 | `pode_ver_item(i uuid)` | **regra "só o que me envolve"** (ver §2.1) |
 | `pode_editar_item(i uuid)` | administra o setor do item **ou** é responsável **ou** é criadora |
 
