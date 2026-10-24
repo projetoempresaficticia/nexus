@@ -31,7 +31,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-18** Página do item: breadcrumbs, **título editável no próprio lugar**, campos editáveis, responsáveis (adicionar/remover), mover tarefa avulsa para projeto, filhos, botões de status com motivo/aprovador, caixa de bloqueio, modo só leitura para itens de contexto. — Dep.: T-16 · US-09, US-10, US-35
 - [x] **T-19** Checklist e Dependências na página do item. — Dep.: T-18 · US-11, US-12
 - [x] **T-20** Exclusão em cascata com confirmação. — Dep.: T-18 · US-13
-- [ ] **T-21** Recorrência no modal e no item; toast da próxima ocorrência. — Dep.: T-18 · US-14
+- [x] **T-21** Recorrência no modal e no item; toast da próxima ocorrência. — Dep.: T-18 · US-14
 - [ ] **T-22** Comentários: listar, criar, editar, apagar, menções. — Dep.: T-18 · US-18, US-19
 - [ ] **T-23** Anexos: upload (≤ 20 MB), link externo, colar imagem no comentário, Edge Functions `url-anexo` e `limpar-anexos`. — Dep.: T-22 · US-20
 - [ ] **T-24** Solicitações: bloco no item, tela com abas e conversa, responder/aprovar/recusar/cancelar, contador e aviso em Tarefas. — Dep.: T-18 · US-15, US-16, US-17

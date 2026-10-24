@@ -82,6 +82,7 @@ flowchart LR
   N --> L[item concluído perde a recorrência]
 ```
 Intervalos: diaria +1d · semanal +7d · quinzenal +14d · mensal +1 mês · anual +1 ano. `inicio` desloca pela mesma diferença.
+> ⚠️ A CONFIRMAR: o protótipo trata "Diária" como **dias úteis** (pula sábado e domingo) e, no mensal, mantém o dia do mês até o último dia válido. Implementado como está acima (+1 dia corrido); se for dias úteis, ajustar `privado.proxima_data` numa nova migration.
 
 ## 5. Exclusão em cascata
 ```mermaid
