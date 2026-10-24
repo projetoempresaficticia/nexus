@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Visões Agenda (abertos por prazo: Atrasados, Hoje, Amanhã…), Mês e Semana (calendário pelo prazo, arrastar para outro dia muda o prazo, próximas ocorrências das recorrentes tracejadas) (T-27).
 - 2026-10-24 — Checklist: marcar pessoas com @ no passo (a pessoa recebe aviso e passa a ver o item) e editar o texto com duplo clique ou pelo botão ✎ (T-47).
 - 2026-10-24 — Filtro "Pessoa" em Tarefas para líderes: mostra só os itens de uma pessoa dos setores que você administra, em todas as visões (T-46).
 - 2026-10-24 — Só quem criou edita e exclui: comentários (o líder deixa de apagar comentário alheio), solicitações (editar o texto enquanto pendente, excluir) e mensagens da conversa, com "(editado)" (T-45).
