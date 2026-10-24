@@ -158,6 +158,22 @@ export const TEXTOS = {
     semFilhos: (filho: string, pai: string) =>
       `Nenhuma ${filho} ainda. O progresso deste ${pai} é calculado a partir delas.`,
     naoEncontrado: 'Não encontramos este item. Ele pode ter sido excluído.',
+    checklist: 'Checklist',
+    checklistProgresso: (c: number, t: number, p: number) => `${c} de ${t} · ${p}%`,
+    novoPasso: 'Novo item do checklist',
+    novoPassoAjuda: 'Adicionar item ao checklist',
+    adicionarPasso: 'Adicionar passo',
+    removerPasso: (texto: string) => `Remover item ${texto}`,
+    checklistTarefa:
+      'O progresso desta tarefa junta o checklist dela com o progresso das subtarefas.',
+    checklistSubtarefa: 'Este checklist conta para o progresso da tarefa e do projeto acima.',
+    dependencias: 'Dependências',
+    esperaPor: 'Espera por',
+    bloqueia: 'Bloqueia',
+    semDependencias: 'Este item não depende de outro.',
+    adicionarDependencia: 'Adicionar dependência',
+    escolhaItem: 'Escolha o item que precisa terminar antes',
+    removerDependencia: (nome: string) => `Remover dependência de ${nome}`,
   },
   novoItem: {
     tituloTarefa: 'Nova tarefa',
