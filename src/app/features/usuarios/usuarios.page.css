@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.busca {
+  flex: 1 1 260px;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--fg);
+}
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.usuario {
+  cursor: default;
+}
+.usuario.inativo {
+  opacity: 0.7;
+}
+.vinculos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 240px;
+}
