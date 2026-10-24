@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-25, T-43 e T-44 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-26, T-43 e T-44 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -34,13 +34,14 @@
 - **T-43**: `core/services/realtime.service.ts` (canal único `nexus`, 8 tabelas, estado Ao vivo/Reconectando, `ouvir`/`ouvirAqui`, `afetaItem`, `setAuth` ao renovar token) e `sincronizacao.service.ts` (liga canal → `ItensStore.sincronizar`, `SolicitacoesStore.sincronizar`, `AcessoStore.recontarPendentes`; offline; aba escondida > 10 min); shell abre/fecha o canal e mostra o indicador; blocos do item recarregam ao receber evento; realce de 1,5 s na `LinhaItem`.
 - **T-44**: `core/services/cache-local.service.ts` (IndexedDB `nexus-cache`, chave `versão:usuário:nome`, `agendar` com 1 s, no-op sem IndexedDB); retratos de `acesso` (carregar_inicial + pendentes), `itens` e `solicitacoes` mostrados na hora e atualizados em segundo plano; perfil desativado desde a última visita → apaga e vai para Sem acesso; logout apaga o IndexedDB e esvazia as stores.
 - **T-25**: `features/tarefas/visoes/kanban.component` (CDK drag-drop, colunas status/prioridade/projeto, menu "Mover para…", realce `.over`), `shared/ui/mudar-status.component` (motivo/aprovador/confirmação, usado pelo item e pelo Kanban), filtro "Todos / Só as minhas" nas visões além da Lista.
+- **T-26**: `visoes/arvore.component` (galhos = projetos/contexto, filtro por predicado `interessa`, pai fora do filtro vira raiz, "Sem projeto") e `visoes/dependencias.component` (pares setor do item → setor principal do destinatário das solicitações pendentes, SVG em elipse como no protótipo).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-26** — Visões Árvore e Dependências.
+- **T-27** — Visões Agenda, Mês e Semana.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

@@ -1,0 +1,99 @@
+<section class="sec">
+  <div class="sec-h">
+    <h3>{{ t.tarefas.deps.titulo }}</h3>
+    <span class="row-sub">{{ t.tarefas.deps.ajuda }}</span>
+  </div>
+  <svg
+    class="dep-svg"
+    [attr.viewBox]="'0 0 ' + W + ' ' + H"
+    role="img"
+    [attr.aria-label]="t.tarefas.deps.mapa"
+  >
+    <defs>
+      <marker
+        id="seta"
+        viewBox="0 0 10 10"
+        refX="9"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        orient="auto-start-reverse"
+      >
+        <path d="M0 0L10 5L0 10z" style="fill: var(--bloq-fg)" />
+      </marker>
+    </defs>
+    @for (s of setas(); track s.id) {
+      <line
+        [attr.x1]="s.x1"
+        [attr.y1]="s.y1"
+        [attr.x2]="s.x2"
+        [attr.y2]="s.y2"
+        [style.stroke-width]="1.5 + s.n"
+        style="stroke: var(--bloq-fg)"
+        marker-end="url(#seta)"
+      />
+      <circle
+        [attr.cx]="s.mx"
+        [attr.cy]="s.my"
+        r="11"
+        style="fill: var(--surface); stroke: var(--bloq-fg); stroke-width: 1.5"
+      />
+      <text
+        [attr.x]="s.mx"
+        [attr.y]="s.my + 4"
+        text-anchor="middle"
+        style="fill: var(--fg); font-size: 12px; font-weight: 700"
+      >
+        {{ s.n }}
+      </text>
+    }
+    @for (n of nos(); track n.id) {
+      <g>
+        <rect
+          [attr.x]="n.x - NW / 2"
+          [attr.y]="n.y - NH / 2"
+          [attr.width]="NW"
+          [attr.height]="NH"
+          rx="10"
+          style="fill: var(--surface)"
+          [style.stroke]="n.meu ? 'var(--accent)' : 'var(--line)'"
+          [style.stroke-width]="n.meu ? 2 : 1.5"
+        />
+        <text
+          [attr.x]="n.x"
+          [attr.y]="n.y + 5"
+          text-anchor="middle"
+          style="fill: var(--fg); font-size: 14px; font-weight: 600"
+        >
+          {{ n.nome }}
+        </text>
+      </g>
+    }
+  </svg>
+</section>
+
+@if (cartoes().length) {
+  <div class="dep-cards">
+    @for (c of cartoes(); track c.id) {
+      <section class="sec">
+        <div class="sec-h">
+          <h3>{{ c.titulo }}</h3>
+          <span class="pill s-bloq">{{ t.tarefas.deps.abertas(c.n) }}</span>
+        </div>
+        @for (i of c.itens; track i.sol.id) {
+          <a class="solic-card" routerLink="/solicitacoes" [queryParams]="{ id: i.sol.id }">
+            <span class="topo">
+              <app-pill-status [status]="i.sol.tipo" tipo="tipo-solicitacao" />
+              <span class="lvl">{{ i.nivel }}</span>
+              <span class="row-sub quando">{{ i.quando }}</span>
+            </span>
+            <strong>{{ i.nome }}</strong>
+            <span class="row-sub">{{ i.texto }}</span>
+          </a>
+        }
+      </section>
+    }
+  </div>
+} @else {
+  <div class="empty">{{ t.tarefas.deps.vazio }}</div>
+}

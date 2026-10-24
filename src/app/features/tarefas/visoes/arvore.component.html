@@ -1,0 +1,76 @@
+<div class="bar-tools">
+  <ng-content />
+  <button type="button" class="btn sm" (click)="todos(true)">
+    {{ t.tarefas.arvore.expandirTudo }}
+  </button>
+  <button type="button" class="btn sm" (click)="todos(false)">
+    {{ t.tarefas.arvore.recolherTudo }}
+  </button>
+</div>
+
+@for (r of ramos(); track r.id) {
+  <section class="panel">
+    @if (r.semProjeto) {
+      <div class="tree-row sem-projeto">
+        <span class="caret-sp"></span>
+        <span class="nav-label">{{ t.tarefas.semProjeto }}</span>
+      </div>
+    }
+    @for (l of r.linhas; track l.item.id) {
+      <div
+        class="tree-row"
+        [class.contexto]="l.item.meu_envolvimento.includes('contexto')"
+        [style.padding-left.px]="16 + (l.item.nivel - (r.semProjeto ? 1 : 0)) * 30"
+      >
+        @if (l.temFilhos) {
+          <button
+            type="button"
+            class="caret"
+            [class.open]="l.aberto"
+            [attr.aria-expanded]="l.aberto"
+            [attr.aria-label]="
+              l.aberto
+                ? t.tarefas.arvore.recolher(l.item.nome)
+                : t.tarefas.arvore.expandir(l.item.nome)
+            "
+            (click)="alternar(l.item, l.aberto)"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        } @else {
+          <span class="caret-sp"></span>
+        }
+        <a class="tree-name" [routerLink]="['/item', l.item.id]">
+          <app-nivel [nivel]="l.item.nivel" />
+          <span class="t">{{ l.item.nome }}</span>
+        </a>
+        @if (progresso(l.item); as p) {
+          <span class="mini-bar" [title]="p.percentual + '%'"
+            ><span [style.width.%]="p.percentual"></span
+          ></span>
+          <span class="row-sub frac">{{ p.concluidos }}/{{ p.total }}</span>
+        } @else {
+          <span class="sem-barra"></span>
+        }
+        <app-avatares [pessoas]="responsaveis(l.item)" />
+        <app-pill-status [status]="l.item.status" />
+        <span class="prazo" [class.late]="l.item.atrasado">{{ prazo(l.item) }}</span>
+      </div>
+    }
+  </section>
+} @empty {
+  <section class="panel">
+    <div class="empty">{{ t.tarefas.arvore.vazio }}</div>
+  </section>
+}

@@ -103,6 +103,22 @@ export const TEXTOS = {
       moverItem: (nome: string) => `Mover "${nome}" para…`,
       prioridadeMudou: (nome: string, p: string) => `Prioridade de "${nome}": ${p}.`,
     },
+    arvore: {
+      expandirTudo: 'Expandir tudo',
+      recolherTudo: 'Recolher tudo',
+      expandir: (nome: string) => `Expandir ${nome}`,
+      recolher: (nome: string) => `Recolher ${nome}`,
+      vazio: 'Nenhum projeto nos setores selecionados.',
+    },
+    deps: {
+      titulo: 'Quem espera por quem',
+      ajuda:
+        'A seta sai do setor que está esperando e aponta para o setor que precisa responder. O número é a quantidade de solicitações abertas.',
+      mapa: 'Mapa de dependências entre setores',
+      abertas: (n: number) => `${n} aberta(s)`,
+      espera: (de: string, para: string, texto: string) => `${de} espera ${para}: ${texto}`,
+      vazio: 'Nenhuma dependência aberta entre setores.',
+    },
     visoes: {
       lista: 'Lista',
       kanban: 'Kanban',
