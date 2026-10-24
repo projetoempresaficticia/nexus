@@ -180,6 +180,10 @@ enabled = false
 authorization_url_path = "/oauth/consent"
 allow_dynamic_registration = false
 
+# Chamada pelo pg_cron (sem login): a proteção é o segredo x-nexus-segredo (T-36)
+[functions.enviar-notificacoes]
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 policy = "per_worker"
