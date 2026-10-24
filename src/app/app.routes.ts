@@ -54,8 +54,8 @@ export const routes: Routes = [
       },
       {
         path: 'solicitacoes',
-        loadComponent: emBreve,
-        data: { titulo: m.solicitacoes },
+        loadComponent: () =>
+          import('./features/solicitacoes/solicitacoes.page').then((x) => x.SolicitacoesPage),
         title: m.solicitacoes,
       },
       { path: 'equipe', loadComponent: emBreve, data: { titulo: m.equipe }, title: m.equipe },

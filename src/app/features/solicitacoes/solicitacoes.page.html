@@ -1,0 +1,167 @@
+<app-cabecalho [titulo]="t.solicitacoes.titulo" [subtitulo]="t.solicitacoes.subtitulo" />
+
+<div class="sol-wrap">
+  <section class="panel sol-list">
+    <div class="tabs" role="tablist" [attr.aria-label]="t.solicitacoes.titulo">
+      @for (a of abas(); track a.id) {
+        <button
+          type="button"
+          role="tab"
+          class="tab"
+          [class.on]="aba() === a.id"
+          [attr.aria-selected]="aba() === a.id"
+          (click)="escolherAba(a.id)"
+        >
+          {{ a.nome }} · {{ a.qtd }}
+        </button>
+      }
+    </div>
+    @if (!store.carregado()) {
+      <app-carregando />
+    } @else {
+      @for (l of linhas(); track l.sol.id) {
+        <button
+          type="button"
+          class="srow"
+          [class.on]="l.sol.id === id()"
+          [attr.aria-current]="l.sol.id === id() ? 'true' : null"
+          (click)="abrir(l.sol.id)"
+        >
+          <span class="selos">
+            <app-pill-status [status]="l.sol.tipo" tipo="tipo-solicitacao" />
+            @if (l.entreSetores) {
+              <span class="pill s-info">{{ t.solicitacoes.entreSetores }}</span>
+            }
+            <span class="fim"><app-pill-status [status]="l.sol.status" tipo="solicitacao" /></span>
+          </span>
+          <strong>{{ l.texto }}</strong>
+          <span class="row-sub">{{ l.dePara }}</span>
+        </button>
+      } @empty {
+        <app-vazio>{{ t.solicitacoes.vazio }}</app-vazio>
+      }
+    }
+  </section>
+
+  <section class="panel sol-detail" aria-live="polite">
+    @if (detalhe(); as d) {
+      <div class="cab">
+        <div class="selos">
+          <app-pill-status [status]="d.sol.tipo" tipo="tipo-solicitacao" />
+          <app-pill-status [status]="d.sol.status" tipo="solicitacao" />
+        </div>
+        <div class="rich" [innerHTML]="d.sol.texto_html | htmlSeguro"></div>
+        <div class="row-sub">
+          <strong>{{ d.de.nome }}</strong> ({{ d.de.setor }}) →
+          <strong>{{ d.para.nome }}</strong> ({{ d.para.setor }}) · {{ d.quando }}
+        </div>
+      </div>
+
+      @if (d.item; as it) {
+        <div class="origin">
+          <div class="nav-label">
+            {{ t.solicitacoes.origem(nivel[it.nivel], acesso.nomeSetor(it.setor_id)) }}
+          </div>
+          <div class="selos">
+            <strong class="nome">{{ it.nome }}</strong>
+            <app-pill-status [status]="it.status" />
+          </div>
+          <div class="row-sub">
+            @if (d.caminho) {
+              {{ d.caminho }} ·
+            }
+            {{ d.resumo }}
+          </div>
+          @if (!d.dentro) {
+            <div class="leitura">{{ t.solicitacoes.leitura }}</div>
+          }
+          <a class="btn sm" [routerLink]="['/item', it.id]">
+            {{
+              d.dentro
+                ? t.solicitacoes.abrirItem(nivel[it.nivel])
+                : t.solicitacoes.verLeitura(nivel[it.nivel])
+            }}
+          </a>
+        </div>
+      }
+
+      <div class="conversa">
+        <h3>{{ t.solicitacoes.conversa }}</h3>
+        @for (m of d.mensagens; track m.id) {
+          <div class="msg" [class.me]="m.eu">
+            <div class="bubble">
+              <div class="who">
+                {{ m.autor.nome }} <span>· {{ m.autor.setor }} · {{ m.quando }}</span>
+              </div>
+              <div class="rich" [innerHTML]="m.texto_html | htmlSeguro"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (d.sol.status === 'pendente') {
+        <app-editor-rico
+          [(valor)]="resposta"
+          [rotulo]="t.solicitacoes.responderAjuda"
+          [pessoas]="acesso.pessoas()"
+        />
+        @if (erro(); as e) {
+          <p class="erro" role="alert">{{ e }}</p>
+        }
+        <div class="acoes">
+          @if (d.cancelar) {
+            <button
+              type="button"
+              class="btn ghost inicio"
+              [disabled]="enviando()"
+              (click)="cancelar(d.sol.id)"
+            >
+              {{ t.solicitacoes.cancelar }}
+            </button>
+          }
+          @if (d.responder) {
+            @if (d.sol.tipo === 'aprovacao') {
+              <button
+                type="button"
+                class="btn danger"
+                [disabled]="enviando()"
+                (click)="responder(d.sol.id, 'recusada')"
+              >
+                {{ t.solicitacoes.recusar }}
+              </button>
+              <button
+                type="button"
+                class="btn good"
+                [disabled]="enviando()"
+                (click)="responder(d.sol.id, 'aprovada')"
+              >
+                {{ t.solicitacoes.aprovar }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn"
+                [disabled]="enviando()"
+                (click)="responder(d.sol.id, 'resolvida')"
+              >
+                {{ t.solicitacoes.resolver }}
+              </button>
+            }
+          }
+          <button
+            type="button"
+            class="btn primary"
+            [disabled]="enviando()"
+            (click)="enviarMensagem(d.sol.id)"
+          >
+            {{ t.solicitacoes.enviar }}
+          </button>
+        </div>
+      } @else {
+        <p class="hint">{{ t.solicitacoes.encerrada }}</p>
+      }
+    } @else {
+      <app-vazio>{{ t.solicitacoes.selecione }}</app-vazio>
+    }
+  </section>
+</div>
