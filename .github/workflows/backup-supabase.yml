@@ -96,23 +96,34 @@ jobs:
         with:
           version: 2.121.0
 
-      - name: Dump do banco (usuários, estrutura e dados)
+      - name: Dump do banco (estrutura e dados; roles ficam de fora)
         if: steps.guarda.outputs.fazer == 'sim'
         run: |
           set -euo pipefail
           cd "$TRABALHO"
-          # O CLI roda o pg_dump num container da mesma versão do Postgres do projeto
-          supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f roles.sql
-          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
-          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f data.sql
+          # pg_dump DIRETO, não "supabase db dump": esse comando da CLI troca para o papel "postgres"
+          # por dentro, e o papel de leitura backup_leitura (de propósito, sem esse poder) é recusado
+          # com "permission denied to set role postgres" (docs.supabase.com, troubleshooting de pg_dump
+          # com role restrito). Como backup_leitura também não lê pg_authid, roles não entram no backup —
+          # um projeto novo já nasce com os papéis padrão; o restauro (BACKUP.md §6) parte sempre de um.
+          # Estrutura: só os schemas do Nexus (public, privado). auth/storage/extensões já existem
+          # prontos em qualquer projeto novo — não precisam ser recriados, só repovoados com os dados.
+          pg_dump "$SUPABASE_DB_URL" --schema-only -n public -n privado -f schema.sql
+          # Dados: Nexus + auth (para as pessoas conseguirem entrar) + storage (imagens coladas).
+          # Fora: tabelas de Vectors (não usamos) e os schemas operacionais (net/cron/vault/realtime) —
+          # crescem a cada chamada e são recriados ao reaplicar supabase/agendamentos.sql (BACKUP.md §6).
+          # Sem --inserts: o pg_dump já usa COPY por padrão (mais rápido e compacto que INSERT).
+          pg_dump "$SUPABASE_DB_URL" --data-only \
+            -n public -n privado -n auth -n storage \
+            --exclude-table=storage.buckets_vectors --exclude-table=storage.vector_indexes \
+            -f data.sql
           # Um único arquivo que se restaura com um psql (passo a passo em docs/BACKUP.md)
           {
-            cat roles.sql
             cat schema.sql
             echo 'SET session_replication_role = replica;'
             cat data.sql
           } > nexus.sql
-          rm roles.sql schema.sql data.sql
+          rm schema.sql data.sql
           # Linhas por tabela no banco de origem, para comparar depois do restauro
           psql "$SUPABASE_DB_URL" -X -A -t -v ON_ERROR_STOP=1 -c "
             select format('select %L || ''|'' || count(*) from %I.%I;', schemaname || '.' || relname, schemaname, relname)
@@ -246,6 +257,9 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get install -y -qq rclone > /dev/null
+          # Sem nenhum anexo (bucket vazio — ex.: a maioria virou link do Drive na T-52), o rclone não
+          # cria a pasta de destino; criamos antes, para o "find" seguinte não falhar.
+          mkdir -p "$TRABALHO/anexos"
           rclone copy supa:anexos "$TRABALHO/anexos" --transfers 4 --checkers 8 --stats-log-level NOTICE
           origem=$(rclone size supa:anexos --json | python -c 'import json,sys; print(json.load(sys.stdin)["count"])')
           copiados=$(find "$TRABALHO/anexos" -type f | wc -l)

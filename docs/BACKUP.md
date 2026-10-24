@@ -3,7 +3,8 @@
 O plano gratuito do Supabase **não guarda backups**. Por isso, todos os dias às **03:00 de Lisboa**, o workflow
 `.github/workflows/backup-supabase.yml`:
 
-1. faz o dump oficial do Supabase (usuários do banco, estrutura e dados — inclui os logins de `auth.users`);
+1. faz o dump do banco por `pg_dump` (estrutura do Nexus + dados do Nexus, de `auth` — inclui os logins —
+   e de `storage`; fora ficam os papéis do banco e os schemas operacionais net/cron/vault/realtime);
 2. **testa o restauro** num Supabase temporário dentro do próprio job e compara as linhas de cada tabela;
 3. comprime (`gzip`) e **encripta** (GPG simétrico, AES256) → `nexus-backup-AAAA-MM-DD.sql.gz.gpg`;
 4. envia para a pasta do **Drive partilhado** da empresa e mantém **os 30 últimos dias + o dia 1 de cada mês
@@ -16,8 +17,10 @@ Os **arquivos dos anexos** (que ficam no Storage, não no banco) têm uma cópia
 mesmo workflow (secção 8): `nexus-anexos-AAAA-MM-DD.tar.gpg`, guardando 8 semanas + o primeiro de cada mês por
 12 meses.
 
-> **Não está em nenhum backup:** as configurações do painel do Supabase (Auth/Google, URLs, hook) e os segredos
-> das Edge Functions. O código das funções e as migrations estão no repositório.
+> **Não está em nenhum backup:** as configurações do painel do Supabase (Auth/Google, URLs, hook), os segredos
+> das Edge Functions, os papéis do banco (*roles*) e os schemas operacionais `net`/`cron`/`vault`/`realtime`
+> (crescem a cada chamada e voltam ao reaplicar `supabase/agendamentos.sql`, passo 8 da seção 6). O código
+> das funções e as migrations estão no repositório.
 
 ---
 
@@ -53,19 +56,30 @@ A conta de serviço **não tem espaço próprio** no Drive: a pasta precisa esta
    **Nunca** coloque o ID nem o link em arquivos do repositório.
 
 ## 4. Usuário do banco só de leitura (recomendado)
-Assim, se o secret vazar, ninguém consegue apagar nem alterar dados.
+Assim, se o secret vazar, ninguém consegue apagar nem alterar dados — só ler.
 1. Supabase → projeto → **SQL Editor**, rode (troque a senha por uma forte, sem `@` nem `:`):
    ```sql
    create role backup_leitura with login password 'TROQUE-POR-UMA-SENHA-FORTE';
    grant pg_read_all_data to backup_leitura;
+   alter role backup_leitura bypassrls;
+   alter role backup_leitura set default_transaction_read_only = on;
    ```
+   - `pg_read_all_data` lê todas as tabelas, mas **não** ignora a RLS (as regras "membro só vê o que
+     é dele" valeriam também para o backup, que ficaria incompleto). `bypassrls` resolve isso; como o
+     papel não tem `insert`/`update`/`delete` em nada, continua só de leitura. O
+     `default_transaction_read_only` é uma segunda trava, para o caso de alguém usar a senha fora deste
+     workflow.
 2. Supabase → **Connect** (botão no topo) → **Session pooler** → copie a URI. Ela tem o formato
    `postgresql://postgres.<ref>:[YOUR-PASSWORD]@aws-...pooler.supabase.com:5432/postgres`.
 3. Troque `postgres.<ref>` por `backup_leitura.<ref>` e `[YOUR-PASSWORD]` pela senha do passo 1.
    - Use o **Session pooler (porta 5432)**: a ligação direta usa IPv6, que os servidores do GitHub não têm.
 4. Essa URI completa vai para o secret `SUPABASE_DB_URL`.
-5. Se a primeira execução falhar com "permission denied" no dump, use temporariamente o usuário `postgres`
-   (mesma URI do passo 2 com a senha do banco) e avise para ajustarmos as permissões.
+
+> O workflow usa `pg_dump` **direto** (não `supabase db dump`): esse comando da CLI troca para o papel
+> `postgres` por dentro e um papel restrito como `backup_leitura` não tem esse poder — falha com
+> `permission denied to set role "postgres"` (é um problema conhecido da CLI com papéis de leitura,
+> documentado pelo próprio Supabase). Por isso o backup também não inclui as *roles* do banco (papel,
+> senha): um projeto novo já nasce com os papéis padrão, e o restauro (seção 6) parte sempre de um.
 
 ## 5. Os 4 secrets no GitHub
 > Atalho: `node scripts/configurar-segredos.mjs` grava estes secrets (e os das Edge Functions) a partir de
