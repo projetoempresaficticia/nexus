@@ -117,6 +117,10 @@ jobs:
             -n public -n privado -n auth -n storage \
             --exclude-table=storage.buckets_vectors --exclude-table=storage.vector_indexes \
             -f data.sql
+          # "public" já existe em qualquer projeto novo (ou no banco local do teste abaixo); sem o
+          # IF NOT EXISTS, restaurar falha com "schema public already exists" antes de criar qualquer
+          # tabela. "privado" continua sendo criado normalmente (IF NOT EXISTS não muda nada pra ele).
+          sed -i -E 's/^CREATE SCHEMA ([A-Za-z0-9_."]+);/CREATE SCHEMA IF NOT EXISTS \1;/' schema.sql
           # Um único arquivo que se restaura com um psql (passo a passo em docs/BACKUP.md)
           {
             cat schema.sql
