@@ -42,7 +42,8 @@ Erros: as funções usam `raise exception using errcode = 'P0001', message = '<c
 | `definir_dependencia(item_id, depende_de_id, ligar bool)` | | ok | pode_editar_item | US-12 |
 | `abrir_solicitacao(item_id, para_id, tipo, texto_html)` | | `{solicitacao, item}` | pode_ver_item | US-15 |
 | `responder_solicitacao(id, resultado, mensagem_html?)` | resultado: resolvida/aprovada/recusada | `{solicitacao, item}` | para_id = eu ou administra setor do item | US-16 |
-| `cancelar_solicitacao(id)` | | `{item}` | de_id = eu (pendente) ou administra | US-16 |
+| `editar_solicitacao(id, texto_html)` | | `{solicitacao, item}` | de_id = eu e pendente | US-38 |
+| `cancelar_solicitacao(id)` | exclui | `{item}` | de_id = eu (qualquer status) | US-16, US-38 |
 | `salvar_comentario(id?, item_id, texto_html)` | id nulo = novo | comentário | criar: pode_ver_item; editar: autor | US-18, US-19 |
 | `resumo_painel(setores uuid[])` | | `{abertas, atrasadas, bloqueadas, aguardando, concluidas_mes, parados[]}` | administra todos os setores pedidos | US-28 |
 | `carga_trabalho(setores uuid[], de date, ate date)` | | `[{perfil_id, semana, qtd}]` | administra | US-26 |

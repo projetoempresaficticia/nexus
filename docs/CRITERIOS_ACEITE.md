@@ -81,7 +81,16 @@ Formato Dado / Quando / Então. Cada critério com 🔒 tem de ter teste pgTAP; 
 
 ## US-19 — Editar/apagar comentário
 - Autor edita → `editado_em` preenchido e "(editado)" aparece. Outra pessoa não consegue editar. 🔒
-- Líder do setor apaga comentário de outro → sucesso; Membro não-autor → negado. 🔒
+- Só o autor apaga: líder, Adm ou membro que não escreveu → nada é apagado. 🔒
+
+## US-38 — Editar/excluir solicitação e mensagens
+- Autor edita o texto da pendente → texto novo, "(editado)" e, se o item estava bloqueado com esse texto, o motivo acompanha. Respondida → `ja_respondida`. 🔒
+- Autor exclui (qualquer status) → some; o item volta a Em andamento se não sobrar pendente. Destinatário ou líder → `sem_permissao`. 🔒
+- Mensagem da conversa: só quem escreveu edita ("(editado)") ou apaga. 🔒
+
+## US-39 — Filtro por pessoa
+- Líder vê no filtro só as pessoas com vínculo nos setores que administra (e abaixo), dentro do setor selecionado; escolher uma pessoa mostra só os itens de que ela é responsável, em todas as visões.
+- Membro não vê o filtro.
 
 ## US-20 — Anexos
 - Quando envia arquivo de 5 MB, então aparece na lista e abre por URL assinada.

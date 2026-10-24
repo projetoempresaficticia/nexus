@@ -58,11 +58,13 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 | Solicitação — abrir | quem pode ver o item | | | |
 | Solicitação — ver | todas | do item visível ou de/para mim | de/para mim ou do item visível | de/para mim |
 | Solicitação — responder (status) | ✅ | ✅ se administra o setor do item | só se `para_id` = eu | se `para_id` = eu |
-| Solicitação — cancelar | ✅ | ✅ | se `de_id` = eu e pendente | ❌ |
-| Mensagem em solicitação | quem vê a solicitação | | | |
+| Solicitação — editar texto | só o autor (`de_id` = eu), enquanto pendente | | | |
+| Solicitação — excluir (`cancelar_solicitacao`) | só o autor (`de_id` = eu), qualquer status | | | |
+| Mensagem em solicitação — escrever | quem vê a solicitação | | | |
+| Mensagem em solicitação — editar/apagar | só o autor | | | |
 | Comentário — criar/ver | quem vê o item | | | |
 | Comentário — editar | autor | autor | autor | autor |
-| Comentário — apagar | ✅ | ✅ no setor | autor | autor |
+| Comentário — apagar | só o autor | só o autor | só o autor | só o autor |
 | Anexo — enviar/ver | quem vê o item | | | |
 | Anexo — apagar | ✅ | ✅ no setor | quem enviou | quem enviou |
 | Painel / Produtividade / Carga | todos | setores administrados | ❌ | ❌ |

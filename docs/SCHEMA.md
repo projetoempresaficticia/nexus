@@ -116,6 +116,7 @@ PK (item_id, depende_de_id); CHECK item_id <> depende_de_id; trigger impede cicl
 | status | status_solicitacao | sim | 'pendente' | aprovada/recusada só se tipo = aprovacao; resolvida só se tipo <> aprovacao (CHECK) |
 | criado_em | timestamptz | sim | now() | |
 | respondido_em | timestamptz | não | | |
+| editado_em | timestamptz | não | | preenchido por `editar_solicitacao` |
 | legacy_id | text | não | | UNIQUE |
 
 ### solicitacao_mensagens
@@ -126,6 +127,7 @@ PK (item_id, depende_de_id); CHECK item_id <> depende_de_id; trigger impede cicl
 | autor_id | uuid | sim | FK → perfis(id) |
 | texto_html | text | sim | |
 | criado_em | timestamptz | sim | default now() |
+| editado_em | timestamptz | não | carimbado por trigger ao editar (só o autor edita/apaga) |
 
 ### comentarios
 | coluna | tipo | obrig. | notas |
