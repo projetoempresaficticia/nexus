@@ -1,15 +1,19 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { AcessoStore } from '../../../core/auth/acesso.store';
 import { Item } from '../../../core/models/item.model';
 import { TEXTOS } from '../../../core/models/textos';
 import { RealtimeService, afetaItem } from '../../../core/services/realtime.service';
+import { HtmlSeguroPipe } from '../../../shared/pipes/html-seguro.pipe';
 import { BarraComponent } from '../../../shared/ui/barra.component';
+import { CampoMencaoComponent } from '../../../shared/ui/campo-mencao.component';
 import { ToastService } from '../../../shared/ui/toast.service';
+import { htmlVazio, sanitizar, textoPuro } from '../../../shared/utils/html-seguro';
 import { ItemService, PassoChecklist } from '../item.service';
 
-/** Checklist do item: marcar (otimista), adicionar e remover passos (US-11). */
+/** Checklist do item: marcar (otimista), adicionar com @menção, editar (duplo clique) e remover (US-11, US-40). */
 @Component({
   selector: 'app-checklist-item',
-  imports: [BarraComponent],
+  imports: [BarraComponent, CampoMencaoComponent, HtmlSeguroPipe],
   template: `
     <section class="sec">
       <div class="sec-h">
@@ -27,35 +31,58 @@ import { ItemService, PassoChecklist } from '../item.service';
         <div class="passo">
           <input
             type="checkbox"
-            [id]="'ck-' + p.id"
             [checked]="p.feito"
             [disabled]="!podeEditar()"
+            [attr.aria-labelledby]="'ck-' + p.id"
             (change)="marcar(p, $any($event.target).checked)"
           />
-          <label [for]="'ck-' + p.id" [class.feito]="p.feito">{{ p.texto }}</label>
-          @if (podeEditar()) {
-            <button
-              type="button"
-              class="btn sm ghost"
-              [attr.aria-label]="t.item.removerPasso(p.texto)"
-              (click)="remover(p)"
-            >
-              ×
-            </button>
+          @if (editandoId() === p.id) {
+            <app-campo-mencao
+              [(valor)]="rascunho"
+              [pessoas]="pessoas()"
+              [rotulo]="t.item.editarPasso(textoPuro(p.texto))"
+              [focar]="true"
+              (enviar)="salvarEdicao(p)"
+              (saiu)="salvarEdicao(p)"
+              (cancelar)="editandoId.set(null)"
+            />
+          } @else {
+            <span
+              class="texto"
+              [id]="'ck-' + p.id"
+              [class.feito]="p.feito"
+              [title]="podeEditar() ? t.item.dicaEditarPasso : ''"
+              [innerHTML]="p.texto | htmlSeguro"
+              (dblclick)="comecarEdicao(p)"
+            ></span>
+            @if (podeEditar()) {
+              <button
+                type="button"
+                class="btn sm ghost"
+                [attr.aria-label]="t.item.editarPasso(textoPuro(p.texto))"
+                (click)="comecarEdicao(p)"
+              >
+                ✎
+              </button>
+              <button
+                type="button"
+                class="btn sm ghost"
+                [attr.aria-label]="t.item.removerPasso(textoPuro(p.texto))"
+                (click)="remover(p)"
+              >
+                ×
+              </button>
+            }
           }
         </div>
       }
       @if (podeEditar()) {
         <div class="novo">
-          <label class="sr" for="ck-novo">{{ t.item.novoPasso }}</label>
-          <input
-            id="ck-novo"
-            type="text"
-            autocomplete="off"
-            [placeholder]="t.item.novoPassoAjuda"
-            [value]="texto()"
-            (input)="texto.set($any($event.target).value)"
-            (keydown.enter)="adicionar()"
+          <app-campo-mencao
+            [(valor)]="texto"
+            [pessoas]="pessoas()"
+            [rotulo]="t.item.novoPassoAjuda"
+            (enviar)="adicionar()"
           />
           <button type="button" class="btn" (click)="adicionar()">
             {{ t.item.adicionarPasso }}
@@ -90,12 +117,12 @@ import { ItemService, PassoChecklist } from '../item.service';
       accent-color: var(--accent);
       flex: none;
     }
-    .passo label {
+    .passo .texto {
       flex: 1;
       font-size: 14px;
-      cursor: pointer;
+      overflow-wrap: anywhere;
     }
-    .passo label.feito {
+    .passo .texto.feito {
       text-decoration: line-through;
       color: var(--muted);
     }
@@ -103,34 +130,23 @@ import { ItemService, PassoChecklist } from '../item.service';
       display: flex;
       gap: 8px;
     }
-    .novo input {
-      flex: 1;
-      min-width: 0;
-      height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0 12px;
-      background: var(--surface);
-    }
     .hint {
       margin: 0;
     }
     .completo ::ng-deep .bar > span {
       background: var(--done-fg);
     }
-    .sr {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-    }
   `,
 })
 export class ChecklistItemComponent {
   private readonly service = inject(ItemService);
   private readonly toast = inject(ToastService);
+  private readonly acesso = inject(AcessoStore);
   protected readonly t = TEXTOS;
+  protected readonly textoPuro = textoPuro;
+  protected readonly pessoas = computed(() => this.acesso.pessoas());
+  protected readonly editandoId = signal<string | null>(null);
+  protected readonly rascunho = signal('');
   readonly item = input.required<Item>();
   readonly podeEditar = input(false);
 
@@ -174,8 +190,8 @@ export class ChecklistItemComponent {
   }
 
   protected async adicionar(): Promise<void> {
-    const texto = this.texto().trim();
-    if (!texto) return;
+    if (htmlVazio(this.texto())) return;
+    const texto = sanitizar(this.texto());
     this.texto.set('');
     try {
       const novo = await this.service.adicionarPasso(
@@ -186,6 +202,28 @@ export class ChecklistItemComponent {
       this.passos.update((ps) => [...ps, novo]);
     } catch (e) {
       this.texto.set(texto);
+      this.toast.erro(e);
+    }
+  }
+
+  protected comecarEdicao(passo: PassoChecklist): void {
+    if (!this.podeEditar()) return;
+    this.rascunho.set(passo.texto);
+    this.editandoId.set(passo.id);
+  }
+
+  /** Enter ou sair do campo salva; texto vazio ou igual não muda nada. */
+  protected async salvarEdicao(passo: PassoChecklist): Promise<void> {
+    if (this.editandoId() !== passo.id) return;
+    this.editandoId.set(null);
+    if (htmlVazio(this.rascunho())) return;
+    const texto = sanitizar(this.rascunho());
+    if (texto === passo.texto) return;
+    this.trocar(passo.id, { ...passo, texto });
+    try {
+      await this.service.editarPasso(passo.id, texto);
+    } catch (e) {
+      this.trocar(passo.id, passo);
       this.toast.erro(e);
     }
   }
