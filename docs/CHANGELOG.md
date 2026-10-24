@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Filtro "Pessoa" em Tarefas para líderes: mostra só os itens de uma pessoa dos setores que você administra, em todas as visões (T-46).
 - 2026-10-24 — Só quem criou edita e exclui: comentários (o líder deixa de apagar comentário alheio), solicitações (editar o texto enquanto pendente, excluir) e mensagens da conversa, com "(editado)" (T-45).
 - 2026-10-24 — Visões Árvore (projeto › tarefa › subtarefa com expandir/recolher, progresso e "Sem projeto") e Dependências (mapa "quem espera por quem" entre setores e cartões das solicitações abertas) (T-26).
 - 2026-10-24 — Visão Kanban em Tarefas: colunas por status, prioridade ou projeto, arrastar para mudar status/prioridade (Bloqueada pede motivo) e menu "Mover para…" pelo teclado; filtro "Só as minhas" (T-25).

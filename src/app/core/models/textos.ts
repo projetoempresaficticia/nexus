@@ -89,6 +89,7 @@ export const TEXTOS = {
         : `Há ${n} solicitações esperando a sua resposta`,
     visao: 'Visualização',
     deQuem: { rotulo: 'De quem', todos: 'Todos', minhas: 'Só as minhas' },
+    pessoa: { rotulo: 'Pessoa', todas: 'Todas as pessoas' },
     kanban: {
       agruparPor: 'Agrupar por',
       grupos: { status: 'Status', prioridade: 'Prioridade', projeto: 'Projeto' },

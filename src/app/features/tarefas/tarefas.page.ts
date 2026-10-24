@@ -68,6 +68,26 @@ export class TarefasPage {
   ] as const;
   protected readonly novo = signal(false);
 
+  /**
+   * Filtro por pessoa (US-39): só para quem lidera; lista quem tem vínculo nos setores que eu
+   * administro (e abaixo) dentro do setor do cabeçalho. '' = todas.
+   */
+  protected readonly pessoaEscolhida = signal('');
+  protected readonly pessoasFiltro = computed(() => {
+    if (!this.acesso.ehLider()) return [];
+    const adm = this.acesso.administrados();
+    const setores = new Set(this.acesso.setoresDoFiltro().filter((s) => adm.has(s)));
+    return this.acesso
+      .pessoas()
+      .filter((p) => p.vinculos.some((v) => setores.has(v.setor_id)))
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+  });
+  /** A escolha some se a pessoa sair da lista (ex.: trocou o setor do cabeçalho). */
+  protected readonly pessoa = computed(() => {
+    const id = this.pessoaEscolhida();
+    return this.pessoasFiltro().some((p) => p.id === id) ? id : '';
+  });
+
   protected readonly abas = Object.entries(this.t.tarefas.abas) as [Aba, string][];
   protected readonly visoes = computed(() =>
     (Object.entries(this.t.tarefas.visoes) as [Visao, string][]).filter(
@@ -89,7 +109,8 @@ export class TarefasPage {
           i.nivel > 0 &&
           !i.meu_envolvimento.includes('contexto') &&
           (filtro === 'todos' || setores.has(i.setor_id)) &&
-          (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))),
+          (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
+          (!this.pessoa() || i.responsaveis.includes(this.pessoa())),
       );
   });
   protected readonly itensVisao = computed(() => {
@@ -109,8 +130,10 @@ export class TarefasPage {
     const eu = this.acesso.perfil()?.id ?? '';
     const soMeus = this.soMeus();
     const minhas = this.quem() === 'minhas';
+    const pessoa = this.pessoa();
     return (i: Item) =>
       !i.meu_envolvimento.includes('contexto') &&
+      (!pessoa || i.responsaveis.includes(pessoa)) &&
       (!soMeus || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
       (!minhas || i.responsaveis.includes(eu));
   });
