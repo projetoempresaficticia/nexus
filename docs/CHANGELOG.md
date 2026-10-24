@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Tempo real: listas, item (comentários, checklist, dependências, anexos), solicitações e contador do menu atualizam sozinhos; indicador "Ao vivo / Reconectando…" e realce do item que um colega mudou (T-43).
 - 2026-10-24 — Solicitações: pedir informação, ação ou aprovação a um colega a partir do item; tela Solicitações com abas Para mim / Enviadas por mim / Dos meus setores, conversa, aprovar, recusar, marcar como resolvida e cancelar (T-24).
 - 2026-10-24 — Anexos no item (arquivo até 20 MB ou link do Drive), imagens coladas em comentários e descrições, e limpeza dos arquivos quando um item é excluído (T-23).
 - 2026-10-24 — Comentários no item com @menções (a pessoa mencionada recebe aviso), edição pelo autor e apagar pelo autor ou pelo líder (T-22).
