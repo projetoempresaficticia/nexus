@@ -72,7 +72,7 @@ supabase/
   config.toml
   migrations/                            0001_tipos.sql, 0002_tabelas.sql, ... (uma por tarefa de banco)
   functions/
-    enviar-notificacoes/  cadastrar-usuario/  desativar-usuario/  url-anexo/  limpar-anexos/
+    enviar-notificacoes/  limpar-anexos/
     _shared/  (cliente admin, templates de e-mail, cors)
   tests/                                 *.test.sql (pgTAP)
   seed.sql
