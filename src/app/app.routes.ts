@@ -65,8 +65,8 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         canActivate: [adminGuard],
-        loadComponent: emBreve,
-        data: { titulo: m.usuarios },
+        loadComponent: () =>
+          import('./features/usuarios/usuarios.page').then((x) => x.UsuariosPage),
         title: m.usuarios,
       },
       {

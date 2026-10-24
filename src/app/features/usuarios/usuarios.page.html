@@ -1,0 +1,81 @@
+<app-cabecalho [titulo]="t.usuarios.titulo" [subtitulo]="subtitulo()" [mostrarSetor]="false">
+  <button type="button" class="btn primary" (click)="novo.set(true)">{{ t.usuarios.novo }}</button>
+</app-cabecalho>
+
+<div class="bar-tools">
+  <input
+    class="busca"
+    type="search"
+    [placeholder]="t.usuarios.buscar"
+    [attr.aria-label]="t.usuarios.buscar"
+    [value]="busca()"
+    (input)="busca.set($any($event.target).value)"
+  />
+  <label class="hint marca">
+    <input
+      type="checkbox"
+      [checked]="mostrarInativos()"
+      (change)="mostrarInativos.set($any($event.target).checked)"
+    />
+    {{ t.usuarios.mostrarInativos }}
+  </label>
+</div>
+
+@if (!carregado()) {
+  <section class="panel"><app-carregando /></section>
+} @else {
+  <section class="panel">
+    @for (u of lista(); track u.id) {
+      <div class="row usuario" [class.inativo]="!u.ativo">
+        <app-avatar [pessoa]="u" />
+        <span class="row-main">
+          <strong>{{ u.nome }}</strong>
+          <span class="row-sub">{{ u.email }}</span>
+        </span>
+        <span class="vinculos">
+          @if (u.is_admin) {
+            <span class="pill s-adm">{{ t.usuarios.adm }}</span>
+          }
+          @for (v of u.vinculos; track v.setor_id) {
+            <span class="pill" [class.s-lider]="v.papel === 'lider'"
+              >{{ acesso.nomeSetor(v.setor_id) }} · {{ t.papel[v.papel] }}</span
+            >
+          } @empty {
+            @if (!u.is_admin) {
+              <span class="row-sub">{{ t.usuarios.semVinculo }}</span>
+            }
+          }
+        </span>
+        <span class="pill" [class.s-done]="u.ativo">{{
+          u.ativo ? t.usuarios.ativo : t.usuarios.inativo
+        }}</span>
+        @if (u.ativo) {
+          <button type="button" class="btn sm" (click)="editando.set(u)">
+            {{ t.usuarios.vinculos }}
+          </button>
+          @if (!souEu(u)) {
+            <button type="button" class="btn sm" (click)="desativar(u)">
+              {{ t.usuarios.desativar }}
+            </button>
+          }
+        } @else {
+          <button type="button" class="btn sm" (click)="reativar(u)">
+            {{ t.usuarios.reativar }}
+          </button>
+        }
+      </div>
+    } @empty {
+      <div class="empty">{{ t.usuarios.vazio }}</div>
+    }
+  </section>
+}
+
+@if (novo()) {
+  <app-novo-usuario-modal (fechar)="fechouModal($event)" />
+}
+@if (editando(); as u) {
+  <app-vinculos-modal [usuario]="u" (fechar)="fechouModal($event)" />
+}
+@if (reatribuindo(); as r) {
+  <app-reatribuir-modal [de]="r.de" [itens]="r.itens" (fechar)="reatribuindo.set(null)" />
+}

@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ancestrais, descendentes, ordenarArvore } from '../../shared/utils/arvore';
-import { DadosIniciais, Papel } from '../models/acesso.model';
+import { DadosIniciais, Papel, Pessoa } from '../models/acesso.model';
 import { CacheLocalService } from '../services/cache-local.service';
 import { ErroApi } from '../services/erro-api';
 import { AcessoService } from './acesso.service';
@@ -29,6 +29,8 @@ export class AcessoStore {
   private readonly router = inject(Router);
   private readonly _dados = signal<DadosIniciais | null>(null);
   private readonly _pendentes = signal(0);
+  /** Quem foi desativado: só para mostrar o nome (nunca entra em listas de escolha). */
+  private readonly _inativos = signal<Pessoa[]>([]);
 
   /** Filtro de setor do cabeçalho: 'todos' ou o id de um setor. */
   readonly setorFiltro = signal<string>('todos');
@@ -42,7 +44,9 @@ export class AcessoStore {
   readonly setores = computed(() => this._dados()?.setores ?? []);
   readonly pessoas = computed(() => this._dados()?.pessoas ?? []);
   readonly pendentes = this._pendentes.asReadonly();
-  readonly pessoaPorId = computed(() => new Map(this.pessoas().map((p) => [p.id, p])));
+  readonly pessoaPorId = computed(
+    () => new Map([...this._inativos(), ...this.pessoas()].map((p) => [p.id, p])),
+  );
   private readonly setorPorId = computed(() => new Map(this.setores().map((s) => [s.id, s])));
 
   nomeSetor(id: string): string {
@@ -159,6 +163,7 @@ export class AcessoStore {
       this._dados.set(dados);
       this._pendentes.set(pendentes);
       void this.cache.gravar('acesso', { dados, pendentes } satisfies Retrato);
+      void this.carregarInativos();
       return 'ok';
     } catch (e) {
       if (e instanceof ErroApi && e.codigo === 'sem_permissao') return 'sem_acesso';
@@ -166,7 +171,26 @@ export class AcessoStore {
     }
   }
 
+  /** Depois de o Adm mudar pessoas ou vínculos: busca de novo, sem "Carregando…". */
+  async recarregar(): Promise<void> {
+    try {
+      await this.buscar();
+    } catch {
+      // continua com o que tem
+    }
+  }
+
+  private async carregarInativos(): Promise<void> {
+    try {
+      const l = await this.service.pessoasInativas();
+      this._inativos.set(l.map((p) => ({ ...p, email: '', vinculos: [] })));
+    } catch {
+      // sem a lista, aparece "Pessoa removida"
+    }
+  }
+
   limpar(): void {
+    this._inativos.set([]);
     this._dados.set(null);
     this._pendentes.set(0);
     this.setorFiltro.set('todos');
