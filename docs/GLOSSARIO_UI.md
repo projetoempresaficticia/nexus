@@ -69,7 +69,7 @@ Setor ("só os que você pode usar") · Projeto (opcional — "Sem projeto") · 
 
 ### Login
 - Título: "Gerenciador de Tarefas" · Subtítulo: "Entre com a sua conta Google da empresa."
-- Acesso não autorizado: "Acesso não autorizado. Sua conta ({email}) não está cadastrada ou está inativa. Fale com um administrador do sistema."
+- Acesso não autorizado (página `/sem-acesso`, com a marca do app): título "Acesso não autorizado"; abaixo, "Sua conta ({email}) não está cadastrada ou está inativa. Entre em contato com a gestão para fazer o seu cadastro."
 
 ### Ajuda de anexos
 "Os arquivos ficam no Google Drive da empresa, na pasta do setor (até 20 MB cada). Para arquivos maiores, cole um link do Drive. Não anexe documentos pessoais sensíveis."
