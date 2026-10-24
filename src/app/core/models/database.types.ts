@@ -629,6 +629,25 @@ isOneToOne: false
 "auth_hook_antes_criar_usuario":
 { Args: { "event": Json }; Returns: Json
                            },
+"cadastrar_usuario":
+{ Args: { "p_email": string,"p_nome": string,"p_vinculos"?: Json }; Returns: {
+              "ativo": boolean,
+"auth_id": string | null,
+"criado_em": string,
+"desativado_em": string | null,
+"email": string,
+"id": string,
+"iniciais": string,
+"is_admin": boolean,
+"legacy_id": string | null,
+"nome": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "perfis"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "cancelar_solicitacao":
 { Args: { "p_id": string }; Returns: Json
                            },
@@ -687,6 +706,9 @@ isOneToOne: false
 "definir_responsaveis":
 { Args: { "p_item": string,"p_perfis": (string)[] }; Returns: (string)[]
                            },
+"desativar_usuario":
+{ Args: { "p_id": string }; Returns: Json
+                           },
 "editar_solicitacao":
 { Args: { "p_id": string,"p_texto_html": string }; Returns: Json
                            },
@@ -696,6 +718,30 @@ isOneToOne: false
 "mudar_status":
 { Args: { "p_aprovador_id"?: string,"p_id": string,"p_motivo_html"?: string,"p_status": Database["public"]['Enums']["status_item"] }; Returns: Json
                            },
+"pessoas_inativas":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "id": string,"iniciais": string,"nome": string
+            }[]
+                           },
+"reativar_usuario":
+{ Args: { "p_id": string }; Returns: {
+              "ativo": boolean,
+"auth_id": string | null,
+"criado_em": string,
+"desativado_em": string | null,
+"email": string,
+"id": string,
+"iniciais": string,
+"is_admin": boolean,
+"legacy_id": string | null,
+"nome": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "perfis"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "reatribuir_itens":
 { Args: { "p_de": string,"p_ids"?: (string)[],"p_para": string }; Returns: number
                            },
