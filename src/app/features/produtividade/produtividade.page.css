@@ -1,0 +1,59 @@
+/* .kpis, .kpi, .kpi-delta, .team-tbl vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.kpi {
+  cursor: default;
+}
+.kpi:hover {
+  transform: none;
+  border-color: var(--line);
+}
+.unidade {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.vs {
+  font-weight: 500;
+}
+.panel-h h2 {
+  margin-right: auto;
+}
+.quem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nomes {
+  display: flex;
+  flex-direction: column;
+}
+.dir {
+  text-align: right;
+}
+.forte {
+  font-weight: 700;
+}
+.ruim {
+  color: var(--danger);
+  font-weight: 700;
+}
+.parado {
+  color: var(--bloq-fg);
+  font-weight: 700;
+}
+.spark {
+  fill: none;
+  stroke: var(--c1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.aviso {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 10px 14px;
+}

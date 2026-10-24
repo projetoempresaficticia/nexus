@@ -1,0 +1,110 @@
+<app-cabecalho [titulo]="t.produtividade.titulo" [subtitulo]="subtitulo()">
+  <label class="field-inline">
+    {{ t.produtividade.periodo }}
+    <select (change)="tipo.set($any($event.target).value)">
+      @for (o of tipos; track o[0]) {
+        <option [value]="o[0]" [selected]="tipo() === o[0]">{{ o[1] }}</option>
+      }
+    </select>
+  </label>
+  <label class="field-inline">
+    {{ t.produtividade.pessoa }}
+    <select (change)="pessoaEscolhida.set($any($event.target).value)">
+      <option value="todas" [selected]="pessoa() === 'todas'">
+        {{ t.produtividade.todaEquipe(equipe().length) }}
+      </option>
+      @for (p of equipe(); track p.id) {
+        <option [value]="p.id" [selected]="pessoa() === p.id">{{ p.nome }}</option>
+      }
+    </select>
+  </label>
+</app-cabecalho>
+
+@if (!setores().length) {
+  <div class="notice">{{ t.produtividade.naoAdministra }}</div>
+} @else if (carregando() && !atual().length) {
+  <section class="panel"><app-carregando /></section>
+} @else {
+  <section class="kpis" [attr.aria-label]="t.painel.indicadores">
+    @for (k of kpis(); track k.id) {
+      <div class="kpi">
+        <span class="kpi-l">{{ k.rotulo }}</span>
+        <span class="kpi-v"
+          >{{ k.valor }}<span class="unidade">{{ k.unidade }}</span></span
+        >
+        @if (k.variacao; as v) {
+          <span class="kpi-delta" [class]="'kpi-delta ' + v.classe">
+            {{ textoVariacao(v) }}
+            @if (v.comparavel) {
+              <span class="muted vs">{{ t.produtividade.variacao.vs }}</span>
+            }
+          </span>
+        } @else {
+          <span class="kpi-delta flat">{{ k.nota }}</span>
+        }
+        <span class="row-sub">{{ k.sub }}</span>
+      </div>
+    }
+  </section>
+
+  <section class="panel">
+    <div class="panel-h">
+      <h2>{{ t.produtividade.equipe }}</h2>
+      <span class="row-sub">{{ t.produtividade.equipeAjuda }}</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="team-tbl">
+        <thead>
+          <tr>
+            <th>{{ t.produtividade.colunas.pessoa }}</th>
+            <th>{{ t.produtividade.colunas.tendencia }}</th>
+            <th class="dir">{{ t.produtividade.colunas.entregas }}</th>
+            <th class="dir">{{ t.produtividade.colunas.noPrazo }}</th>
+            <th class="dir">{{ t.produtividade.colunas.ciclo }}</th>
+            <th class="dir">{{ t.produtividade.colunas.abertos }}</th>
+            <th class="dir">{{ t.produtividade.colunas.atrasados }}</th>
+            <th class="dir">{{ t.produtividade.colunas.parados }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of linhas(); track l.pessoa.id) {
+            <tr
+              tabindex="0"
+              [class.sel]="pessoa() === l.pessoa.id"
+              [attr.aria-selected]="pessoa() === l.pessoa.id"
+              (click)="escolherPessoa(l.pessoa.id)"
+              (keydown.enter)="escolherPessoa(l.pessoa.id)"
+            >
+              <td>
+                <span class="quem">
+                  <app-avatar [pessoa]="l.pessoa" />
+                  <span class="nomes">
+                    <strong>{{ l.pessoa.nome }}</strong>
+                    <span class="row-sub">{{ l.setores }}</span>
+                  </span>
+                </span>
+              </td>
+              <td>
+                <svg width="96" height="26" viewBox="0 0 96 26" aria-hidden="true">
+                  <polyline class="spark" [attr.points]="pontos(l.tendencia)" />
+                </svg>
+              </td>
+              <td class="dir forte">{{ l.entregas }}</td>
+              <td class="dir" [class.ruim]="l.pontualidade !== null && l.pontualidade < 70">
+                {{ l.pontualidade === null ? '—' : l.pontualidade + '%' }}
+              </td>
+              <td class="dir">
+                {{ l.ciclo === null ? '—' : t.produtividade.diasCurto(l.ciclo) }}
+              </td>
+              <td class="dir">{{ l.abertos }}</td>
+              <td class="dir" [class.ruim]="l.atrasados > 0">{{ l.atrasados }}</td>
+              <td class="dir" [class.parado]="l.parados > 0">{{ l.parados }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="hint aviso">{{ t.produtividade.aviso }}</div>
+}
