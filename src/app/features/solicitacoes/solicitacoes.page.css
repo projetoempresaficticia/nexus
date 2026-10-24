@@ -1,0 +1,49 @@
+.selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
+.fim {
+  margin-left: auto;
+}
+.srow strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.cab,
+.conversa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.conversa {
+  gap: 10px;
+}
+.origin .nav-label,
+.leitura {
+  color: var(--info-fg);
+}
+.leitura {
+  font-size: 13px;
+}
+.origin .nome {
+  margin-right: auto;
+}
+.origin .btn {
+  align-self: flex-start;
+  text-decoration: none;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.acoes .inicio {
+  margin-right: auto;
+}
+.hint {
+  margin: 0;
+}
