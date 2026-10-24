@@ -15,6 +15,8 @@ import { TituloEditavelComponent } from '../../shared/ui/titulo-editavel.compone
 import { ToastService } from '../../shared/ui/toast.service';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { htmlVazio, sanitizar } from '../../shared/utils/html-seguro';
+import { DetalhesItemComponent } from './components/detalhes-item.component';
+import { FilhosItemComponent } from './components/filhos-item.component';
 import { StatusItemComponent } from './components/status-item.component';
 
 /** Página do item: duas colunas (conteúdo | painel lateral), como no protótipo (US-09, US-10). */
@@ -30,6 +32,8 @@ import { StatusItemComponent } from './components/status-item.component';
     PillStatusComponent,
     TituloEditavelComponent,
     StatusItemComponent,
+    DetalhesItemComponent,
+    FilhosItemComponent,
   ],
   templateUrl: './item.page.html',
   styleUrl: './item.page.css',

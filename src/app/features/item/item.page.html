@@ -92,10 +92,15 @@
           <div class="rich" [innerHTML]="it.descricao_html | htmlSeguro"></div>
         }
       </section>
+
+      @if (it.nivel < 2) {
+        <app-filhos-item [item]="it" />
+      }
     </div>
 
     <div class="item-side">
       <app-status-item [item]="it" [podeEditar]="podeEditar()" />
+      <app-detalhes-item [item]="it" [podeEditar]="podeEditar()" />
     </div>
   </div>
 } @else if (existe() === false) {
