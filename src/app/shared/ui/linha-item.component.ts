@@ -26,7 +26,9 @@ import { PillStatusComponent } from './pill-status.component';
           <app-nivel [nivel]="item().nivel" />
           <strong>{{ item().nome }}</strong>
           @if (item().recorrencia; as r) {
-            <span class="pill s-info">{{ recorrencia[r] }}</span>
+            <span class="rec" [title]="'Tarefa recorrente: ' + recorrencia[r].toLowerCase()"
+              >↻ {{ recorrencia[r] }}</span
+            >
           }
         </span>
         <span class="row-sub">{{ subtitulo() }}</span>

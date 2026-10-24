@@ -67,6 +67,16 @@ export const TEXTOS = {
     atrasada: 'Atrasada',
     ver: 'Ver',
   },
+  projetos: {
+    titulo: 'Projetos',
+    quantos: (n: number) => `${n} projeto(s) nos setores selecionados`,
+    novo: '+ Novo projeto',
+    progresso: (c: number, t: number, p: number) => `${c} de ${t} tarefas · ${p}%`,
+    semTarefas: 'Sem tarefas ainda',
+    parados: (n: number) => `${n} parado(s)`,
+    avulsas: (n: number) => `${n} tarefa(s) fora de projetos`,
+    vazio: 'Nenhum projeto nos setores selecionados.',
+  },
   tarefas: {
     tituloLider: 'Tarefas',
     tituloMembro: 'Minhas tarefas',
