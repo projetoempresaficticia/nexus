@@ -1,4 +1,10 @@
-<app-cabecalho [titulo]="t.equipe.titulo" [subtitulo]="t.equipe.subtitulo" [mostrarSetor]="false" />
+<app-cabecalho [titulo]="t.equipe.titulo" [subtitulo]="t.equipe.subtitulo" [mostrarSetor]="false">
+  @if (acesso.ehAdmin()) {
+    <button type="button" class="btn primary" (click)="criando.set('')">
+      {{ t.setores.novo }}
+    </button>
+  }
+</app-cabecalho>
 
 <section class="sec">
   <div class="sec-h">
@@ -141,6 +147,13 @@
           } @else {
             <span class="row-sub">{{ t.equipe.nenhumAcima }}</span>
           }
+          @if (n.podeSubsetor) {
+            <div class="bar-tools">
+              <button type="button" class="btn sm" (click)="criando.set(n.id)">
+                {{ t.setores.subsetor }}
+              </button>
+            </div>
+          }
           <div class="org-lbl">{{ t.equipe.projetos }}</div>
           @if (!n.visivel) {
             <span class="row-sub">{{ t.equipe.projetosOcultos }}</span>
@@ -173,3 +186,7 @@
     }
   </div>
 </ng-template>
+
+@if (criando() !== null) {
+  <app-novo-setor-modal [pai]="criando() || null" (fechar)="criando.set(null)" />
+}

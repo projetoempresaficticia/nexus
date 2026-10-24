@@ -6,6 +6,7 @@ import { ItensStore } from '../../core/itens/itens.store';
 import { Papel, Pessoa } from '../../core/models/acesso.model';
 import { TEXTOS } from '../../core/models/textos';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
+import { NovoSetorModal } from '../setores/novo-setor.modal';
 import { AvatarComponent } from '../../shared/ui/avatar.component';
 import { PillStatusComponent } from '../../shared/ui/pill-status.component';
 import { ancestrais, ordenarArvore } from '../../shared/utils/arvore';
@@ -24,7 +25,14 @@ const ORDEM_PAPEL: Record<Papel, number> = { lider: 0, membro: 1 } as Record<Pap
  */
 @Component({
   selector: 'app-equipe-page',
-  imports: [RouterLink, NgTemplateOutlet, CabecalhoComponent, AvatarComponent, PillStatusComponent],
+  imports: [
+    RouterLink,
+    NgTemplateOutlet,
+    CabecalhoComponent,
+    AvatarComponent,
+    PillStatusComponent,
+    NovoSetorModal,
+  ],
   templateUrl: './equipe.page.html',
   styleUrl: './equipe.page.css',
 })
@@ -35,6 +43,8 @@ export class EquipePage {
 
   /** Escolhas de abrir/fechar: 'k:<id>' subsetores, 'd:<id>' detalhes. */
   private readonly abertos = signal<ReadonlyMap<string, boolean>>(new Map());
+  /** Modal de novo setor: null fechado, '' setor principal (Adm), id = subsetor de. */
+  protected readonly criando = signal<string | null>(null);
 
   private readonly eu = computed(() => this.acesso.perfil()?.id ?? null);
   private readonly meusVinculos = computed(() => {
@@ -127,6 +137,8 @@ export class EquipePage {
       filhosAbertos: this.abertos().get(`k:${id}`) ?? true,
       detalhesAbertos: this.abertos().get(`d:${id}`) ?? !!direto,
       cadeia: this.cadeia(id),
+      // Líder cria subsetor só abaixo do que administra (o banco confere)
+      podeSubsetor: this.acesso.administrados().has(id),
     };
   }
 
