@@ -28,7 +28,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-15** Editor rico (TipTap) com barra do protótipo, link em popup, @menção, colar imagem (gancho para upload); `html-seguro.pipe` com DOMPurify. — Dep.: T-14 · US-18
 - [x] **T-16** Tarefas: `ItensService`, `ItensStore` (otimista + rollback), visão Lista (agrupada por projeto, com grupo "Sem projeto"), filtros (líder: "Só os meus" / "Toda a equipe"), modal Nova tarefa/subtarefa com projeto opcional e seletor de **vários responsáveis**. — Dep.: T-13, T-14, T-15 · US-08, US-21, US-34, US-35, US-36
 - [x] **T-17** Projetos: grade de cartões com progresso, criar projeto. — Dep.: T-16 · US-07
-- [ ] **T-18** Página do item: breadcrumbs, **título editável no próprio lugar**, campos editáveis, responsáveis (adicionar/remover), mover tarefa avulsa para projeto, filhos, botões de status com motivo/aprovador, caixa de bloqueio, modo só leitura para itens de contexto. — Dep.: T-16 · US-09, US-10, US-35
+- [x] **T-18** Página do item: breadcrumbs, **título editável no próprio lugar**, campos editáveis, responsáveis (adicionar/remover), mover tarefa avulsa para projeto, filhos, botões de status com motivo/aprovador, caixa de bloqueio, modo só leitura para itens de contexto. — Dep.: T-16 · US-09, US-10, US-35
 - [ ] **T-19** Checklist e Dependências na página do item. — Dep.: T-18 · US-11, US-12
 - [ ] **T-20** Exclusão em cascata com confirmação. — Dep.: T-18 · US-13
 - [ ] **T-21** Recorrência no modal e no item; toast da próxima ocorrência. — Dep.: T-18 · US-14
