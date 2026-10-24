@@ -30,6 +30,7 @@
             [(valor)]="edicao"
             [rotulo]="t.comentarios.ajuda"
             [pessoas]="pessoas()"
+            [enviarImagem]="enviarImagem"
           />
           <div class="rodape">
             <button type="button" class="btn sm" (click)="editandoId.set(null)">
@@ -40,14 +41,23 @@
             </button>
           </div>
         } @else {
-          <div class="rich" [innerHTML]="c.texto_html | htmlSeguro"></div>
+          <div
+            class="rich"
+            [innerHTML]="c.texto_html | htmlSeguro"
+            [appImagensPrivadas]="c.texto_html"
+          ></div>
         }
       </div>
     </div>
   } @empty {
     <p class="muted vazio">{{ t.comentarios.vazio }}</p>
   }
-  <app-editor-rico [(valor)]="novo" [rotulo]="t.comentarios.ajuda" [pessoas]="pessoas()" />
+  <app-editor-rico
+    [(valor)]="novo"
+    [rotulo]="t.comentarios.ajuda"
+    [pessoas]="pessoas()"
+    [enviarImagem]="enviarImagem"
+  />
   <div class="rodape">
     <button type="button" class="btn primary" [disabled]="enviando()" (click)="publicar()">
       {{ t.comentarios.comentar }}

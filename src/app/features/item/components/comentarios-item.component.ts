@@ -9,12 +9,14 @@ import { EditorRicoComponent } from '../../../shared/ui/editor-rico/editor-rico.
 import { ToastService } from '../../../shared/ui/toast.service';
 import { dataHora } from '../../../shared/utils/datas';
 import { htmlVazio, sanitizar } from '../../../shared/utils/html-seguro';
+import { AnexosService } from '../anexos.service';
+import { ImagensPrivadasDirective } from '../imagens-privadas.directive';
 import { Comentario, ItemService } from '../item.service';
 
 /** Comentários do item: publicar com @menção, editar (autor) e apagar (autor ou líder) — US-18, US-19. */
 @Component({
   selector: 'app-comentarios-item',
-  imports: [AvatarComponent, EditorRicoComponent, HtmlSeguroPipe],
+  imports: [AvatarComponent, EditorRicoComponent, HtmlSeguroPipe, ImagensPrivadasDirective],
   templateUrl: './comentarios-item.component.html',
   styles: `
     .com + .com {
@@ -45,6 +47,7 @@ import { Comentario, ItemService } from '../item.service';
 })
 export class ComentariosItemComponent {
   private readonly service = inject(ItemService);
+  private readonly anexos = inject(AnexosService);
   private readonly acesso = inject(AcessoStore);
   private readonly toast = inject(ToastService);
   private readonly confirmacao = inject(ConfirmacaoService);
@@ -59,6 +62,16 @@ export class ComentariosItemComponent {
   protected readonly enviando = signal(false);
   protected readonly pessoas = computed(() => this.acesso.pessoas());
   private readonly eu = computed(() => this.acesso.perfil()?.id ?? null);
+
+  /** Imagem colada no comentário: vira anexo do item (bucket privado). */
+  protected readonly enviarImagem = async (arquivo: File) => {
+    try {
+      return await this.anexos.enviarImagem(this.item(), arquivo, this.eu()!);
+    } catch (e) {
+      this.toast.erro(e);
+      throw e;
+    }
+  };
 
   constructor() {
     effect(() => {

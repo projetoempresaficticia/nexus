@@ -17,6 +17,8 @@ import { ToastService } from '../../shared/ui/toast.service';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { htmlVazio, sanitizar } from '../../shared/utils/html-seguro';
 import { ComentariosItemComponent } from './components/comentarios-item.component';
+import { AnexosService } from './anexos.service';
+import { ImagensPrivadasDirective } from './imagens-privadas.directive';
 import { AnexosItemComponent } from './components/anexos-item.component';
 import { ChecklistItemComponent } from './components/checklist-item.component';
 import { DependenciasItemComponent } from './components/dependencias-item.component';
@@ -43,6 +45,7 @@ import { StatusItemComponent } from './components/status-item.component';
     DependenciasItemComponent,
     ComentariosItemComponent,
     AnexosItemComponent,
+    ImagensPrivadasDirective,
   ],
   templateUrl: './item.page.html',
   styleUrl: './item.page.css',
@@ -53,6 +56,7 @@ export class ItemPage {
   private readonly toast = inject(ToastService);
   private readonly confirmacao = inject(ConfirmacaoService);
   private readonly router = inject(Router);
+  private readonly anexos = inject(AnexosService);
   protected readonly t = TEXTOS;
   protected readonly recorrencia = RECORRENCIA;
 
@@ -82,6 +86,16 @@ export class ItemPage {
   protected readonly editandoMotivo = signal(false);
   protected readonly motivo = signal('');
   protected readonly vazio = htmlVazio;
+
+  /** Imagem colada na descrição/motivo: vira anexo do item (bucket privado). */
+  protected readonly enviarImagem = async (arquivo: File) => {
+    try {
+      return await this.anexos.enviarImagem(this.item()!, arquivo, this.acesso.perfil()!.id);
+    } catch (e) {
+      this.toast.erro(e);
+      throw e;
+    }
+  };
 
   constructor() {
     effect(() => {
@@ -141,6 +155,7 @@ export class ItemPage {
     if (!ok) return;
     const r = await this.itens.excluir(item.id);
     if (!r) return;
+    void this.anexos.limpar(r.caminhos);
     this.toast.sucesso(this.t.item.excluidos(r.apagados));
     await this.router.navigateByUrl(item.pai_id ? `/item/${item.pai_id}` : '/tarefas');
   }
