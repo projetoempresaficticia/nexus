@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensStore } from '../../core/itens/itens.store';
@@ -68,7 +68,9 @@ export class TarefasPage {
   protected readonly itens = inject(ItensStore);
   protected readonly t = TEXTOS;
 
-  protected readonly aba = signal<Aba>('todas');
+  protected readonly abaAtual = signal<Aba>('todas');
+  /** ?aba= vindo dos KPIs do Painel. */
+  readonly aba = input<string>();
   protected readonly visao = signal<Visao>('lista');
   protected readonly soMeus = signal(false);
   /** Mês/semana mostrados no calendário; continua igual ao trocar entre Mês e Semana. */
@@ -173,7 +175,7 @@ export class TarefasPage {
   /** Grupos por projeto (alfabético) e, no fim, "Sem projeto". */
   protected readonly grupos = computed<Grupo[]>(() => {
     const eu = this.acesso.perfil()?.id ?? null;
-    const lista = this.base().filter((i) => FILTROS[this.aba()](i, eu));
+    const lista = this.base().filter((i) => FILTROS[this.abaAtual()](i, eu));
     const porProjeto = new Map<string, Item[]>();
     for (const i of lista) {
       const chave = i.projeto_id ?? '';
@@ -204,6 +206,13 @@ export class TarefasPage {
   }
 
   constructor() {
+    effect(() => {
+      const aba = this.aba();
+      if (aba && aba in this.t.tarefas.abas) {
+        this.abaAtual.set(aba as Aba);
+        this.visao.set('lista');
+      }
+    });
     void this.itens.carregar();
   }
 

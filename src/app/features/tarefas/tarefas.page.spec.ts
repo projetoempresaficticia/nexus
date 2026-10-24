@@ -192,4 +192,14 @@ describe('TarefasPage', () => {
     const { el } = await montar(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]));
     expect(el.querySelector('.viewbar select')).toBeNull();
   });
+
+  it('?aba=concluidas (vindo do Painel) abre a Lista nessa aba', async () => {
+    const { fixture, el } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    fixture.componentRef.setInput('aba', 'concluidas');
+    await fixture.whenStable();
+    expect(el.querySelector('.tab.on')?.textContent).toContain('Concluídas');
+    expect(textos(el, 'app-linha-item strong')).toEqual(['Caixa partilhada']);
+  });
 });
