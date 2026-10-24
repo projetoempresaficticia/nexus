@@ -1,0 +1,175 @@
+<app-cabecalho [titulo]="t.equipe.titulo" [subtitulo]="t.equipe.subtitulo" [mostrarSetor]="false" />
+
+<section class="sec">
+  <div class="sec-h">
+    <h3>{{ t.equipe.minhaLinha }}</h3>
+    <span class="row-sub">{{ t.equipe.minhaLinhaAjuda }}</span>
+  </div>
+  @for (l of minhasLinhas(); track l.id) {
+    <div class="linha">
+      <span class="row-sub"
+        ><strong>{{ l.texto }}</strong></span
+      >
+      <div class="chain">
+        @if (acesso.perfil(); as eu) {
+          <span class="step">
+            <app-avatar [pessoa]="eu" [tamanho]="26" />
+            <span
+              ><strong>{{ t.equipe.voce }}</strong
+              ><br /><small>{{ acesso.nomeSetor(l.id) }}</small></span
+            >
+          </span>
+        }
+        @for (p of l.passos; track $index) {
+          <span class="arr" aria-hidden="true">›</span>
+          <span class="step">
+            <app-avatar [pessoa]="p.pessoa" [tamanho]="26" />
+            <span
+              ><strong>{{ p.pessoa.nome }}</strong
+              ><br /><small>{{ t.equipe.liderDe(p.setor) }}</small></span
+            >
+          </span>
+        }
+      </div>
+    </div>
+  }
+</section>
+
+<div class="bar-tools hint">
+  <span class="leg"><span class="quadro"></span>{{ t.equipe.legendaMeus }}</span>
+  <span class="pill s-lider">{{ t.papel.lider }}</span
+  ><span>{{ t.equipe.legendaLider }}</span> <span class="pill s-adm">{{ t.papel.adm }}</span
+  ><span>{{ t.equipe.legendaAdm }}</span>
+  <span>{{ t.equipe.legendaHeranca }}</span>
+</div>
+
+<div class="org">
+  @for (id of raizes(); track id) {
+    <ng-container [ngTemplateOutlet]="ramo" [ngTemplateOutletContext]="{ id }" />
+  }
+</div>
+
+<ng-template #ramo let-id="id">
+  @let n = no(id);
+  <div class="org-branch">
+    <div class="org-node" [class.mine]="n.meu" [class.ghost]="!n.visivel">
+      <div class="org-head">
+        @if (n.filhos.length) {
+          <button
+            type="button"
+            class="caret"
+            [class.open]="n.filhosAbertos"
+            [attr.aria-expanded]="n.filhosAbertos"
+            [attr.aria-label]="
+              n.filhosAbertos ? t.equipe.recolher(n.nome) : t.equipe.expandir(n.nome)
+            "
+            (click)="alternar('k:' + n.id, n.filhosAbertos)"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        } @else {
+          <span class="caret-sp"></span>
+        }
+        <span class="nm">
+          {{ n.nome }}
+          @if (n.papel) {
+            <span class="pill" [class]="'pill ' + n.classePapel">{{ n.papel }}</span>
+          }
+        </span>
+        @for (l of n.lideres; track l.id) {
+          <span class="person">
+            <app-avatar [pessoa]="l" [tamanho]="26" />
+            <span
+              ><small class="muted">{{ t.equipe.lider }}</small> {{ l.nome }}</span
+            >
+          </span>
+        } @empty {
+          <span class="row-sub">{{ t.equipe.semLider }}</span>
+        }
+        <span class="row-sub num">{{ n.resumo }}</span>
+        <button
+          type="button"
+          class="btn sm"
+          [attr.aria-expanded]="n.detalhesAbertos"
+          (click)="alternar('d:' + n.id, n.detalhesAbertos)"
+        >
+          {{ n.detalhesAbertos ? t.equipe.ocultar : t.equipe.detalhes }}
+        </button>
+      </div>
+      @if (n.detalhesAbertos) {
+        <div class="org-body">
+          <div class="org-lbl">{{ t.equipe.pessoas }}</div>
+          <div class="people">
+            @for (p of n.pessoas; track p.pessoa.id) {
+              <span class="person">
+                <app-avatar [pessoa]="p.pessoa" [tamanho]="26" />{{ p.pessoa.nome }}
+                @if (p.papel === 'lider') {
+                  <span class="pill s-lider">{{ t.papel.lider }}</span>
+                }
+              </span>
+            } @empty {
+              <span class="row-sub">{{ t.equipe.ninguem }}</span>
+            }
+          </div>
+          <div class="org-lbl">{{ t.equipe.linhaDecisao }}</div>
+          @if (n.cadeia.length) {
+            <div class="chain">
+              @for (p of n.cadeia; track $index; let primeiro = $first) {
+                @if (!primeiro) {
+                  <span class="arr" aria-hidden="true">›</span>
+                }
+                <span class="step">
+                  <app-avatar [pessoa]="p.pessoa" [tamanho]="26" />
+                  <span
+                    ><strong>{{ p.pessoa.nome }}</strong
+                    ><br /><small>{{ t.equipe.liderDe(p.setor) }}</small></span
+                  >
+                </span>
+              }
+            </div>
+          } @else {
+            <span class="row-sub">{{ t.equipe.nenhumAcima }}</span>
+          }
+          <div class="org-lbl">{{ t.equipe.projetos }}</div>
+          @if (!n.visivel) {
+            <span class="row-sub">{{ t.equipe.projetosOcultos }}</span>
+          } @else {
+            @for (p of n.projetos; track p.item.id) {
+              <a class="proj-line" [routerLink]="['/item', p.item.id]">
+                <strong class="pnome">{{ p.item.nome }}</strong>
+                @if (p.responsavel; as r) {
+                  <span class="person sem-borda">
+                    <app-avatar [pessoa]="r" [tamanho]="24" />{{ r.nome }}
+                  </span>
+                }
+                <span class="mini-bar"><span [style.width.%]="p.percentual"></span></span>
+                <span class="row-sub pct">{{ p.percentual }}%</span>
+                <app-pill-status [status]="p.item.status" />
+              </a>
+            } @empty {
+              <span class="row-sub">{{ t.equipe.semProjetos }}</span>
+            }
+          }
+        </div>
+      }
+    </div>
+    @if (n.filhos.length && n.filhosAbertos) {
+      <div class="org-kids">
+        @for (f of n.filhos; track f) {
+          <ng-container [ngTemplateOutlet]="ramo" [ngTemplateOutletContext]="{ id: f }" />
+        }
+      </div>
+    }
+  </div>
+</ng-template>
