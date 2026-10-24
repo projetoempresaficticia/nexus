@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(23);
+select plan(24);
 
 -- ---------------------------------------------------------------- dados
 -- SA: Ana (líder), Bruno, Gabriela ; PED: Diogo, Eva
@@ -117,7 +117,12 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000c1","role":"authenticated"}';
 delete from public.comentarios where id = '52000000-0000-0000-0000-000000000001';
 reset role;
-select results_eq($$select count(*)::int from public.comentarios where id = '52000000-0000-0000-0000-000000000001'$$, array[0], 'líder do setor apaga comentário');
+select results_eq($$select count(*)::int from public.comentarios where id = '52000000-0000-0000-0000-000000000001'$$, array[1], 'líder não apaga comentário de outra pessoa (T-45)');
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000c3","role":"authenticated"}';
+delete from public.comentarios where id = '52000000-0000-0000-0000-000000000001';
+reset role;
+select results_eq($$select count(*)::int from public.comentarios where id = '52000000-0000-0000-0000-000000000001'$$, array[0], 'autor apaga o próprio comentário');
 select results_eq($$select count(*)::int from public.mencoes where comentario_id = '52000000-0000-0000-0000-000000000001'$$, array[0], 'menções vão junto com o comentário');
 
 select * from finish();

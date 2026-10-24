@@ -137,6 +137,7 @@ describe('SolicitacoesPage', () => {
             autor_id: 'p-bruno',
             texto_html: '<p>Pode aprovar?</p>',
             criado_em: '2026-10-23T11:00:00Z',
+            editado_em: null,
           },
         ],
       }),

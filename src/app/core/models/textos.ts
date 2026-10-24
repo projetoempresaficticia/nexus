@@ -321,6 +321,7 @@ export const TEXTOS = {
   },
   erros: {
     sem_permissao: 'Você não tem permissão para fazer isto.',
+    texto_obrigatorio: 'Escreva o texto antes de salvar.',
     nao_encontrado: 'Não encontramos este item. Ele pode ter sido excluído.',
     motivo_obrigatorio: 'Conte o motivo do bloqueio para a equipe entender.',
     aprovador_obrigatorio: 'Escolha quem vai aprovar.',

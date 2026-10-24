@@ -151,6 +151,7 @@ describe('SolicitacoesItemComponent', () => {
               autor_id: 'p-bruno',
               texto_html: '<p>ok</p>',
               criado_em: '2026-10-23T11:00:00Z',
+              editado_em: null,
             },
           ],
         }),

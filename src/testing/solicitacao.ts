@@ -12,6 +12,7 @@ export function solicitacao(dados: Partial<Solicitacao> = {}): Solicitacao {
     texto_html: '<p>Qual o prazo?</p>',
     criado_em: '2026-10-23T10:00:00Z',
     respondido_em: null,
+    editado_em: null,
     legacy_id: null,
     solicitacao_mensagens: [],
     ...dados,
