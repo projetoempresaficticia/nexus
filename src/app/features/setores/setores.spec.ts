@@ -108,6 +108,51 @@ describe('SetoresPage (US-05)', () => {
   });
 });
 
+describe('SetoresPage — excluir e arrastar (T-51)', () => {
+  async function montar(servico: Partial<Record<keyof SetoresService, unknown>>) {
+    await preparar(adm(), servico);
+    const fixture = TestBed.createComponent(SetoresPage);
+    await estabilizar(fixture);
+    return { fixture, comp: fixture.componentInstance as unknown as Record<string, unknown> };
+  }
+
+  it('excluir pede confirmação e mostra o motivo quando o banco recusa', async () => {
+    const excluir = vi.fn().mockRejectedValue(new ErroApi('setor_com_pessoas'));
+    const { fixture } = await montar({ excluir });
+    const erro = vi.spyOn(TestBed.inject(ToastService), 'erro');
+    vi.spyOn(TestBed.inject(ConfirmacaoService), 'perguntar').mockResolvedValue(true);
+    const linha = [...(fixture.nativeElement as HTMLElement).querySelectorAll('.tree-row')][0];
+    [...linha.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Excluir')!.click();
+    await estabilizar(fixture);
+    expect(excluir).toHaveBeenCalledWith(SETORES.financeiro);
+    expect((erro.mock.calls[0][0] as ErroApi).codigo).toBe('setor_com_pessoas');
+  });
+
+  it('arrastar não aceita soltar no próprio setor nem nos de baixo', async () => {
+    const { comp } = await montar({});
+    const pode = comp['podeSoltar'] as (a: { data: string }, b: { data: string }) => boolean;
+    expect(pode({ data: SETORES.pedagogico }, { data: SETORES.sucesso })).toBe(false);
+    expect(pode({ data: SETORES.pedagogico }, { data: SETORES.pedagogico })).toBe(false);
+    expect(pode({ data: SETORES.pedagogico }, { data: SETORES.financeiro })).toBe(true);
+    // faixa "setor principal": só para quem ainda tem setor de cima
+    expect(pode({ data: SETORES.pedagogico }, { data: '' })).toBe(true);
+    expect(pode({ data: SETORES.financeiro }, { data: '' })).toBe(false);
+  });
+
+  it('soltar noutro setor muda o setor de cima', async () => {
+    const alterar = vi.fn().mockResolvedValue(undefined);
+    const { comp } = await montar({ alterar });
+    const sucesso = vi.spyOn(TestBed.inject(ToastService), 'sucesso');
+    await (comp['soltou'] as (e: unknown) => Promise<void>)({
+      item: { data: SETORES.sucesso },
+      container: { data: SETORES.financeiro },
+      previousContainer: { data: SETORES.sucesso },
+    });
+    expect(alterar).toHaveBeenCalledWith(SETORES.sucesso, { pai_id: SETORES.financeiro });
+    expect(sucesso).toHaveBeenCalledWith('"Sucesso do Aluno" agora fica dentro de Financeiro.');
+  });
+});
+
 describe('NovoSetorModal', () => {
   it('líder só cria dentro do que administra (sem "setor principal")', async () => {
     const criar = vi.fn().mockResolvedValue(undefined);

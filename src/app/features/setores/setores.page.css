@@ -25,3 +25,28 @@
 .setor.inativo .nome strong {
   color: var(--muted);
 }
+.hint {
+  margin: 0;
+}
+.principal {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px dashed var(--line);
+}
+.over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+.alca {
+  cursor: grab;
+  padding: 0 6px;
+}
+.preview {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+}

@@ -17,6 +17,12 @@ export class SetoresService {
     lancarSeErro(error);
   }
 
+  /** Só setor vazio; o banco explica o motivo quando não pode (setor_com_*). */
+  async excluir(id: string): Promise<void> {
+    const { error } = await this.supabase.rpc('excluir_setor', { p_id: id });
+    lancarSeErro(error);
+  }
+
   async alterar(
     id: string,
     campos: { nome?: string; pai_id?: string | null; ativo?: boolean },

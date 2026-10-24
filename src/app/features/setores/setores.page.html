@@ -6,13 +6,47 @@
   <button type="button" class="btn primary" (click)="criando.set('')">{{ t.setores.novo }}</button>
 </app-cabecalho>
 
-<section class="panel">
+<p class="hint">{{ t.setores.dicaArrastar }}</p>
+
+<section class="panel" cdkDropListGroup>
+  <div
+    class="principal"
+    [class.over]="sobre() === ''"
+    cdkDropList
+    cdkDropListData=""
+    [cdkDropListSortingDisabled]="true"
+    [cdkDropListEnterPredicate]="podeSoltar"
+    (cdkDropListEntered)="sobre.set('')"
+    (cdkDropListExited)="sobre.set(null)"
+    (cdkDropListDropped)="soltou($event)"
+  >
+    {{ t.setores.soltarPrincipal }}
+  </div>
   @for (l of linhas(); track l.setor.id) {
     <div
       class="tree-row setor"
       [class.inativo]="!l.setor.ativo"
+      [class.over]="sobre() === l.setor.id"
       [style.padding-left.px]="16 + l.nivel * 30"
+      cdkDropList
+      [cdkDropListData]="l.setor.id"
+      [cdkDropListSortingDisabled]="true"
+      [cdkDropListEnterPredicate]="podeSoltar"
+      (cdkDropListEntered)="sobre.set(l.setor.id)"
+      (cdkDropListExited)="sobre.set(null)"
+      (cdkDropListDropped)="soltou($event)"
     >
+      <span class="arrasto" cdkDrag [cdkDragData]="l.setor.id">
+        <button
+          type="button"
+          class="btn sm ghost alca"
+          cdkDragHandle
+          [attr.aria-label]="t.setores.arrastar(l.setor.nome)"
+        >
+          ⠿
+        </button>
+        <span *cdkDragPreview class="preview">{{ l.setor.nome }}</span>
+      </span>
       @if (renomeando() === l.setor.id) {
         <input
           class="inline-sel nome-edit"
@@ -59,6 +93,9 @@
         (click)="alternarAtivo(l.setor.id, l.setor.nome, l.setor.ativo)"
       >
         {{ l.setor.ativo ? t.setores.desativar : t.setores.reativar }}
+      </button>
+      <button type="button" class="btn sm danger" (click)="excluir(l.setor.id, l.setor.nome)">
+        {{ t.setores.excluir }}
       </button>
     </div>
   }

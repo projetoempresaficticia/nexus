@@ -43,6 +43,7 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 | Perfis — ver | todos | pessoas ativas (para atribuir/mencionar) | pessoas ativas | pessoas ativas |
 | Perfis — criar/editar/desativar | ✅ | ❌ | ❌ | ❌ |
 | Setores — ver | todos | visíveis | visíveis | ❌ |
+| Setor — excluir (`excluir_setor`) | ✅ só setor vazio | ❌ | ❌ | ❌ |
 | Setores — criar | ✅ | ✅ só **abaixo** de um setor que administra (nunca na raiz nem acima) | ❌ | ❌ |
 | Setores — editar/mover/desativar | ✅ | ❌ | ❌ | ❌ |
 | Vínculos — ver | todos | dos setores visíveis | dos setores visíveis | ❌ |
