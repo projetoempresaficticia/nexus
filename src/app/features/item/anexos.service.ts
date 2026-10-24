@@ -93,6 +93,37 @@ export class AnexosService {
     if (anexo.caminho) await this.supabase.storage.from(BUCKET).remove([anexo.caminho]);
   }
 
+  /** Depois de excluir item: pede à Edge Function para apagar os arquivos órfãos (sem erro para a pessoa). */
+  async limpar(caminhos: string[]): Promise<void> {
+    if (!caminhos.length) return;
+    try {
+      await this.supabase.functions.invoke('limpar-anexos', { body: { caminhos } });
+    } catch {
+      // limpeza é melhor esforço: arquivo órfão não aparece para ninguém
+    }
+  }
+
+  private readonly cacheImagens = new Map<string, { url: string; ate: number }>();
+
+  /** URL de imagem embutida (1 h), guardada por 50 min para não pedir de novo a cada tela. */
+  async urlImagem(caminho: string): Promise<string> {
+    const guardada = this.cacheImagens.get(caminho);
+    if (guardada && guardada.ate > Date.now()) return guardada.url;
+    const url = await this.urlAssinada(caminho, 3600);
+    this.cacheImagens.set(caminho, { url, ate: Date.now() + 50 * 60 * 1000 });
+    return url;
+  }
+
+  /** Imagem colada no editor: vira anexo do item e devolve o que o editor precisa. */
+  async enviarImagem(
+    item: { id: string; setor_id: string },
+    arquivo: File,
+    enviadoPor: string,
+  ): Promise<{ src: string; caminho: string }> {
+    const anexo = await this.enviar(item, arquivo, enviadoPor);
+    return { src: await this.urlImagem(anexo.caminho!), caminho: anexo.caminho! };
+  }
+
   /** URL temporária para abrir/baixar (60 s por padrão). */
   async urlAssinada(caminho: string, segundos = 60): Promise<string> {
     const { data, error } = await this.supabase.storage
