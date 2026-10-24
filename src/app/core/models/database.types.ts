@@ -337,17 +337,23 @@ isOneToOne: false
                   ]
                 },"notificacoes": {
                   Row: {
-                    "criado_em": string,"dados": NonNullable<Json>,"destinatario_id": string,"enviado_em": string | null,"erro": string | null,"id": string,"item_id": string | null,"tentativas": number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id": string | null,"criado_em": string,"dados": NonNullable<Json>,"destinatario_id": string,"enviado_em": string | null,"erro": string | null,"id": string,"item_id": string | null,"tentativas": number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id": string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id": string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
                   }
                   Update: {
-                    "criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id"?: string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo"?: Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id"?: string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo"?: Database["public"]['Enums']["tipo_notificacao"]
                   }
                   Relationships: [
                     {
+      foreignKeyName: "notificacoes_autor_id_fkey"
+      columns: ["autor_id"]
+isOneToOne: false
+      referencedRelation: "perfis"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "notificacoes_destinatario_id_fkey"
       columns: ["destinatario_id"]
 isOneToOne: false
