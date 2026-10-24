@@ -1,7 +1,7 @@
 -- Agendamentos do Nexus (T-36). NÃO é migration: depende da URL e do segredo de cada projeto.
 -- Aplicar UMA vez por projeto (nexus-dev / produção), no SQL Editor, com confirmação do Germano,
 -- DEPOIS de: (1) publicar a Edge Function enviar-notificacoes; (2) definir os segredos da função
--- (NOTIFICACOES_SEGREDO, APP_URL, EMAIL_PROVEDOR, RESEND_API_KEY, EMAIL_REMETENTE). Ver DEPLOY.md.
+-- (NOTIFICACOES_SEGREDO, APP_URL, EMAIL_PROVEDOR, SMTP_USUARIO, SMTP_SENHA_APP). Ver DEPLOY.md.
 -- Troque os dois valores <...> abaixo antes de rodar. O segredo é o mesmo NOTIFICACOES_SEGREDO.
 
 create extension if not exists pg_cron;

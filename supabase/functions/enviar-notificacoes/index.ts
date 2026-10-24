@@ -3,7 +3,7 @@
 // Segurança: não usa o JWT de ninguém — exige o segredo NOTIFICACOES_SEGREDO no cabeçalho x-nexus-segredo.
 import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { json } from '../_shared/cors.ts';
-import { enviarEmail } from '../_shared/email.ts';
+import { encerrarEmail, enviarEmail } from '../_shared/email.ts';
 import { DadosEmail, montarEmail, TipoNotificacao } from '../_shared/modelos-email.ts';
 
 const LOTE = 50;
@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
         .eq('id', n.id);
     }
   }
+  encerrarEmail();
   return json({ enviados, falhas });
 });
 
