@@ -1,3 +1,11 @@
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDragPreview,
+  CdkDropList,
+  CdkDropListGroup,
+} from '@angular/cdk/drag-drop';
 import { Component, computed, inject, signal } from '@angular/core';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { TEXTOS } from '../../core/models/textos';
@@ -8,10 +16,18 @@ import { descendentes, ordenarArvore } from '../../shared/utils/arvore';
 import { NovoSetorModal } from './novo-setor.modal';
 import { SetoresService } from './setores.service';
 
-/** Setores (só o Adm, US-05): árvore, criar, renomear, mover e (des)ativar. */
+/** Setores (só o Adm, US-05): árvore, criar, renomear, mover (lista ou arrastar), (des)ativar e excluir vazio. */
 @Component({
   selector: 'app-setores-page',
-  imports: [CabecalhoComponent, NovoSetorModal],
+  imports: [
+    CabecalhoComponent,
+    NovoSetorModal,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    CdkDragHandle,
+    CdkDragPreview,
+  ],
   templateUrl: './setores.page.html',
   styleUrl: './setores.page.css',
 })
@@ -26,6 +42,8 @@ export class SetoresPage {
   protected readonly criando = signal<string | null>(null);
   protected readonly renomeando = signal<string | null>(null);
   protected readonly rascunho = signal('');
+  /** Setor sob o arraste (contorno tracejado). '' = faixa "setor principal". */
+  protected readonly sobre = signal<string | null>(null);
 
   protected readonly linhas = computed(() => {
     const setores = this.acesso.setores();
@@ -56,11 +74,51 @@ export class SetoresPage {
   }
 
   protected async mover(id: string, nome: string, select: HTMLSelectElement): Promise<void> {
-    const pai = select.value || null;
-    const novoPai = pai ? this.acesso.nomeSetor(pai) : this.t.setores.principal;
-    const ok = await this.alterar(id, { pai_id: pai }, this.t.setores.movido(nome, novoPai));
+    const ok = await this.moverPara(id, nome, select.value || null);
     // Recusado (ex.: ciclo_setor): volta o select para o pai atual
     if (!ok) select.value = this.acesso.setores().find((s) => s.id === id)?.pai_id ?? '';
+  }
+
+  /** Só aceita soltar onde o setor pode ir: não nele mesmo nem nos de baixo (o banco confere de novo). */
+  protected readonly podeSoltar = (
+    arrasto: CdkDrag<string>,
+    alvo: CdkDropList<string>,
+  ): boolean => {
+    const id = arrasto.data;
+    const destino = alvo.data;
+    if (!destino) return !!this.acesso.setores().find((s) => s.id === id)?.pai_id;
+    return !descendentes(id, this.acesso.setores()).has(destino);
+  };
+
+  protected async soltou(e: CdkDragDrop<string, string, string>): Promise<void> {
+    this.sobre.set(null);
+    const id = e.item.data;
+    const pai = e.container.data || null;
+    const setor = this.acesso.setores().find((s) => s.id === id);
+    if (!setor || e.previousContainer === e.container || setor.pai_id === pai) return;
+    await this.moverPara(id, setor.nome, pai);
+  }
+
+  protected async excluir(id: string, nome: string): Promise<void> {
+    const sim = await this.confirmacao.perguntar({
+      titulo: this.t.setores.excluirTitulo(nome),
+      mensagem: this.t.setores.excluirTexto,
+      confirmar: this.t.setores.excluir,
+      perigo: true,
+    });
+    if (!sim) return;
+    try {
+      await this.service.excluir(id);
+      await this.acesso.recarregar();
+      this.toast.sucesso(this.t.setores.excluido(nome));
+    } catch (e) {
+      this.toast.erro(e);
+    }
+  }
+
+  private moverPara(id: string, nome: string, pai: string | null): Promise<boolean> {
+    const novoPai = pai ? this.acesso.nomeSetor(pai) : this.t.setores.principal;
+    return this.alterar(id, { pai_id: pai }, this.t.setores.movido(nome, novoPai));
   }
 
   protected async alternarAtivo(id: string, nome: string, ativo: boolean): Promise<void> {
