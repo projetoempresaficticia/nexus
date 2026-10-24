@@ -7,7 +7,6 @@ import { TEXTOS } from './core/models/textos';
 import { LOGIN_ROUTES } from './features/login/login.routes';
 
 const m = TEXTOS.menu;
-const emBreve = () => import('./features/em-breve/em-breve.page').then((x) => x.EmBrevePage);
 
 export const routes: Routes = [
   ...LOGIN_ROUTES,
@@ -72,8 +71,7 @@ export const routes: Routes = [
       {
         path: 'setores',
         canActivate: [adminGuard],
-        loadComponent: emBreve,
-        data: { titulo: m.setores },
+        loadComponent: () => import('./features/setores/setores.page').then((x) => x.SetoresPage),
         title: m.setores,
       },
     ],
