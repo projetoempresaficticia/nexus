@@ -10,6 +10,7 @@ import { podeExcluirItem } from '../../core/itens/permissoes';
 import { Papel } from '../../core/models/acesso.model';
 import { ConfirmacaoService } from '../../shared/ui/confirmacao.service';
 import { ItemPage } from './item.page';
+import { SolicitacoesService } from '../../core/solicitacoes/solicitacoes.service';
 import { AnexosService } from './anexos.service';
 import { ItemService } from './item.service';
 
@@ -54,6 +55,7 @@ describe('Excluir na página do item', () => {
             listarComentarios: vi.fn().mockResolvedValue([]),
           },
         },
+        { provide: SolicitacoesService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
         {
           provide: AnexosService,
           useValue: { listar: vi.fn().mockResolvedValue([]), limpar: vi.fn() },
