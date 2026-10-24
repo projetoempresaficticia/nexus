@@ -9,6 +9,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Site passa a ser publicado no Cloudflare Pages (a partir do repositório privado) e o banco ganha backup diário encriptado no Google Drive, com teste automático de restauro e guia de recuperação (T-48).
 
 ### Corrigido
+- 2026-10-24 — Login real pelo Google quebrado logo depois da T-56 (faltava uma permissão para o papel que o Auth usa de verdade); corrigido no mesmo dia, sem ninguém perder acesso (T-57).
 - 2026-10-24 — Backup diário: a primeira execução real falhava — o dump não funcionava com o usuário restrito de leitura, e a cópia semanal dos anexos falhava quando o Storage estava vazio. Os dois foram corrigidos (T-48).
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
 
