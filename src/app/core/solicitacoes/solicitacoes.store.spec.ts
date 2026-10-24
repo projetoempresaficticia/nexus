@@ -107,6 +107,7 @@ describe('SolicitacoesStore — tempo real', () => {
     autor_id: 'p-bruno',
     texto_html: '<p>oi</p>',
     criado_em: '2026-10-24T10:00:00Z',
+    editado_em: null,
   };
 
   function criar(servico: Partial<Record<keyof SolicitacoesService, unknown>>) {
