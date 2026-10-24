@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Tela Produtividade do líder: período e pessoa, indicadores com comparação ao período anterior, ritmo de entregas, entregas por pessoa, quem segura as solicitações, entregas por setor e semana e tabela da equipe (T-31).
 - 2026-10-24 — Painel do líder: 5 indicadores clicáveis (abrem Tarefas na aba certa), tabela de itens parados com motivo, de quem se espera e há quantos dias, e andamento dos projetos (T-30).
 - 2026-10-24 — Visões do líder: Por pessoa (uma coluna por pessoa, arrastar troca o responsável) e Carga de trabalho (barras por status e mapa de prazos das próximas 4 semanas). Todas as 10 visões de Tarefas estão prontas (T-29).
 - 2026-10-24 — Visão Linha do tempo: 10 semanas com barras do início ao prazo, projeto com o progresso, marco (losango) quando só há prazo, atrasados com contorno vermelho e a linha de hoje (T-28).

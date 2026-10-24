@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-30, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-31, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -42,13 +42,14 @@
 - **T-28**: `visoes/gantt.component` (70 dias a partir da segunda da semana passada, ‹ › de 14 dias, ordem da Árvore, marco em losango quando não há início).
 - **T-29**: `visoes/por-pessoa.component` (arrastar troca só a pessoa da coluna de origem; mantém os outros responsáveis) e `visoes/carga.component` (calculado no navegador a partir da store, sem chamar `carga_trabalho`); `visoes/equipe.ts` com utilitários comuns. Todas as visões de Tarefas prontas.
 - **T-30**: `features/painel` (KPIs, parados, projetos; calculado das stores de itens e solicitações, atualiza em tempo real); Tarefas aceita `?aba=`.
+- **T-31** (T-31a + T-31b): `features/produtividade` (calculos puros testados, service de `vw_produtividade`, página com KPIs e Equipe, `graficos.component` com SVG próprio). Fora: Fluxo do trabalho e por motivo (⚠️ DECISOES).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-31** — Produtividade (período, pessoa, comparação).
+- **T-32** — Equipe (organograma + linha de decisão).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
