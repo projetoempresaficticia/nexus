@@ -721,6 +721,9 @@ isOneToOne: false
 "excluir_item":
 { Args: { "p_id": string }; Returns: Json
                            },
+"excluir_setor":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "mudar_status":
 { Args: { "p_aprovador_id"?: string,"p_id": string,"p_motivo_html"?: string,"p_status": Database["public"]['Enums']["status_item"] }; Returns: Json
                            },
