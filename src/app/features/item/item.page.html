@@ -23,6 +23,9 @@
         (salvar)="salvarTitulo($event)"
       />
     </div>
+    @if (podeExcluir()) {
+      <button type="button" class="btn sm danger" (click)="excluir()">{{ t.item.excluir }}</button>
+    }
   </header>
 
   @if (!podeEditar()) {

@@ -1,13 +1,14 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensStore } from '../../core/itens/itens.store';
-import { podeEditarItem } from '../../core/itens/permissoes';
+import { podeEditarItem, podeExcluirItem } from '../../core/itens/permissoes';
 import { RECORRENCIA } from '../../core/models/rotulos';
 import { TEXTOS } from '../../core/models/textos';
 import { ErroApi } from '../../core/services/erro-api';
 import { HtmlSeguroPipe } from '../../shared/pipes/html-seguro.pipe';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
+import { ConfirmacaoService } from '../../shared/ui/confirmacao.service';
 import { EditorRicoComponent } from '../../shared/ui/editor-rico/editor-rico.component';
 import { NivelComponent } from '../../shared/ui/nivel.component';
 import { PillStatusComponent } from '../../shared/ui/pill-status.component';
@@ -46,6 +47,8 @@ export class ItemPage {
   protected readonly itens = inject(ItensStore);
   protected readonly acesso = inject(AcessoStore);
   private readonly toast = inject(ToastService);
+  private readonly confirmacao = inject(ConfirmacaoService);
+  private readonly router = inject(Router);
   protected readonly t = TEXTOS;
   protected readonly recorrencia = RECORRENCIA;
 
@@ -60,6 +63,13 @@ export class ItemPage {
   protected readonly podeEditar = computed(() => {
     const i = this.item();
     return !!i && podeEditarItem(i, this.acesso.perfil()?.id ?? null, this.acesso.administrados());
+  });
+  protected readonly podeExcluir = computed(() => {
+    const i = this.item();
+    const eu = this.acesso.perfil()?.id ?? null;
+    return (
+      !!i && podeExcluirItem(i, this.itens.filhos(i.id).length, eu, this.acesso.administrados())
+    );
   });
   protected readonly pessoas = computed(() => this.acesso.pessoas());
 
@@ -110,5 +120,24 @@ export class ItemPage {
     if (await this.itens.mudarStatus(this.id(), 'bloqueada', sanitizar(this.motivo()))) {
       this.toast.sucesso(this.t.item.alteracoesSalvas);
     }
+  }
+
+  /** US-13: conta o que vai junto, pede confirmação, exclui e volta para o pai (ou Tarefas). */
+  protected async excluir(): Promise<void> {
+    const item = this.item();
+    if (!item) return;
+    const abaixo = await this.itens.contarDescendentes(item.id);
+    if (abaixo === null) return;
+    const ok = await this.confirmacao.perguntar({
+      titulo: this.t.item.excluirTitulo,
+      mensagem: this.t.item.excluirConfirmacao(item.nome, abaixo),
+      confirmar: this.t.item.excluir,
+      perigo: true,
+    });
+    if (!ok) return;
+    const r = await this.itens.excluir(item.id);
+    if (!r) return;
+    this.toast.sucesso(this.t.item.excluidos(r.apagados));
+    await this.router.navigateByUrl(item.pai_id ? `/item/${item.pai_id}` : '/tarefas');
   }
 }
