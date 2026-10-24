@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { item } from '../../../testing/item';
 import { ToastService } from '../../shared/ui/toast.service';
+import { cacheFalso } from '../../../testing/cache-falso';
+import { CacheLocalService } from '../services/cache-local.service';
 import { ErroApi } from '../services/erro-api';
 import { Evento } from '../services/realtime.service';
 import { ItensService } from './itens.service';
@@ -158,5 +160,50 @@ describe('ItensStore — tempo real', () => {
     expect(store.carregando()).toBe(false);
     await p;
     expect(store.todos()).toEqual([]);
+  });
+});
+
+describe('ItensStore — abertura instantânea (T-44)', () => {
+  it('mostra o retrato na hora e troca pela lista do servidor', async () => {
+    let responder!: (l: unknown[]) => void;
+    const cache = cacheFalso({ itens: [item({ id: 'velho' })] });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CacheLocalService, useValue: cache },
+        {
+          provide: ItensService,
+          useValue: { listar: vi.fn(() => new Promise((r) => (responder = r))) },
+        },
+      ],
+    });
+    const store = TestBed.inject(ItensStore);
+    await store.carregar();
+    expect(store.carregado()).toBe(true);
+    expect(store.carregando()).toBe(false);
+    expect(store.porId('velho')).toBeDefined();
+    responder([item({ id: 'novo' })]);
+    await new Promise((r) => setTimeout(r));
+    expect(store.porId('velho')).toBeUndefined();
+    expect(store.porId('novo')).toBeDefined();
+    TestBed.tick();
+    expect(cache.agendar).toHaveBeenLastCalledWith('itens', [
+      expect.objectContaining({ id: 'novo' }),
+    ]);
+  });
+
+  it('limpar (logout) esvazia a memória', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ItensService,
+          useValue: { listar: vi.fn().mockResolvedValue([item({ id: 't' })]) },
+        },
+      ],
+    });
+    const store = TestBed.inject(ItensStore);
+    await store.carregar();
+    store.limpar();
+    expect(store.todos()).toEqual([]);
+    expect(store.carregado()).toBe(false);
   });
 });
