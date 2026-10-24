@@ -30,8 +30,11 @@
 Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` (cliente OAuth com redirect `http://127.0.0.1:54321/auth/v1/callback`). Sem eles, use o login por e-mail/senha local.
 
 ### Edge Functions (segredos do Supabase)
-`SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_URL` (automáticos) · `NOTIFICACOES_SEGREDO` (longo e aleatório; o pg_cron manda no cabeçalho `x-nexus-segredo`) · `APP_URL` (ex.: `https://projetoempresaficticia.github.io/nexus`) · `EMAIL_PROVEDOR` (`nenhum` = só registra no log, padrão; `resend`) · `RESEND_API_KEY` e `EMAIL_REMETENTE` (ex.: `Nexus — Prepara Portugal <nexus@dominio>`) quando `EMAIL_PROVEDOR=resend`.
-> ⚠️ A CONFIRMAR: provedor de e-mail (Resend × SMTP do Google Workspace). O código troca só em `supabase/functions/_shared/email.ts`.
+`SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_URL` (automáticos) · `NOTIFICACOES_SEGREDO` (longo e aleatório; o pg_cron manda no cabeçalho `x-nexus-segredo`) · `APP_URL` (ex.: `https://projetoempresaficticia.github.io/nexus`) · `EMAIL_PROVEDOR` (`nenhum` = só registra no log, padrão; `smtp` = envia) · `SMTP_USUARIO` (a conta Google da empresa que envia, ex.: `nexus@estudeemportugal.org`) · `SMTP_SENHA_APP` (senha de app dessa conta) · opcionais: `EMAIL_REMETENTE` (padrão `"Nexus — Prepara Portugal" <SMTP_USUARIO>`; só a própria conta ou um alias dela), `SMTP_HOST` (`smtp.gmail.com`), `SMTP_PORTA` (`465` — 25 e 587 são bloqueadas nas Edge Functions).
+**Senha de app do Google (uma vez):** na conta que vai enviar, ative a **verificação em 2 passos**
+(myaccount.google.com → Segurança) e crie uma **senha de app** (myaccount.google.com/apppasswords, nome "Nexus").
+Se a opção não aparecer, o administrador do Workspace precisa permitir verificação em 2 passos/senhas de app.
+Recomendado: uma conta só para o sistema (ex.: `nexus@...`) em vez da conta de uma pessoa.
 
 ### Scripts locais (`.env`, fora do Git) — ver `.env.example`
 
@@ -43,7 +46,7 @@ Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e
 5. Desligar provedor Email em produção.
 6. `npx supabase link --project-ref <ref>` → `npx supabase db push` (**com confirmação**).
 7. `npx supabase functions deploy` + `npx supabase secrets set ...` (**com confirmação**).
-8. Notificações: `npx supabase functions deploy enviar-notificacoes` (**com confirmação**; `verify_jwt = false` já está no `config.toml`), `npx supabase secrets set NOTIFICACOES_SEGREDO=... APP_URL=... EMAIL_PROVEDOR=... RESEND_API_KEY=... EMAIL_REMETENTE=...`, e rodar **uma vez** o `supabase/agendamentos.sql` no SQL Editor (trocando os dois `<...>`): ativa `pg_cron`/`pg_net` e agenda o envio a cada 2 min e o lembrete das 08:00 de Lisboa.
+8. Notificações: `npx supabase functions deploy enviar-notificacoes` (**com confirmação**; `verify_jwt = false` já está no `config.toml`), `npx supabase secrets set NOTIFICACOES_SEGREDO=... APP_URL=... EMAIL_PROVEDOR=smtp SMTP_USUARIO=... SMTP_SENHA_APP=...`, e rodar **uma vez** o `supabase/agendamentos.sql` no SQL Editor (trocando os dois `<...>`): ativa `pg_cron`/`pg_net` e agenda o envio a cada 2 min e o lembrete das 08:00 de Lisboa.
 9. Inserir os 2 admins em `perfis` (Germano e Camila) com `is_admin = true`.
 10. GitHub: Pages já está em "GitHub Actions" (T-04). **Trocar** os secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` (hoje do nexus-dev) pelos do `nexus-prod`: `gh secret set SUPABASE_URL` / `gh secret set SUPABASE_ANON_KEY`.
 
