@@ -145,4 +145,51 @@ describe('TarefasPage', () => {
     await clicar('Só as minhas');
     expect(textos(el, '.kcard strong')).toEqual(['Calendário']);
   });
+
+  it('líder filtra por pessoa dos setores que administra; membro não vê o filtro (US-39)', async () => {
+    const lider = dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]);
+    lider.pessoas = [
+      {
+        id: 'p-eu',
+        nome: 'Ana Ribeiro',
+        iniciais: 'AR',
+        email: 'a@x',
+        vinculos: [{ setor_id: SETORES.sucesso, papel: 'lider' }],
+      },
+      {
+        id: 'p-bruno',
+        nome: 'Bruno Costa',
+        iniciais: 'BC',
+        email: 'b@x',
+        vinculos: [{ setor_id: SETORES.sucesso, papel: 'membro' }],
+      },
+      {
+        id: 'p-fin',
+        nome: 'Duarte Faria',
+        iniciais: 'DF',
+        email: 'd@x',
+        vinculos: [{ setor_id: SETORES.financeiro, papel: 'membro' }],
+      },
+    ];
+    const itens = [
+      ...ITENS,
+      item({ id: 'b1', nome: 'Do Bruno', setor_id: SETORES.sucesso, responsaveis: ['p-bruno'] }),
+    ];
+    const { fixture, el } = await montar(lider, itens);
+    const select = el.querySelector('.viewbar select') as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent?.trim())).toEqual([
+      'Todas as pessoas',
+      'Ana Ribeiro',
+      'Bruno Costa',
+    ]);
+    select.value = 'p-bruno';
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(textos(el, 'app-linha-item strong')).toEqual(['Do Bruno']);
+  });
+
+  it('membro não tem filtro por pessoa', async () => {
+    const { el } = await montar(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]));
+    expect(el.querySelector('.viewbar select')).toBeNull();
+  });
 });
