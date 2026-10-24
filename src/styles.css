@@ -118,3 +118,19 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 10px;
 }
+
+/* Arrastar (Angular CDK): a cópia que segue o cursor é desenhada no <body>, fora dos componentes */
+.cdk-drag-preview {
+  box-shadow: var(--shadow);
+}
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+.cdk-drag-animating {
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cdk-drag-animating {
+    transition: none;
+  }
+}

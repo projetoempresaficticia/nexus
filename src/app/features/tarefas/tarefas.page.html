@@ -48,12 +48,28 @@
   </div>
 </div>
 
-@if (visao() !== 'lista') {
+@if (itens.carregando() && !itens.carregado()) {
+  <section class="panel"><app-carregando /></section>
+} @else if (visao() === 'kanban') {
+  <app-kanban [itens]="itensVisao()">
+    <div class="views" role="tablist" [attr.aria-label]="t.tarefas.deQuem.rotulo">
+      @for (q of deQuem; track q[0]) {
+        <button
+          type="button"
+          role="tab"
+          [class.on]="quem() === q[0]"
+          [attr.aria-selected]="quem() === q[0]"
+          (click)="quem.set(q[0])"
+        >
+          {{ q[1] }}
+        </button>
+      }
+    </div>
+  </app-kanban>
+} @else if (visao() !== 'lista') {
   <section class="panel">
     <app-vazio>{{ t.emBreve }}</app-vazio>
   </section>
-} @else if (itens.carregando() && !itens.carregado()) {
-  <section class="panel"><app-carregando /></section>
 } @else {
   <section class="panel">
     <div class="tabs" role="tablist">
