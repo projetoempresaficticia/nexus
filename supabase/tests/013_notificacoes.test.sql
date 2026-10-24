@@ -41,14 +41,28 @@ select is((select count(*)::int from public.notificacoes where tipo = 'comentari
   'ninguém é avisado da própria ação');
 
 -- ---------------------------------------------------------------- lembrete diário
-select is(privado.enfileirar_lembretes(), 1, 'um lembrete: só quem é ativo e só o que vence amanhã');
-select is((select destinatario_id from public.notificacoes where tipo = 'lembrete_prazo'),
+-- (o seed do CI também tem itens; as contagens olham só os itens deste teste)
+create temp table t_lembretes as
+  select '3d000000-0000-0000-0000-000000000001'::uuid as id
+  union select '3d000000-0000-0000-0000-000000000002'::uuid;
+select privado.enfileirar_lembretes();
+select is((select count(*)::int from public.notificacoes
+           where tipo = 'lembrete_prazo' and item_id in (select id from t_lembretes)), 1,
+  'um lembrete: só quem é ativo e só o que vence amanhã');
+select is((select destinatario_id from public.notificacoes
+           where tipo = 'lembrete_prazo' and item_id in (select id from t_lembretes)),
   '1d000000-0000-0000-0000-000000000002'::uuid, 'vai para o responsável');
-select is(privado.enfileirar_lembretes(), 0, 'rodar de novo no mesmo dia não repete');
+select privado.enfileirar_lembretes();
+select is((select count(*)::int from public.notificacoes
+           where tipo = 'lembrete_prazo' and item_id in (select id from t_lembretes)), 1,
+  'rodar de novo no mesmo dia não repete');
 
 update public.itens set status = 'concluida' where id = '3d000000-0000-0000-0000-000000000001';
-delete from public.notificacoes where tipo = 'lembrete_prazo';
-select is(privado.enfileirar_lembretes(), 0, 'concluído não gera lembrete');
+delete from public.notificacoes where tipo = 'lembrete_prazo' and item_id in (select id from t_lembretes);
+select privado.enfileirar_lembretes();
+select is((select count(*)::int from public.notificacoes
+           where tipo = 'lembrete_prazo' and item_id in (select id from t_lembretes)), 0,
+  'concluído não gera lembrete');
 
 select * from finish();
 rollback;
