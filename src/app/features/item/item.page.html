@@ -93,6 +93,10 @@
         }
       </section>
 
+      @if (it.nivel > 0) {
+        <app-checklist-item [item]="it" [podeEditar]="podeEditar()" />
+      }
+
       @if (it.nivel < 2) {
         <app-filhos-item [item]="it" />
       }
@@ -101,6 +105,7 @@
     <div class="item-side">
       <app-status-item [item]="it" [podeEditar]="podeEditar()" />
       <app-detalhes-item [item]="it" [podeEditar]="podeEditar()" />
+      <app-dependencias-item [item]="it" [podeEditar]="podeEditar()" />
     </div>
   </div>
 } @else if (existe() === false) {

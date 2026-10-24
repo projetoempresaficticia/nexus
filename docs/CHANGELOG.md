@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Checklist e dependências entre tarefas na página do item (T-19).
 - 2026-10-24 — Página do item: título editável, descrição, status com motivo/aprovador, detalhes com vários responsáveis, mover tarefa entre projetos, subtarefas e modo só leitura (T-18).
 - 2026-10-24 — Tela de Projetos com cartões de progresso, itens parados, cartão "Sem projeto" e criação de projeto (T-17).
 - 2026-10-24 — Tela de Tarefas: lista agrupada por projeto (com "Sem projeto"), abas Todas/Minhas/Em andamento/Paradas/Concluídas, "Só os meus" para líderes e criação de tarefa com vários responsáveis (T-16).
