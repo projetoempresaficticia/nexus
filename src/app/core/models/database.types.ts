@@ -81,6 +81,32 @@ isOneToOne: false
       referencedColumns: ["item_id"]
     }
                   ]
+                },"checklist_mencoes": {
+                  Row: {
+                    "checklist_id": string,"perfil_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checklist_id": string,"perfil_id": string
+                  }
+                  Update: {
+                    "checklist_id"?: string,"perfil_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "checklist_mencoes_checklist_id_fkey"
+      columns: ["checklist_id"]
+isOneToOne: false
+      referencedRelation: "checklist_itens"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "checklist_mencoes_perfil_id_fkey"
+      columns: ["perfil_id"]
+isOneToOne: false
+      referencedRelation: "perfis"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"comentarios": {
                   Row: {
                     "autor_id": string,"criado_em": string,"editado_em": string | null,"id": string,"item_id": string,"legacy_id": string | null,"texto_html": string
