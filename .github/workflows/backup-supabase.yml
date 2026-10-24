@@ -123,6 +123,10 @@ jobs:
           sed -i -E 's/^CREATE SCHEMA ([A-Za-z0-9_."]+);/CREATE SCHEMA IF NOT EXISTS \1;/' schema.sql
           # Um único arquivo que se restaura com um psql (passo a passo em docs/BACKUP.md)
           {
+            # Extensões que as tabelas do Nexus usam (hoje só o citext de perfis.email), de fora do
+            # dump porque o schema "extensions" também é (comentário acima); se um dia vier mais
+            # alguma, repita a mesma linha da migration que a criou aqui.
+            echo 'create extension if not exists citext with schema extensions;'
             cat schema.sql
             echo 'SET session_replication_role = replica;'
             cat data.sql
