@@ -18,6 +18,11 @@ export class ToastService {
     this.mostrar({ texto, erro: false });
   }
 
+  /** Erro de validação no navegador, com texto já pronto do glossário. */
+  falha(texto: string): void {
+    this.mostrar({ texto, erro: true });
+  }
+
   /** Erro da API (código → texto do glossário) ou erro inesperado (mensagem genérica de rede). */
   erro(e: unknown): void {
     this.mostrar({ texto: e instanceof ErroApi ? e.message : TEXTOS.erros.rede, erro: true });
