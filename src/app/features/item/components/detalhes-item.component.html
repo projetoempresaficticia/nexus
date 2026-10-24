@@ -1,0 +1,83 @@
+<section class="sec">
+  <h3>{{ t.item.detalhes }}</h3>
+  <div class="kv">
+    <div class="resp">
+      <span>{{ t.item.responsaveis }}</span>
+      @if (podeEditar()) {
+        <app-seletor-pessoas
+          [opcoes]="pessoas()"
+          [selecionados]="item().responsaveis"
+          [euId]="euId()"
+          [rotulo]="t.item.responsaveis"
+          (selecionadosChange)="definirResponsaveis($event)"
+        />
+      } @else {
+        <app-avatares [pessoas]="responsaveis()" />
+      }
+    </div>
+
+    <label for="d-prio">{{ t.novoItem.prioridade }}</label>
+    <select
+      id="d-prio"
+      [disabled]="!podeEditar()"
+      (change)="salvar({ prioridade: $any($event.target).value })"
+    >
+      @for (p of prioridades; track p[0]) {
+        <option [value]="p[0]" [selected]="p[0] === item().prioridade">{{ p[1].texto }}</option>
+      }
+    </select>
+
+    @if (item().nivel > 0) {
+      <label for="d-rec">{{ t.novoItem.repetir }}</label>
+      <select
+        id="d-rec"
+        [disabled]="!podeEditar()"
+        (change)="salvar({ recorrencia: $any($event.target).value || null })"
+      >
+        <option value="" [selected]="!item().recorrencia">{{ semRecorrencia }}</option>
+        @for (r of recorrencias; track r[0]) {
+          <option [value]="r[0]" [selected]="r[0] === item().recorrencia">{{ r[1] }}</option>
+        }
+      </select>
+    }
+
+    <label for="d-inicio">{{ t.novoItem.inicio }}</label>
+    <input
+      id="d-inicio"
+      type="date"
+      [value]="item().inicio ?? ''"
+      [disabled]="!podeEditar()"
+      (change)="salvar({ inicio: $any($event.target).value || null })"
+    />
+
+    <label for="d-prazo">{{ t.novoItem.prazo }}</label>
+    <input
+      id="d-prazo"
+      type="date"
+      [value]="item().prazo ?? ''"
+      [disabled]="!podeEditar()"
+      (change)="salvar({ prazo: $any($event.target).value || null })"
+    />
+
+    @if (item().nivel === 1) {
+      <label for="d-proj">{{ t.item.projeto }}</label>
+      <select id="d-proj" [disabled]="!podeEditar()" (change)="mover($any($event.target).value)">
+        <option value="" [selected]="!item().pai_id">{{ t.novoItem.semProjeto }}</option>
+        @for (p of projetos(); track p.id) {
+          <option [value]="p.id" [selected]="p.id === item().pai_id">{{ p.nome }}</option>
+        }
+      </select>
+    }
+
+    <span class="kv-l">{{ t.item.setor }}</span>
+    <span>{{ acesso.caminhoSetor(item().setor_id) }}</span>
+
+    <span class="kv-l">{{ t.item.decide }}</span>
+    <span>{{ decide() }}</span>
+
+    @if (progresso(); as p) {
+      <span class="kv-l">{{ t.item.progresso }}</span>
+      <span class="prog"><app-barra [percentual]="p.percentual" />{{ p.percentual }}%</span>
+    }
+  </div>
+</section>
