@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { Session } from '@supabase/supabase-js';
 import { SUPABASE } from '../supabase.client';
 import { supabaseFalso } from '../../../testing/supabase-falso';
+import { cacheFalso } from '../../../testing/cache-falso';
+import { CacheLocalService } from '../services/cache-local.service';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -60,5 +62,22 @@ describe('AuthService', () => {
     await auth.sair();
     expect(falso.auth.signOut).toHaveBeenCalled();
     expect(auth.logado()).toBe(false);
+  });
+
+  it('separa o cache local por usuário e apaga tudo ao sair (T-44)', async () => {
+    const cache = cacheFalso();
+    falso = supabaseFalso({ user: { id: 'u1' } } as Session);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: SUPABASE, useValue: falso },
+        { provide: CacheLocalService, useValue: cache },
+      ],
+    });
+    auth = TestBed.inject(AuthService);
+    await auth.iniciar(new URL('http://localhost:4200/'));
+    expect(cache.definirDono).toHaveBeenLastCalledWith('u1');
+    await auth.sair();
+    expect(cache.limpar).toHaveBeenCalled();
+    expect(cache.definirDono).toHaveBeenLastCalledWith(null);
   });
 });

@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Session } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
+import { CacheLocalService } from '../services/cache-local.service';
 import { SUPABASE } from '../supabase.client';
 
 /** Resultado de um login por senha: null = sucesso; senão o código para mostrar. */
@@ -13,6 +14,7 @@ export type ErroLogin = 'senha_invalida' | 'acesso_nao_autorizado' | 'rede';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly supabase = inject(SUPABASE);
+  private readonly cache = inject(CacheLocalService);
   private readonly _sessao = signal<Session | null>(null);
   private readonly _erroRetorno = signal<string | null>(null);
 
@@ -28,9 +30,18 @@ export class AuthService {
       new URLSearchParams(url.hash.slice(1)).get('error_description');
     if (erro) this._erroRetorno.set(erro);
 
-    this.supabase.auth.onAuthStateChange((_evento, sessao) => this._sessao.set(sessao));
+    this.supabase.auth.onAuthStateChange((evento, sessao) => {
+      this.definirSessao(sessao);
+      if (evento === 'SIGNED_OUT') void this.cache.limpar();
+    });
     const { data } = await this.supabase.auth.getSession();
-    this._sessao.set(data.session);
+    this.definirSessao(data.session);
+  }
+
+  /** O cache local é separado por usuário (T-44). */
+  private definirSessao(sessao: Session | null): void {
+    this._sessao.set(sessao);
+    this.cache.definirDono(sessao?.user.id ?? null);
   }
 
   async entrarComGoogle(): Promise<void> {
@@ -61,7 +72,8 @@ export class AuthService {
   }
 
   async sair(): Promise<void> {
+    await this.cache.limpar();
     await this.supabase.auth.signOut();
-    this._sessao.set(null);
+    this.definirSessao(null);
   }
 }
