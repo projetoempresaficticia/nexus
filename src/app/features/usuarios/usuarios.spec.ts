@@ -135,18 +135,16 @@ describe('UsuariosPage (US-03, US-04)', () => {
   });
 
   it('desativar com itens abertos abre a reatribuição', async () => {
-    const desativar = vi
-      .fn()
-      .mockResolvedValue([
-        {
-          id: 'i1',
-          nome: 'Contrato',
-          nivel: 1,
-          setor_id: SETORES.sucesso,
-          prazo: null,
-          status: 'a_fazer',
-        },
-      ]);
+    const desativar = vi.fn().mockResolvedValue([
+      {
+        id: 'i1',
+        nome: 'Contrato',
+        nivel: 1,
+        setor_id: SETORES.sucesso,
+        prazo: null,
+        status: 'a_fazer',
+      },
+    ]);
     const reatribuir = vi.fn().mockResolvedValue(1);
     const { estabilizar, botao } = await montar({ desativar, reatribuir });
     const sucesso = vi.spyOn(TestBed.inject(ToastService), 'sucesso');
