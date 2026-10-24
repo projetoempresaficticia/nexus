@@ -7,14 +7,14 @@ export type Database = {
           Tables: {
             "anexos": {
                   Row: {
-                    "caminho": string | null,"comentario_id": string | null,"criado_em": string,"enviado_por": string,"id": string,"item_id": string,"link_externo": string | null,"mime": string | null,"nome": string,"tamanho_bytes": number | null
+                    "caminho": string | null,"comentario_id": string | null,"criado_em": string,"drive_id": string | null,"enviado_por": string,"id": string,"item_id": string,"link_externo": string | null,"mime": string | null,"nome": string,"tamanho_bytes": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "caminho"?: string | null,"comentario_id"?: string | null,"criado_em"?: string,"enviado_por": string,"id"?: string,"item_id": string,"link_externo"?: string | null,"mime"?: string | null,"nome": string,"tamanho_bytes"?: number | null
+                    "caminho"?: string | null,"comentario_id"?: string | null,"criado_em"?: string,"drive_id"?: string | null,"enviado_por": string,"id"?: string,"item_id": string,"link_externo"?: string | null,"mime"?: string | null,"nome": string,"tamanho_bytes"?: number | null
                   }
                   Update: {
-                    "caminho"?: string | null,"comentario_id"?: string | null,"criado_em"?: string,"enviado_por"?: string,"id"?: string,"item_id"?: string,"link_externo"?: string | null,"mime"?: string | null,"nome"?: string,"tamanho_bytes"?: number | null
+                    "caminho"?: string | null,"comentario_id"?: string | null,"criado_em"?: string,"drive_id"?: string | null,"enviado_por"?: string,"id"?: string,"item_id"?: string,"link_externo"?: string | null,"mime"?: string | null,"nome"?: string,"tamanho_bytes"?: number | null
                   }
                   Relationships: [
                     {

@@ -19,9 +19,20 @@ export function nomeSeguro(nome: string): string {
   );
 }
 
+/** Código de erro que a Edge Function devolve no corpo ({ erro }); sem corpo legível, rede. */
+async function codigoDaFuncao(error: unknown): Promise<string> {
+  const resposta = (error as { context?: unknown }).context;
+  if (resposta instanceof Response) {
+    const corpo = (await resposta.json().catch(() => null)) as { erro?: string } | null;
+    if (corpo?.erro) return corpo.erro;
+  }
+  return 'rede';
+}
+
 /**
- * Anexos (US-20): arquivo no bucket privado `anexos` em {setor_id}/{item_id}/{uuid}-{nome} ou link externo.
- * Download por URL assinada pedida pelo navegador — a política de Storage (T-07) decide quem pode.
+ * Anexos (US-20). Arquivo anexado vai para o Google Drive partilhado, numa pasta por setor, pela Edge
+ * Function enviar-anexo; a linha guarda o link (link_externo) e o drive_id (T-52). Imagens coladas
+ * no texto ficam no bucket privado `anexos` em {setor_id}/{item_id}/{uuid}-{nome}, com URL assinada.
  */
 @Injectable({ providedIn: 'root' })
 export class AnexosService {
@@ -39,6 +50,29 @@ export class AnexosService {
   }
 
   async enviar(
+    item: { id: string; setor_id: string },
+    arquivo: File,
+    enviadoPor: string,
+    comentarioId: string | null = null,
+  ): Promise<Anexo> {
+    if (arquivo.size > LIMITE_BYTES) throw new ErroApi('arquivo_grande');
+    const corpo = new FormData();
+    corpo.append('item_id', item.id);
+    if (comentarioId) corpo.append('comentario_id', comentarioId);
+    corpo.append('arquivo', arquivo);
+    const { data, error } = await this.supabase.functions.invoke<Anexo>('enviar-anexo', {
+      body: corpo,
+    });
+    if (!error && data) return data;
+    const codigo = error ? await codigoDaFuncao(error) : 'rede';
+    // Sem os secrets do Drive (desenvolvimento), o arquivo fica no Storage como antes
+    if (codigo === 'drive_nao_configurado') {
+      return this.enviarStorage(item, arquivo, enviadoPor, comentarioId);
+    }
+    throw new ErroApi(codigo);
+  }
+
+  private async enviarStorage(
     item: { id: string; setor_id: string },
     arquivo: File,
     enviadoPor: string,
@@ -86,16 +120,19 @@ export class AnexosService {
     return data!;
   }
 
-  /** Apaga a linha (RLS: quem enviou ou líder) e depois o arquivo. */
+  /** Apaga a linha (RLS: quem enviou ou líder) e depois o arquivo (no Drive, pela fila do banco). */
   async apagar(anexo: Anexo): Promise<void> {
     const { error } = await this.supabase.from('anexos').delete().eq('id', anexo.id);
     lancarSeErro(error);
     if (anexo.caminho) await this.supabase.storage.from(BUCKET).remove([anexo.caminho]);
+    if (anexo.drive_id) void this.limpar([]);
   }
 
-  /** Depois de excluir item: pede à Edge Function para apagar os arquivos órfãos (sem erro para a pessoa). */
+  /**
+   * Depois de excluir item ou anexo: a Edge Function apaga os arquivos órfãos do Storage e manda para
+   * a lixeira do Drive os da fila (sem erro para a pessoa).
+   */
   async limpar(caminhos: string[]): Promise<void> {
-    if (!caminhos.length) return;
     try {
       await this.supabase.functions.invoke('limpar-anexos', { body: { caminhos } });
     } catch {
@@ -120,7 +157,7 @@ export class AnexosService {
     arquivo: File,
     enviadoPor: string,
   ): Promise<{ src: string; caminho: string }> {
-    const anexo = await this.enviar(item, arquivo, enviadoPor);
+    const anexo = await this.enviarStorage(item, arquivo, enviadoPor);
     return { src: await this.urlImagem(anexo.caminho!), caminho: anexo.caminho! };
   }
 

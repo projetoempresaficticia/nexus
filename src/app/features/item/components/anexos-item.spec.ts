@@ -16,6 +16,7 @@ const anexo = (id: string, enviadoPor: string, extra: Partial<Anexo> = {}): Anex
   nome: `arquivo-${id}.pdf`,
   caminho: `s/t/${id}.pdf`,
   link_externo: null,
+  drive_id: null,
   tamanho_bytes: 1_400_000,
   mime: 'application/pdf',
   enviado_por: enviadoPor,
@@ -35,6 +36,66 @@ describe('regras de anexo (US-20)', () => {
       TestBed.inject(AnexosService).enviar({ id: 't', setor_id: 's' }, grande, 'p-eu'),
     ).rejects.toEqual(new ErroApi('arquivo_grande'));
     expect(upload).not.toHaveBeenCalled();
+  });
+
+  it('arquivo vai para o Drive pela Edge Function enviar-anexo (T-52)', async () => {
+    const devolvido = anexo('d1', 'p-eu', {
+      caminho: null,
+      link_externo: 'https://drive.google.com/file/d/x/view',
+      drive_id: 'x',
+    });
+    const invoke = vi.fn().mockResolvedValue({ data: devolvido, error: null });
+    const upload = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: SUPABASE,
+          useValue: { functions: { invoke }, storage: { from: () => ({ upload }) } },
+        },
+      ],
+    });
+    const novo = await TestBed.inject(AnexosService).enviar(
+      { id: 't', setor_id: 's' },
+      new File(['x'], 'a.pdf'),
+      'p-eu',
+    );
+    expect(novo).toBe(devolvido);
+    const corpo = invoke.mock.calls[0][1].body as FormData;
+    expect(invoke.mock.calls[0][0]).toBe('enviar-anexo');
+    expect(corpo.get('item_id')).toBe('t');
+    expect((corpo.get('arquivo') as File).name).toBe('a.pdf');
+    expect(upload).not.toHaveBeenCalled();
+  });
+
+  it('erro do Drive vira mensagem; sem Drive configurado usa o Storage', async () => {
+    const erro = (codigo: string) => ({
+      data: null,
+      error: { context: new Response(JSON.stringify({ erro: codigo }), { status: 502 }) },
+    });
+    const invoke = vi.fn().mockResolvedValueOnce(erro('drive_falhou'));
+    const upload = vi.fn().mockResolvedValue({ error: null });
+    const single = vi.fn().mockResolvedValue({ data: anexo('s1', 'p-eu'), error: null });
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: SUPABASE,
+          useValue: {
+            functions: { invoke },
+            storage: { from: () => ({ upload }) },
+            from: () => ({ insert: () => ({ select: () => ({ single }) }) }),
+          },
+        },
+      ],
+    });
+    const servico = TestBed.inject(AnexosService);
+    const arquivo = new File(['x'], 'a.pdf');
+    await expect(servico.enviar({ id: 't', setor_id: 's' }, arquivo, 'p-eu')).rejects.toEqual(
+      new ErroApi('drive_falhou'),
+    );
+    invoke.mockResolvedValueOnce(erro('drive_nao_configurado'));
+    const novo = await servico.enviar({ id: 't', setor_id: 's' }, arquivo, 'p-eu');
+    expect(upload).toHaveBeenCalled();
+    expect(novo.id).toBe('s1');
   });
 
   it('nome seguro para o Storage e tamanho legível', () => {
