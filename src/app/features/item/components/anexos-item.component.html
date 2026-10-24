@@ -1,0 +1,75 @@
+<section class="sec">
+  <h3>{{ t.anexos.titulo }}</h3>
+  @for (a of anexos(); track a.id) {
+    <div class="file">
+      <span aria-hidden="true">{{ a.link_externo ? '🔗' : '📄' }}</span>
+      @if (a.link_externo) {
+        <a class="nome" [href]="a.link_externo" target="_blank" rel="noopener noreferrer">{{
+          a.nome
+        }}</a>
+      } @else {
+        <button
+          type="button"
+          class="nome"
+          [attr.aria-label]="t.anexos.abrir(a.nome)"
+          (click)="abrir(a)"
+        >
+          {{ a.nome }}
+        </button>
+      }
+      <span class="row-sub">{{ a.link_externo ? 'link' : tamanho(a.tamanho_bytes) }}</span>
+      @if (podeRemover(a)) {
+        <button
+          type="button"
+          class="btn sm ghost"
+          [attr.aria-label]="t.anexos.remover(a.nome)"
+          (click)="remover(a)"
+        >
+          ×
+        </button>
+      }
+    </div>
+  } @empty {
+    <p class="hint">{{ t.anexos.nenhum }}</p>
+  }
+
+  <div class="acoes">
+    <label class="btn anexar" for="f-anexo">
+      {{ enviando() ? t.anexos.enviando : t.anexos.anexar }}
+    </label>
+    <input
+      id="f-anexo"
+      type="file"
+      hidden
+      [disabled]="enviando()"
+      (change)="arquivoEscolhido($event)"
+    />
+    <button type="button" class="btn" (click)="colandoLink.set(!colandoLink())">
+      {{ t.anexos.colarLink }}
+    </button>
+  </div>
+
+  @if (colandoLink()) {
+    <div class="link">
+      <input
+        type="text"
+        [attr.aria-label]="t.anexos.nomeLink"
+        [placeholder]="t.anexos.nomeLink"
+        [value]="nomeLink()"
+        (input)="nomeLink.set($any($event.target).value)"
+      />
+      <input
+        type="url"
+        [attr.aria-label]="t.anexos.enderecoLink"
+        [placeholder]="t.anexos.enderecoLink"
+        [value]="urlLink()"
+        (input)="urlLink.set($any($event.target).value)"
+        (keydown.enter)="adicionarLink()"
+      />
+      <button type="button" class="btn primary" (click)="adicionarLink()">
+        {{ t.anexos.adicionar }}
+      </button>
+    </div>
+  }
+  <p class="hint">{{ t.anexos.ajuda }}</p>
+</section>
