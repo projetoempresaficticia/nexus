@@ -23,7 +23,7 @@ Pessoa do sistema. Criada pelo Adm **antes** do primeiro login; ligada ao `auth.
 |---|---|---|---|---|
 | id | uuid | sim | gen_random_uuid() | PK |
 | auth_id | uuid | não | | UNIQUE, FK → auth.users(id) on delete set null |
-| email | citext | sim | | UNIQUE, termina em `@estudeemportugal.org` (CHECK) |
+| email | citext | sim | | UNIQUE, aprovado por `privado.email_permitido` (CHECK) — domínio `@estudeemportugal.org` ou uma conta externa explicitamente aprovada (T-56) |
 | nome | text | sim | | |
 | iniciais | text | sim | | 2–3 letras, gerado pelo app |
 | is_admin | boolean | sim | false | adm do sistema |

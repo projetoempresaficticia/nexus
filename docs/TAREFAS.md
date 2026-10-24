@@ -42,6 +42,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-51** Setores: excluir setor vazio e organizar a hierarquia arrastando. — Pedido do Germano · US-05
 - [x] **T-52** Anexos só no Google Drive: Edge Function `enviar-anexo` (pasta por setor, link para o domínio), `drive_id` protegido, fila da lixeira do Drive em `limpar-anexos`; imagens coladas seguem no Storage. — Dep.: T-23, T-48 · Pedido do Germano · US-20
 - [x] **T-51b** Líder renomeia, move, desativa e exclui os subsetores abaixo dele (nunca o próprio setor nem os de cima). — Dep.: T-51 · Pedido do Germano · US-05
+- [x] **T-56** Login aceita contas externas explicitamente aprovadas (além de `@estudeemportugal.org`), numa função só usada pela CHECK de `perfis` e pelo hook de login. — Dep.: T-12 · Pedido do Germano · US-02
 - [x] **T-50** Cópia semanal dos arquivos dos anexos (Storage) para o Google Drive, encriptada, com guia de restauro (BACKUP.md §8). — Dep.: T-48
 - [x] **T-49** E-mail pelo SMTP do Google Workspace em `_shared/email.ts` (senha de app; porta 465). — Dep.: T-36
 - [x] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40

@@ -4,7 +4,7 @@ Princípio: **o banco decide**. O Angular só esconde o que a pessoa não pode f
 
 ## 1. Autenticação
 - Supabase Auth com provedor **Google** (OAuth do Google Workspace da empresa). Parâmetro `hd=estudeemportugal.org` no login (só melhora a experiência; não é segurança).
-- **Auth Hook "Before User Created"** (função SQL `auth_hook_antes_criar_usuario`): rejeita e-mails fora de `@estudeemportugal.org` **e** e-mails sem `perfis.ativo = true`. Assim ninguém sem cadastro chega sequer a ter conta.
+- **Auth Hook "Before User Created"** (função SQL `auth_hook_antes_criar_usuario`): rejeita e-mails que `privado.email_permitido` não aprova (domínio `@estudeemportugal.org` ou uma conta externa explicitamente listada ali — T-56) **e** e-mails sem `perfis.ativo = true`. Assim ninguém sem cadastro chega sequer a ter conta. A mesma função também é a CHECK de `perfis.email`: as duas travas nunca se desalinham.
 - Trigger em `auth.users` (after insert) liga `perfis.auth_id` pelo e-mail.
 - Função `meu_perfil_id()` devolve o `perfis.id` do usuário logado **apenas se ativo**; senão `null` → todas as políticas falham → "Acesso não autorizado".
 - Desativar alguém: RPC `desativar_usuario` põe `perfis.ativo = false`. O acesso cai na próxima requisição porque `privado.meu_perfil_id()` só devolve perfis ativos (toda RLS e RPC dependem dele); o token que ainda existir não abre nada.
