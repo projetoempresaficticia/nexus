@@ -13,6 +13,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
 
 ### Modificado
+- 2026-10-24 — Login aceita, além do e-mail da empresa, contas externas explicitamente aprovadas e cadastradas (hoje: a conta que administra GitHub/Google Cloud/Cloudflare) (T-56).
 - 2026-10-24 — Página de acesso não autorizado (quando a conta não está cadastrada ou está inativa) ganha a marca do Nexus e passa a orientar a pessoa a entrar em contato com a gestão para fazer o cadastro.
 
 ### Adicionado
