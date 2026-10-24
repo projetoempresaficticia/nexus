@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.banner {
+  padding: 14px 18px;
+  text-decoration: none;
+  color: inherit;
+}
+.banner strong {
+  margin-right: auto;
+  font-size: 14px;
+}
+.ver {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+}
+.grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px 6px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.grupo .nav-label {
+  color: var(--fg);
+  margin-right: auto;
+}
+.grupo.contexto .nav-label {
+  color: var(--muted);
+}
