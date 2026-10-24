@@ -51,6 +51,7 @@ export const TEXTOS = {
     paraClaro: 'Mudar para tema claro',
     paraEscuro: 'Mudar para tema escuro',
   },
+  tempoReal: { ao_vivo: 'Ao vivo', reconectando: 'Reconectando…' },
   setor: { rotulo: 'Setor', todos: 'Todos os meus setores' },
   emBreve: 'Esta tela ainda está em construção.',
   comum: {

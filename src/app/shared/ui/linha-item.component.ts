@@ -15,7 +15,7 @@ import { PillStatusComponent } from './pill-status.component';
   selector: 'app-linha-item',
   imports: [RouterLink, AvataresComponent, NivelComponent, PillStatusComponent],
   template: `
-    <a class="row" [routerLink]="['/item', item().id]">
+    <a class="row" [class.realce]="realcado()" [routerLink]="['/item', item().id]">
       <span
         class="dot"
         [style.background]="prioridade().cor"
@@ -44,6 +44,15 @@ import { PillStatusComponent } from './pill-status.component';
     .row {
       text-decoration: none;
       color: inherit;
+      transition: background 0.4s;
+    }
+    .row.realce {
+      background: var(--accent-soft);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .row {
+        transition: none;
+      }
     }
     .titulo {
       display: flex;
@@ -60,6 +69,8 @@ export class LinhaItemComponent {
   protected readonly recorrencia = RECORRENCIA;
   readonly item = input.required<Item>();
 
+  /** Um colega acabou de mudar este item (tempo real). */
+  protected readonly realcado = computed(() => this.itens.realcados().has(this.item().id));
   protected readonly prioridade = computed(() => PRIORIDADE[this.item().prioridade]);
   protected readonly prazo = computed(() => dataCurta(this.item().prazo));
   protected readonly responsaveis = computed(() =>

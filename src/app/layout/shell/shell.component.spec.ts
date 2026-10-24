@@ -29,6 +29,7 @@ describe('ShellComponent', () => {
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     return {
+      fixture,
       menu: [...el.querySelectorAll('.nav-item span:first-child')].map((s) =>
         s.textContent?.trim(),
       ),
@@ -71,5 +72,22 @@ describe('ShellComponent', () => {
     expect(el.querySelector('.count')?.textContent?.trim()).toBe('2');
     expect(el.querySelector('.quem')?.textContent).toContain('Líder de 1 setor(es)');
     expect(el.querySelector('.setor .pill.lider')?.textContent?.trim()).toBe('Líder');
+  });
+
+  it('abre o tempo real e mostra Ao vivo / Reconectando… no rodapé (US-37)', async () => {
+    const { el, fixture } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    const supabase = TestBed.inject(SUPABASE) as unknown as ReturnType<typeof supabaseFalso>;
+    expect(supabase.channel).toHaveBeenCalledWith('nexus');
+    expect(el.querySelector('.ao-vivo')).toBeNull();
+    supabase.canal.status('SUBSCRIBED');
+    await fixture.whenStable();
+    expect(el.querySelector('.ao-vivo')?.textContent?.trim()).toBe('Ao vivo');
+    window.dispatchEvent(new Event('offline'));
+    await fixture.whenStable();
+    expect(el.querySelector('.ao-vivo')?.textContent?.trim()).toBe('Reconectando…');
+    fixture.destroy();
+    expect(supabase.removeChannel).toHaveBeenCalled();
   });
 });

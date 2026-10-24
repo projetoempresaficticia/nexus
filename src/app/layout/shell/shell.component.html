@@ -46,6 +46,11 @@
     </div>
 
     <div class="tema">
+      @if (ligacao(); as l) {
+        <div class="ao-vivo" [class.on]="l === 'ao_vivo'" role="status">
+          <span class="bolinha" aria-hidden="true"></span>{{ t.tempoReal[l] }}
+        </div>
+      }
       <button
         type="button"
         class="btn sm"

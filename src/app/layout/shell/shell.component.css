@@ -41,6 +41,26 @@
 .tema {
   margin-top: auto;
   padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ao-vivo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--nav-muted);
+}
+.bolinha {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+}
+.ao-vivo.on .bolinha {
+  background: var(--done-fg);
+  border-color: var(--done-fg);
 }
 .tema .btn {
   width: 100%;
