@@ -3,6 +3,7 @@ import { Tables } from '../models/database.types';
 import { Item } from '../models/item.model';
 import { StatusSolicitacao, TipoSolicitacao } from '../models/rotulos';
 import { lancarSeErro } from '../services/erro-api';
+import { buscarTodas } from '../services/paginar';
 import { SUPABASE } from '../supabase.client';
 
 export type Mensagem = Tables<'solicitacao_mensagens'>;
@@ -19,12 +20,15 @@ export class SolicitacoesService {
   private readonly supabase = inject(SUPABASE);
 
   async listar(): Promise<Solicitacao[]> {
-    const { data, error } = await this.supabase
-      .from('solicitacoes')
-      .select('*, solicitacao_mensagens(*)')
-      .order('criado_em', { ascending: false });
-    lancarSeErro(error);
-    return (data ?? []) as Solicitacao[];
+    const l = await buscarTodas((de, ate) =>
+      this.supabase
+        .from('solicitacoes')
+        .select('*, solicitacao_mensagens(*)')
+        .order('criado_em', { ascending: false })
+        .order('id')
+        .range(de, ate),
+    );
+    return l as Solicitacao[];
   }
 
   async obter(id: string): Promise<Solicitacao | null> {

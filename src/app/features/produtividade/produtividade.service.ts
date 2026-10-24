@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { lancarSeErro } from '../../core/services/erro-api';
+import { buscarTodas } from '../../core/services/paginar';
 import { SUPABASE } from '../../core/supabase.client';
 import { somarDias } from '../../shared/utils/datas';
 import { Entrega } from './produtividade.calculos';
@@ -18,14 +18,18 @@ export class ProdutividadeService {
 
   async listar(setores: string[], desde: string): Promise<Entrega[]> {
     if (!setores.length) return [];
-    const { data, error } = await this.supabase
-      .from('vw_produtividade')
-      .select('*')
-      .in('setor_id', setores)
-      // um dia de folga por causa do fuso; o corte exato é feito em Lisboa abaixo
-      .gte('concluido_em', `${somarDias(desde, -1)}T00:00:00Z`);
-    lancarSeErro(error);
-    return (data ?? [])
+    const data = await buscarTodas((de, ate) =>
+      this.supabase
+        .from('vw_produtividade')
+        .select('*')
+        .in('setor_id', setores)
+        // um dia de folga por causa do fuso; o corte exato é feito em Lisboa abaixo
+        .gte('concluido_em', `${somarDias(desde, -1)}T00:00:00Z`)
+        .order('item_id')
+        .order('perfil_id')
+        .range(de, ate),
+    );
+    return data
       .filter((r) => r.item_id && r.perfil_id && r.setor_id && r.concluido_em)
       .map((r) => ({
         item_id: r.item_id!,
