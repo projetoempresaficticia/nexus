@@ -4,6 +4,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ## [Não lançado]
 ### Adicionado
+- 2026-10-24 — Tela de Projetos com cartões de progresso, itens parados, cartão "Sem projeto" e criação de projeto (T-17).
 - 2026-10-24 — Tela de Tarefas: lista agrupada por projeto (com "Sem projeto"), abas Todas/Minhas/Em andamento/Paradas/Concluídas, "Só os meus" para líderes e criação de tarefa com vários responsáveis (T-16).
 - 2026-10-24 — Editor de texto com formatação, links, @menções e imagens, e limpeza de HTML para evitar código malicioso (T-15).
 - 2026-10-24 — Peças visuais comuns: etiquetas de status, avatares de vários responsáveis, janelas (modal), avisos (toast) e confirmação (T-14).
