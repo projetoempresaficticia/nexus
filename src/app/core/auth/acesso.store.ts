@@ -73,6 +73,17 @@ export class AcessoStore {
     ].join(' › ');
   }
 
+  /** Tempo real: uma solicitação mudou — conta de novo as pendentes para mim. */
+  async recontarPendentes(): Promise<void> {
+    const eu = this.perfil()?.id;
+    if (!eu) return;
+    try {
+      this._pendentes.set(await this.service.contarSolicitacoesPendentes(eu));
+    } catch {
+      // mantém o número atual
+    }
+  }
+
   incrementarPendentes(delta: number): void {
     this._pendentes.update((n) => Math.max(0, n + delta));
   }
