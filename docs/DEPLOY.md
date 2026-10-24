@@ -5,7 +5,7 @@
 |---|---|---|---|
 | desenvolvimento | `npm start` → localhost:4200 | projeto **nexus-dev** na nuvem (`woroiluncnfscajlqoot`, Frankfurt, plano free) | dia a dia do Germano (PC com pouca RAM) |
 | local / CI | `npm start` | `npx supabase start` (Docker) | testes pgTAP no CI; opcional em PC com RAM suficiente |
-| produção | GitHub Pages https://projetoempresaficticia.github.io/nexus/ | projeto `nexus-prod` (região UE) — **até a T-40 os secrets apontam para o nexus-dev** | equipa |
+| produção | **Cloudflare Pages** (`https://<projeto>.pages.dev`, a partir do repositório privado) — antes: GitHub Pages | projeto `nexus-prod` (região UE) — **até a T-40 as variáveis apontam para o nexus-dev** | equipa |
 > ⚠️ A CONFIRMAR: se haverá domínio próprio (ex.: `tarefas.preparaportugal.pt` via CNAME). Conta GitHub: `projetoempresaficticia` (confirmado).
 
 ## Variáveis
@@ -47,8 +47,33 @@ Para testar login Google localmente: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` e
 9. Inserir os 2 admins em `perfis` (Germano e Camila) com `is_admin = true`.
 10. GitHub: Pages já está em "GitHub Actions" (T-04). **Trocar** os secrets `SUPABASE_URL` e `SUPABASE_ANON_KEY` (hoje do nexus-dev) pelos do `nexus-prod`: `gh secret set SUPABASE_URL` / `gh secret set SUPABASE_ANON_KEY`.
 
-## Publicação do frontend (automática)
-Merge na `main` → `deploy.yml`: `npm ci` → gera environment → `ng build --configuration production --base-href /nexus/` → copia `index.html` para `404.html` → `actions/deploy-pages`.
+## Publicação do frontend (automática, Cloudflare Pages — T-48)
+Merge na `main` → o Cloudflare Pages faz o build e publica sozinho; cada PR ganha um endereço de pré-visualização.
+O build roda `npm run build:cloudflare`: `scripts/gerar-environment.mjs` escreve o `environment.ts` a partir das
+variáveis do Cloudflare (recusa chave `sb_secret_`/`service_role`) e depois `ng build --configuration production`
+→ `dist/nexus/browser`. `public/_redirects` (`/* /index.html 200`) faz as rotas do Angular funcionarem ao
+recarregar a página; `public/_headers` põe cabeçalhos de segurança.
+
+### Ligar o repositório no Cloudflare (uma vez)
+1. <https://dash.cloudflare.com> → **Workers & Pages → Create → Pages → Connect to Git**.
+2. Autorize o app **Cloudflare Pages** no GitHub **só para o repositório `nexus`** (funciona com repositório privado).
+3. **Production branch:** `main`.
+4. **Framework preset:** `None` (o preset "Angular" usa outra pasta de saída).
+5. **Build command:** `npm run build:cloudflare`
+6. **Build output directory:** `dist/nexus/browser`
+7. **Environment variables** (Production e Preview):
+   | nome | valor |
+   |---|---|
+   | `NODE_VERSION` | `24` (o `.nvmrc` também indica 24) |
+   | `SUPABASE_URL` | `https://<ref>.supabase.co` (hoje o nexus-dev) |
+   | `SUPABASE_ANON_KEY` | a chave **publishable** (`sb_publishable_...`) — nunca a secret |
+   | `APP_URL` | o endereço do site, ex.: `https://nexus.pages.dev` |
+8. **Save and Deploy**. Depois, no Supabase do mesmo ambiente: **Auth → URL Configuration** → Site URL = `APP_URL`
+   e Redirect URLs com `https://<projeto>.pages.dev/**` e `https://*.<projeto>.pages.dev/**` (pré-visualizações).
+9. (Opcional) **Custom domains** no Cloudflare, se a empresa quiser um domínio próprio.
+
+O `deploy.yml` antigo (GitHub Pages) ficou só manual e pode ser apagado depois da virada: com o repositório
+privado no plano gratuito do GitHub, o Pages não funciona.
 
 ## Publicação do banco e funções (manual, com confirmação)
 ```bash
@@ -61,6 +86,7 @@ npx supabase functions deploy <nome>
 - [ ] CI verde (lint, unit, pgTAP, build).
 - [ ] `get_advisors` (segurança e desempenho) sem alertas críticos.
 - [ ] Nenhuma chave secreta no bundle (`bash .github/scripts/sem-segredos.sh dist` — roda também no CI).
+- [ ] Último backup do dia verde em Actions → Backup Supabase (docs/BACKUP.md).
 - [ ] Migrations novas testadas localmente com `db reset`.
 - [ ] CHANGELOG.md atualizado.
 - [ ] Teste rápido em produção: login, criar tarefa, comentar, solicitação, e-mail recebido.
@@ -76,7 +102,8 @@ npx supabase functions deploy <nome>
 
 ## Rollback
 - Frontend: reverter o merge na `main` (deploy automático da versão anterior).
-- Banco: nova migration que desfaz; nunca editar a anterior. Backups diários do Supabase (plano Pro) ou `pg_dump` manual antes de cada `db push`.
+- Frontend no Cloudflare: **Deployments → … → Rollback** numa versão anterior (imediato).
+- Banco: nova migration que desfaz; nunca editar a anterior. Backup diário encriptado no Google Drive (docs/BACKUP.md; restauro na secção 6) — rode o backup à mão antes de cada `db push` em produção.
 - Em último caso: reativar o v26 em modo escrita.
 
 ## Remoção de dados pessoais (pedido de uma pessoa)

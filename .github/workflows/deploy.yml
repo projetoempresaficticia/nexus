@@ -1,9 +1,9 @@
-# Deploy do frontend no GitHub Pages a cada merge na main (docs/DEPLOY.md).
-name: Deploy
+# Deploy ANTIGO no GitHub Pages — só manual (T-48). A hospedagem passou para o Cloudflare Pages,
+# que publica sozinho a cada merge na main (docs/DEPLOY.md). Com o repositório privado no plano
+# gratuito do GitHub, o Pages deixa de funcionar; apague este arquivo depois da virada.
+name: Deploy (GitHub Pages, legado)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

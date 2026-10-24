@@ -3,6 +3,9 @@
 Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); versões [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
+### Infraestrutura
+- 2026-10-24 — Site passa a ser publicado no Cloudflare Pages (a partir do repositório privado) e o banco ganha backup diário encriptado no Google Drive, com teste automático de restauro e guia de recuperação (T-48).
+
 ### Corrigido
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
 
