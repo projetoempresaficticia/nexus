@@ -1,8 +1,9 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { ToastService } from '../../shared/ui/toast.service';
 import { instante } from '../../shared/utils/datas';
 import { CamposEditaveis, Item, NovoItem } from '../models/item.model';
 import { StatusItem } from '../models/rotulos';
+import { CacheLocalService } from '../services/cache-local.service';
 import { Evento } from '../services/realtime.service';
 import { ItensService, ResultadoStatus } from './itens.service';
 
@@ -14,6 +15,7 @@ import { ItensService, ResultadoStatus } from './itens.service';
 export class ItensStore {
   private readonly service = inject(ItensService);
   private readonly toast = inject(ToastService);
+  private readonly cache = inject(CacheLocalService);
   private readonly _itens = signal<ReadonlyMap<string, Item>>(new Map());
   private readonly _carregando = signal(false);
   private readonly _carregado = signal(false);
@@ -24,6 +26,14 @@ export class ItensStore {
   readonly todos = computed(() => [...this._itens().values()]);
   /** Itens que um colega acabou de mudar (realce de 1,5 s — DESIGN.md). */
   readonly realcados = this._realcados.asReadonly();
+
+  constructor() {
+    // Retrato para a próxima abertura (T-44), gravado 1 s depois da última mudança
+    effect(() => {
+      const itens = this.todos();
+      if (this._carregado()) this.cache.agendar('itens', itens);
+    });
+  }
 
   porId(id: string): Item | undefined {
     return this._itens().get(id);
@@ -46,6 +56,13 @@ export class ItensStore {
 
   async carregar(forcar = false): Promise<void> {
     if (this._carregado() && !forcar) return;
+    const retrato = forcar ? null : await this.cache.ler<Item[]>('itens');
+    if (retrato && !this._carregado()) {
+      this._itens.set(new Map(retrato.map((i) => [i.id, i])));
+      this._carregado.set(true);
+      void this.recarregar();
+      return;
+    }
     this._carregando.set(true);
     try {
       const itens = await this.service.listar();
@@ -56,6 +73,12 @@ export class ItensStore {
     } finally {
       this._carregando.set(false);
     }
+  }
+
+  /** Logout: nada do usuário anterior fica na memória. */
+  limpar(): void {
+    this._itens.set(new Map());
+    this._carregado.set(false);
   }
 
   /** Recarga silenciosa (ligação voltou): sem "Carregando…" e sem aviso de erro. */

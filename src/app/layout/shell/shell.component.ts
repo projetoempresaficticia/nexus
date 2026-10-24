@@ -2,10 +2,12 @@ import { Component, DestroyRef, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { AuthService } from '../../core/auth/auth.service';
+import { ItensStore } from '../../core/itens/itens.store';
 import { TEXTOS } from '../../core/models/textos';
 import { RealtimeService } from '../../core/services/realtime.service';
 import { SincronizacaoService } from '../../core/services/sincronizacao.service';
 import { TemaService } from '../../core/services/tema.service';
+import { SolicitacoesStore } from '../../core/solicitacoes/solicitacoes.store';
 
 interface ItemMenu {
   rota: string;
@@ -25,6 +27,8 @@ export class ShellComponent {
   protected readonly tema = inject(TemaService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly itensStore = inject(ItensStore);
+  private readonly solicitacoes = inject(SolicitacoesStore);
   protected readonly t = TEXTOS;
   protected readonly realtime = inject(RealtimeService);
 
@@ -79,6 +83,8 @@ export class ShellComponent {
   protected async sair(): Promise<void> {
     await this.auth.sair();
     this.acesso.limpar();
+    this.itensStore.limpar();
+    this.solicitacoes.limpar();
     await this.router.navigateByUrl('/login');
   }
 }

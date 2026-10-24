@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ancestrais, descendentes, ordenarArvore } from '../../shared/utils/arvore';
 import { DadosIniciais, Papel } from '../models/acesso.model';
+import { CacheLocalService } from '../services/cache-local.service';
 import { ErroApi } from '../services/erro-api';
 import { AcessoService } from './acesso.service';
 
@@ -14,10 +16,17 @@ export interface OpcaoSetor {
   papel: PapelEfetivo | null;
 }
 
+interface Retrato {
+  dados: DadosIniciais;
+  pendentes: number;
+}
+
 /** Quem sou, o que vejo e o que administro — carregado uma vez por sessão (carregar_inicial). */
 @Injectable({ providedIn: 'root' })
 export class AcessoStore {
   private readonly service = inject(AcessoService);
+  private readonly cache = inject(CacheLocalService);
+  private readonly router = inject(Router);
   private readonly _dados = signal<DadosIniciais | null>(null);
   private readonly _pendentes = signal(0);
 
@@ -125,10 +134,31 @@ export class AcessoStore {
 
   /** 'sem_acesso' quando o perfil não existe ou está desativado. */
   async carregar(): Promise<'ok' | 'sem_acesso'> {
+    // Abertura instantânea (T-44): mostra o retrato e confirma no servidor em segundo plano.
+    const retrato = await this.cache.ler<Retrato>('acesso');
+    if (!retrato) return this.buscar();
+    this._dados.set(retrato.dados);
+    this._pendentes.set(retrato.pendentes);
+    void this.buscar().then(
+      async (r) => {
+        if (r === 'ok') return;
+        // Foi desativado desde a última visita
+        this.limpar();
+        await this.cache.limpar();
+        await this.router.navigateByUrl('/sem-acesso');
+      },
+      () => undefined, // sem internet: fica com o retrato
+    );
+    return 'ok';
+  }
+
+  private async buscar(): Promise<'ok' | 'sem_acesso'> {
     try {
       const dados = await this.service.carregarInicial();
+      const pendentes = await this.service.contarSolicitacoesPendentes(dados.perfil.id);
       this._dados.set(dados);
-      this._pendentes.set(await this.service.contarSolicitacoesPendentes(dados.perfil.id));
+      this._pendentes.set(pendentes);
+      void this.cache.gravar('acesso', { dados, pendentes } satisfies Retrato);
       return 'ok';
     } catch (e) {
       if (e instanceof ErroApi && e.codigo === 'sem_permissao') return 'sem_acesso';

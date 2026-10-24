@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { dadosIniciais, SETORES } from '../../../testing/dados-iniciais';
 import { DadosIniciais } from '../models/acesso.model';
+import { Router, provideRouter } from '@angular/router';
+import { cacheFalso } from '../../../testing/cache-falso';
+import { CacheLocalService } from '../services/cache-local.service';
 import { ErroApi } from '../services/erro-api';
 import { AcessoService } from './acesso.service';
 import { AcessoStore } from './acesso.store';
@@ -62,5 +65,52 @@ describe('AcessoStore', () => {
     const { store, resultado } = await carregar(new ErroApi('sem_permissao'));
     expect(resultado).toBe('sem_acesso');
     expect(store.carregado()).toBe(false);
+  });
+
+  describe('abertura instantânea (T-44)', () => {
+    function criar(servidor: Promise<DadosIniciais>) {
+      const membro = dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]);
+      const cache = cacheFalso({ acesso: { dados: membro, pendentes: 3 } });
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([]),
+          { provide: CacheLocalService, useValue: cache },
+          {
+            provide: AcessoService,
+            useValue: {
+              carregarInicial: vi.fn(() => servidor),
+              contarSolicitacoesPendentes: vi.fn().mockResolvedValue(1),
+            },
+          },
+        ],
+      });
+      return { store: TestBed.inject(AcessoStore), cache };
+    }
+
+    it('abre com o retrato sem esperar o servidor e depois atualiza', async () => {
+      let responder!: (d: DadosIniciais) => void;
+      const { store, cache } = criar(new Promise((r) => (responder = r)));
+      expect(await store.carregar()).toBe('ok');
+      expect(store.pendentes()).toBe(3);
+      expect(store.ehLider()).toBe(false);
+      responder(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]));
+      await new Promise((r) => setTimeout(r));
+      expect(store.ehLider()).toBe(true);
+      expect(store.pendentes()).toBe(1);
+      expect(cache.gravar).toHaveBeenCalledWith(
+        'acesso',
+        expect.objectContaining({ pendentes: 1 }),
+      );
+    });
+
+    it('desativado desde a última visita: apaga o retrato e vai para Sem acesso', async () => {
+      const { store, cache } = criar(Promise.reject(new ErroApi('sem_permissao')));
+      const navegar = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      expect(await store.carregar()).toBe('ok');
+      await new Promise((r) => setTimeout(r));
+      expect(cache.limpar).toHaveBeenCalled();
+      expect(navegar).toHaveBeenCalledWith('/sem-acesso');
+      expect(store.carregado()).toBe(false);
+    });
   });
 });

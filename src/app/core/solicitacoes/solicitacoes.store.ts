@@ -1,8 +1,9 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { ToastService } from '../../shared/ui/toast.service';
 import { AcessoStore } from '../auth/acesso.store';
 import { ItensStore } from '../itens/itens.store';
 import { StatusSolicitacao, TipoSolicitacao } from '../models/rotulos';
+import { CacheLocalService } from '../services/cache-local.service';
 import { Evento } from '../services/realtime.service';
 import { Mensagem, Solicitacao, SolicitacoesService } from './solicitacoes.service';
 
@@ -16,6 +17,7 @@ export class SolicitacoesStore {
   private readonly itens = inject(ItensStore);
   private readonly acesso = inject(AcessoStore);
   private readonly toast = inject(ToastService);
+  private readonly cache = inject(CacheLocalService);
   private readonly _lista = signal<Solicitacao[]>([]);
   private readonly _carregado = signal(false);
 
@@ -30,6 +32,13 @@ export class SolicitacoesStore {
     ),
   );
 
+  constructor() {
+    effect(() => {
+      const lista = this._lista();
+      if (this._carregado()) this.cache.agendar('solicitacoes', lista);
+    });
+  }
+
   doItem(itemId: string): Solicitacao[] {
     return this.ordenadas().filter((s) => s.item_id === itemId);
   }
@@ -40,12 +49,23 @@ export class SolicitacoesStore {
 
   async carregar(forcar = false): Promise<void> {
     if (this._carregado() && !forcar) return;
+    // Retrato da última visita na hora; a lista do servidor chega logo depois (T-44)
+    const retrato = this._carregado() ? null : await this.cache.ler<Solicitacao[]>('solicitacoes');
+    if (retrato && !this._carregado()) {
+      this._lista.set(retrato);
+      this._carregado.set(true);
+    }
     try {
       this._lista.set(await this.service.listar());
       this._carregado.set(true);
     } catch (e) {
-      this.toast.erro(e);
+      if (!retrato) this.toast.erro(e); // sem internet: fica com o retrato
     }
+  }
+
+  limpar(): void {
+    this._lista.set([]);
+    this._carregado.set(false);
   }
 
   /** Tempo real (T-43): busca a solicitação com as mensagens; mensagem nova entra direto. */
