@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-35, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-36, T-43 a T-47 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -47,13 +47,14 @@
 - **T-33** (T-33a + T-33b): migration `20261024100959_usuarios_admin.sql` (**por aplicar no nexus-dev**) + pgTAP 011; `features/usuarios` (lista, busca, inativos, modais Novo usuário / Setores / Reatribuir); `AcessoStore` busca `pessoas_inativas()` (nomes de quem saiu) e tem `recarregar()`. Resolve a pendência "Pessoa removida" da T-22.
 - **T-34**: `features/setores` (página do Adm, `NovoSetorModal` compartilhado com a Equipe, `SetoresService`: criar por insert com RLS, alterar por `salvar_setor`); `EmBrevePage` removida (todas as rotas têm tela).
 - **T-35**: migration `20261024103800_historico_responsaveis.sql` (**por aplicar no nexus-dev**; trigger em `item_responsaveis`) + pgTAP 012; `HistoricoItemComponent` na página do item.
+- **T-36** (T-36a + T-36b): migration `20261024105531_notificacoes_autor_lembretes.sql` (**por aplicar no nexus-dev**) + pgTAP 013; Edge Function `enviar-notificacoes` (**por publicar**), `_shared/modelos-email.ts` (testado pelo Vitest — `angular.json` inclui `../supabase/functions/**/*.spec.ts`), `_shared/email.ts` (`EMAIL_PROVEDOR=nenhum|resend`), `supabase/agendamentos.sql` (rodar à mão por projeto). ⚠️ Provedor de e-mail a confirmar.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-36** — Notificações por e-mail (Edge Function `enviar-notificacoes`, pg_cron) — depende do provedor de e-mail (⚠️ Resend × SMTP).
+- **T-37** — Desempenho (métricas do PRD, advisors).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

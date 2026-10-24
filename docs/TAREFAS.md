@@ -51,7 +51,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-33** Usuários (admin): lista, cadastrar, editar vínculos, desativar/reativar, reatribuir; RPCs `cadastrar_usuario`, `desativar_usuario`, `reativar_usuario` (substituem as Edge Functions). — Dep.: T-13 · US-03, US-04
 - [x] **T-34** Setores (admin): árvore, criar, renomear, mover, desativar. — Dep.: T-13 · US-05
 - [x] **T-35** Histórico no item. — Dep.: T-18 · US-32
-- [ ] **T-36** Notificações: Edge Function `enviar-notificacoes`, templates, pg_cron (2 min + lembrete diário 08:00 Lisboa). — Dep.: T-10 · US-30
+- [x] **T-36** Notificações: Edge Function `enviar-notificacoes`, templates, pg_cron (2 min + lembrete diário 08:00 Lisboa). — Dep.: T-10 · US-30
 
 ## Fase 4 — Polimento
 - [ ] **T-37** Desempenho: medir as métricas do PRD (inclui < 2 s do tempo real e < 500 ms da reabertura), revisar cache das stores e consultas lentas (`get_advisors`). — Dep.: T-16..T-31
