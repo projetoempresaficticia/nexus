@@ -194,7 +194,9 @@ export const TEXTOS = {
     checklist: 'Checklist',
     checklistProgresso: (c: number, t: number, p: number) => `${c} de ${t} · ${p}%`,
     novoPasso: 'Novo item do checklist',
-    novoPassoAjuda: 'Adicionar item ao checklist',
+    novoPassoAjuda: 'Adicionar item ao checklist (use @ para marcar alguém)',
+    editarPasso: (texto: string) => `Editar item ${texto}`,
+    dicaEditarPasso: 'Clique duas vezes para editar',
     adicionarPasso: 'Adicionar passo',
     removerPasso: (texto: string) => `Remover item ${texto}`,
     checklistTarefa:

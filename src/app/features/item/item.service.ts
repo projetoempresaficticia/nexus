@@ -40,6 +40,12 @@ export class ItemService {
     lancarSeErro(error);
   }
 
+  /** Texto com menções (HTML); o banco avisa quem foi marcado (T-47). */
+  async editarPasso(id: string, texto: string): Promise<void> {
+    const { error } = await this.supabase.from('checklist_itens').update({ texto }).eq('id', id);
+    lancarSeErro(error);
+  }
+
   async removerPasso(id: string): Promise<void> {
     const { error } = await this.supabase.from('checklist_itens').delete().eq('id', id);
     lancarSeErro(error);
