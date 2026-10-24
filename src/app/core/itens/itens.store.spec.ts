@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { item } from '../../../testing/item';
 import { ToastService } from '../../shared/ui/toast.service';
 import { ErroApi } from '../services/erro-api';
+import { Evento } from '../services/realtime.service';
 import { ItensService } from './itens.service';
 import { ItensStore } from './itens.store';
 
@@ -78,5 +79,84 @@ describe('ItensStore', () => {
     await store.carregar();
     store.aplicar(item({ id: 't', nome: 'velho', atualizado_em: '2026-10-23T00:00:00Z' }));
     expect(store.porId('t')!.nome).toBe('novo');
+  });
+});
+
+describe('ItensStore — tempo real', () => {
+  const ev = (
+    tabela: Evento['tabela'],
+    tipo: Evento['tipo'],
+    novo: Record<string, unknown> | null,
+    antigo: Record<string, unknown> | null = null,
+  ): Evento => ({ tabela, tipo, novo, antigo });
+
+  async function criar(obter: ReturnType<typeof vi.fn>, listar = vi.fn()) {
+    listar.mockResolvedValue([item({ id: 't', atualizado_em: '2026-10-24T10:00:00Z' })]);
+    TestBed.configureTestingModule({
+      providers: [{ provide: ItensService, useValue: { listar, obter } }],
+    });
+    const store = TestBed.inject(ItensStore);
+    await store.carregar();
+    return { store, listar };
+  }
+
+  it('ignora o evento da versão que já tem (ação otimista própria não pisca)', async () => {
+    const obter = vi.fn();
+    const { store } = await criar(obter);
+    await store.sincronizar(
+      ev('itens', 'UPDATE', { id: 't', atualizado_em: '2026-10-24 10:00:00+00' }),
+    );
+    expect(obter).not.toHaveBeenCalled();
+  });
+
+  it('versão mais nova de um colega: busca na vw_itens, aplica e realça por 1,5 s', async () => {
+    vi.useFakeTimers();
+    const obter = vi
+      .fn()
+      .mockResolvedValue(
+        item({ id: 't', status: 'concluida', atualizado_em: '2026-10-24T11:00:00Z' }),
+      );
+    const { store } = await criar(obter);
+    await store.sincronizar(
+      ev('itens', 'UPDATE', { id: 't', atualizado_em: '2026-10-24T11:00:00.123456+00:00' }),
+    );
+    expect(store.porId('t')!.status).toBe('concluida');
+    expect(store.realcados().has('t')).toBe(true);
+    vi.advanceTimersByTime(1500);
+    expect(store.realcados().has('t')).toBe(false);
+    vi.useRealTimers();
+  });
+
+  it('item novo visível entra; deixar de ser responsável tira da lista', async () => {
+    const obter = vi
+      .fn()
+      .mockResolvedValueOnce(item({ id: 'novo' }))
+      .mockResolvedValueOnce(null);
+    const { store } = await criar(obter);
+    await store.sincronizar(ev('itens', 'INSERT', { id: 'novo', atualizado_em: 'x' }));
+    expect(store.porId('novo')).toBeDefined();
+    await store.sincronizar(
+      ev('item_responsaveis', 'DELETE', null, { item_id: 't', perfil_id: 'p-eu' }),
+    );
+    expect(obter).toHaveBeenLastCalledWith('t');
+    expect(store.porId('t')).toBeUndefined();
+  });
+
+  it('DELETE de item que não conheço é ignorado; DELETE de item conhecido remove', async () => {
+    const obter = vi.fn();
+    const { store } = await criar(obter);
+    await store.sincronizar(ev('item_responsaveis', 'DELETE', null, { item_id: 'outro' }));
+    expect(obter).not.toHaveBeenCalled();
+    await store.sincronizar(ev('itens', 'DELETE', null, { id: 't' }));
+    expect(store.porId('t')).toBeUndefined();
+  });
+
+  it('reconexão recarrega tudo sem "Carregando…"', async () => {
+    const { store, listar } = await criar(vi.fn());
+    listar.mockResolvedValue([]);
+    const p = store.sincronizar(null);
+    expect(store.carregando()).toBe(false);
+    await p;
+    expect(store.todos()).toEqual([]);
   });
 });

@@ -6,6 +6,7 @@ import { AcessoService } from '../auth/acesso.service';
 import { AcessoStore } from '../auth/acesso.store';
 import { ItensService } from '../itens/itens.service';
 import { ItensStore } from '../itens/itens.store';
+import { Evento } from '../services/realtime.service';
 import { SolicitacoesService } from './solicitacoes.service';
 import { SolicitacoesStore } from './solicitacoes.store';
 
@@ -95,6 +96,63 @@ describe('SolicitacoesStore', () => {
     expect(await store.cancelar('sol-1')).toBe(false);
     expect(store.porId('sol-1')).toBeDefined();
     expect(await store.cancelar('sol-1')).toBe(true);
+    expect(store.porId('sol-1')).toBeUndefined();
+  });
+});
+
+describe('SolicitacoesStore — tempo real', () => {
+  const mensagem = {
+    id: 'm1',
+    solicitacao_id: 'sol-1',
+    autor_id: 'p-bruno',
+    texto_html: '<p>oi</p>',
+    criado_em: '2026-10-24T10:00:00Z',
+  };
+
+  function criar(servico: Partial<Record<keyof SolicitacoesService, unknown>>) {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: SolicitacoesService, useValue: servico },
+        { provide: ItensService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
+      ],
+    });
+    return TestBed.inject(SolicitacoesStore);
+  }
+
+  it('mensagem nova entra uma vez só, mesmo chegando pelo evento e pelo envio', async () => {
+    const store = criar({
+      listar: vi.fn().mockResolvedValue([solicitacao()]),
+      enviarMensagem: vi.fn().mockResolvedValue(mensagem),
+    });
+    await store.carregar();
+    const ev: Evento = {
+      tabela: 'solicitacao_mensagens',
+      tipo: 'INSERT',
+      novo: mensagem,
+      antigo: null,
+    };
+    await store.sincronizar(ev);
+    await store.sincronizar(ev);
+    expect(store.porId('sol-1')!.solicitacao_mensagens).toHaveLength(1);
+  });
+
+  it('solicitação nova é buscada; cancelada (DELETE) sai da lista', async () => {
+    const obter = vi.fn().mockResolvedValue(solicitacao({ id: 'nova' }));
+    const store = criar({ listar: vi.fn().mockResolvedValue([solicitacao()]), obter });
+    await store.carregar();
+    await store.sincronizar({
+      tabela: 'solicitacoes',
+      tipo: 'INSERT',
+      novo: { id: 'nova' },
+      antigo: null,
+    });
+    expect(store.porId('nova')).toBeDefined();
+    await store.sincronizar({
+      tabela: 'solicitacoes',
+      tipo: 'DELETE',
+      novo: null,
+      antigo: { id: 'sol-1' },
+    });
     expect(store.porId('sol-1')).toBeUndefined();
   });
 });
