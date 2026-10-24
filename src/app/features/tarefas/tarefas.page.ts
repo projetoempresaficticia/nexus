@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
@@ -9,6 +10,8 @@ import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { LinhaItemComponent } from '../../shared/ui/linha-item.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { NovoItemModal } from './novo-item.modal';
+import { ArvoreComponent } from './visoes/arvore.component';
+import { DependenciasComponent } from './visoes/dependencias.component';
 import { KanbanComponent } from './visoes/kanban.component';
 
 type Aba = keyof typeof TEXTOS.tarefas.abas;
@@ -42,6 +45,9 @@ interface Grupo {
     CarregandoComponent,
     NovoItemModal,
     KanbanComponent,
+    ArvoreComponent,
+    DependenciasComponent,
+    NgTemplateOutlet,
   ],
   templateUrl: './tarefas.page.html',
   styleUrl: './tarefas.page.css',
@@ -91,6 +97,22 @@ export class TarefasPage {
     return this.quem() === 'minhas'
       ? this.base().filter((i) => i.responsaveis.includes(eu))
       : this.base();
+  });
+  /** Árvore: todos os itens dos setores do filtro, inclusive projetos e contexto (os galhos). */
+  protected readonly itensArvore = computed(() => {
+    const filtro = this.acesso.setorFiltro();
+    const setores = new Set(this.acesso.setoresDoFiltro());
+    return this.itens.todos().filter((i) => filtro === 'todos' || setores.has(i.setor_id));
+  });
+  /** Folhas que a Árvore mostra (com o caminho até elas), pelos filtros "Só os meus" e "Só as minhas". */
+  protected readonly interessa = computed(() => {
+    const eu = this.acesso.perfil()?.id ?? '';
+    const soMeus = this.soMeus();
+    const minhas = this.quem() === 'minhas';
+    return (i: Item) =>
+      !i.meu_envolvimento.includes('contexto') &&
+      (!soMeus || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
+      (!minhas || i.responsaveis.includes(eu));
   });
   protected readonly abertos = computed(
     () => this.base().filter((i) => i.status !== 'concluida').length,

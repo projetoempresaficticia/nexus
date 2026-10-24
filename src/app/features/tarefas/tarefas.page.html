@@ -51,21 +51,13 @@
 @if (itens.carregando() && !itens.carregado()) {
   <section class="panel"><app-carregando /></section>
 } @else if (visao() === 'kanban') {
-  <app-kanban [itens]="itensVisao()">
-    <div class="views" role="tablist" [attr.aria-label]="t.tarefas.deQuem.rotulo">
-      @for (q of deQuem; track q[0]) {
-        <button
-          type="button"
-          role="tab"
-          [class.on]="quem() === q[0]"
-          [attr.aria-selected]="quem() === q[0]"
-          (click)="quem.set(q[0])"
-        >
-          {{ q[1] }}
-        </button>
-      }
-    </div>
-  </app-kanban>
+  <app-kanban [itens]="itensVisao()"><ng-container [ngTemplateOutlet]="seletorQuem" /></app-kanban>
+} @else if (visao() === 'arvore') {
+  <app-arvore [itens]="itensArvore()" [interessa]="interessa()">
+    <ng-container [ngTemplateOutlet]="seletorQuem" />
+  </app-arvore>
+} @else if (visao() === 'deps') {
+  <app-dependencias />
 } @else if (visao() !== 'lista') {
   <section class="panel">
     <app-vazio>{{ t.emBreve }}</app-vazio>
@@ -111,3 +103,19 @@
 @if (novo()) {
   <app-novo-item-modal [nivel]="1" (fechar)="novo.set(false)" />
 }
+
+<ng-template #seletorQuem>
+  <div class="views" role="tablist" [attr.aria-label]="t.tarefas.deQuem.rotulo">
+    @for (q of deQuem; track q[0]) {
+      <button
+        type="button"
+        role="tab"
+        [class.on]="quem() === q[0]"
+        [attr.aria-selected]="quem() === q[0]"
+        (click)="quem.set(q[0])"
+      >
+        {{ q[1] }}
+      </button>
+    }
+  </div>
+</ng-template>
