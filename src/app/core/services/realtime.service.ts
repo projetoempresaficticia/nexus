@@ -67,9 +67,7 @@ export class RealtimeService {
     this.caiu = false;
     let canal = supabase.channel('nexus');
     for (const tabela of TABELAS_TEMPO_REAL) {
-      // Mensagens nunca mudam nem são apagadas (API.md).
-      const event = tabela === 'solicitacao_mensagens' ? 'INSERT' : '*';
-      canal = canal.on('postgres_changes', { event, schema: 'public', table: tabela }, (p) =>
+      canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: tabela }, (p) =>
         this.entregar(tabela, p),
       );
     }

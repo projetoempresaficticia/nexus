@@ -67,6 +67,32 @@ export class SolicitacoesService {
     return data as unknown as Resposta;
   }
 
+  async editar(id: string, html: string): Promise<Resposta> {
+    const { data, error } = await this.supabase.rpc('editar_solicitacao', {
+      p_id: id,
+      p_texto_html: html,
+    });
+    lancarSeErro(error);
+    return data as unknown as Resposta;
+  }
+
+  /** Só o autor consegue (RLS); editado_em é carimbado pelo banco. */
+  async editarMensagem(id: string, html: string): Promise<Mensagem> {
+    const { data, error } = await this.supabase
+      .from('solicitacao_mensagens')
+      .update({ texto_html: html })
+      .eq('id', id)
+      .select()
+      .single();
+    lancarSeErro(error);
+    return data!;
+  }
+
+  async apagarMensagem(id: string): Promise<void> {
+    const { error } = await this.supabase.from('solicitacao_mensagens').delete().eq('id', id);
+    lancarSeErro(error);
+  }
+
   async cancelar(id: string): Promise<{ item: Item }> {
     const { data, error } = await this.supabase.rpc('cancelar_solicitacao', { p_id: id });
     lancarSeErro(error);
