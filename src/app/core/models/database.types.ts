@@ -49,6 +49,20 @@ isOneToOne: false
       referencedColumns: ["item_id"]
     }
                   ]
+                },"anexos_drive_lixeira": {
+                  Row: {
+                    "criado_em": string,"drive_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "criado_em"?: string,"drive_id": string
+                  }
+                  Update: {
+                    "criado_em"?: string,"drive_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"checklist_itens": {
                   Row: {
                     "feito": boolean,"id": string,"item_id": string,"ordem": number,"texto": string
