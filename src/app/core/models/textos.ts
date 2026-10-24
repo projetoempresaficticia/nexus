@@ -23,9 +23,9 @@ export const TEXTOS = {
   semAcesso: {
     titulo: 'Acesso não autorizado',
     comEmail: (email: string) =>
-      `Acesso não autorizado. Sua conta (${email}) não está cadastrada ou está inativa. Fale com um administrador do sistema.`,
+      `Sua conta (${email}) não está cadastrada ou está inativa. Entre em contato com a gestão para fazer o seu cadastro.`,
     semEmail:
-      'Acesso não autorizado. Sua conta não está cadastrada ou está inativa. Fale com um administrador do sistema.',
+      'Sua conta não está cadastrada ou está inativa. Entre em contato com a gestão para fazer o seu cadastro.',
     voltar: 'Voltar ao início',
   },
   sair: 'Sair',
