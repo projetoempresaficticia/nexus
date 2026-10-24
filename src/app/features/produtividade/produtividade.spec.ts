@@ -5,6 +5,9 @@ import { item } from '../../../testing/item';
 import { AcessoService } from '../../core/auth/acesso.service';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensService } from '../../core/itens/itens.service';
+import { Pessoa } from '../../core/models/acesso.model';
+import { SolicitacoesService } from '../../core/solicitacoes/solicitacoes.service';
+import { GraficosProdutividadeComponent } from './graficos.component';
 import { hojeIso, somarDias } from '../../shared/utils/datas';
 import {
   Entrega,
@@ -117,6 +120,7 @@ describe('ProdutividadePage', () => {
           },
         },
         { provide: ProdutividadeService, useValue: { listar } },
+        { provide: SolicitacoesService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
       ],
     });
     await TestBed.inject(AcessoStore).carregar();
@@ -164,5 +168,82 @@ describe('ProdutividadePage', () => {
     linhaCarla.click();
     await fixture.whenStable();
     expect(kpi(el, 0).valor).toBe('2');
+  });
+});
+
+describe('GraficosProdutividadeComponent', () => {
+  const PESSOAS: Pessoa[] = [
+    { id: 'p-bruno', nome: 'Bruno Costa', iniciais: 'BC', email: 'b@x', vinculos: [] },
+    { id: 'p-carla', nome: 'Carla Dias', iniciais: 'CD', email: 'c@x', vinculos: [] },
+  ];
+  const SEMANAS = semanasDo(periodo('mes', '2026-10-24'));
+
+  async function montar() {
+    const dados = dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]);
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AcessoService,
+          useValue: {
+            carregarInicial: vi.fn().mockResolvedValue(dados),
+            contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
+          },
+        },
+      ],
+    });
+    await TestBed.inject(AcessoStore).carregar();
+    const entregas = [
+      entrega({ item_id: 'a', concluido: '2026-10-20' }),
+      entrega({ item_id: 'b', concluido: '2026-10-21', no_prazo: false }),
+      entrega({ item_id: 'c', concluido: '2026-10-06', perfil_id: 'p-carla' }),
+    ];
+    const fixture = TestBed.createComponent(GraficosProdutividadeComponent);
+    fixture.componentRef.setInput('semanas', SEMANAS);
+    fixture.componentRef.setInput('entregas', entregas);
+    fixture.componentRef.setInput('doPeriodo', entregas);
+    fixture.componentRef.setInput('pessoas', PESSOAS);
+    fixture.componentRef.setInput('criadosPorSemana', [1, 0, 2, 0]);
+    fixture.componentRef.setInput('esperas', [{ setor_id: SETORES.financeiro, media: 2.5, n: 3 }]);
+    fixture.componentRef.setInput('setores', [SETORES.sucesso]);
+    await fixture.whenStable();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  it('ritmo: duas linhas com o último valor e a tabela de dados', async () => {
+    const el = await montar();
+    expect(el.querySelectorAll('path.serie')).toHaveLength(2);
+    expect([...el.querySelectorAll('text.fim')].map((t) => t.textContent?.trim())).toEqual([
+      'Entregues: 2',
+      'Criados: 0',
+    ]);
+    const linha = el.querySelectorAll('details tbody tr')[1];
+    expect([...linha.querySelectorAll('td')].map((t) => t.textContent?.trim())).toEqual([
+      '05/10 a 11/10',
+      '1',
+      '0',
+    ]);
+  });
+
+  it('entregas por pessoa com % no prazo e quem segura as solicitações', async () => {
+    const el = await montar();
+    const bruno = el.querySelector('.hbar-row')!;
+    expect(bruno.textContent).toContain('Bruno Costa');
+    expect(bruno.textContent).toContain('50% no prazo');
+    expect(bruno.getAttribute('title')).toContain('com atraso: b');
+    expect(el.textContent).toContain('Financeiro');
+    expect(el.textContent).toContain('2,5 dias · 3');
+  });
+
+  it('setor × semana com total', async () => {
+    const el = await montar();
+    const linha = el.querySelectorAll('.heat')[1].querySelector('tbody tr')!;
+    expect([...linha.querySelectorAll('td')].map((t) => t.textContent?.trim())).toEqual([
+      'Sucesso do Aluno',
+      '·',
+      '1',
+      '·',
+      '2',
+      '3',
+    ]);
   });
 });

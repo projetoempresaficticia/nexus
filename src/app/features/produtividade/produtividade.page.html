@@ -47,6 +47,16 @@
     }
   </section>
 
+  <app-graficos-produtividade
+    [semanas]="semanas()"
+    [entregas]="daSelecao()"
+    [doPeriodo]="doPeriodo()"
+    [pessoas]="pessoasSelecao()"
+    [criadosPorSemana]="criadosPorSemana()"
+    [esperas]="esperas()"
+    [setores]="setores()"
+  />
+
   <section class="panel">
     <div class="panel-h">
       <h2>{{ t.produtividade.equipe }}</h2>

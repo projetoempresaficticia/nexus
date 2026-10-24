@@ -1,0 +1,83 @@
+/* .chart-sec, .legend, .hbar-row, .hbar, .heat, .chart-svg vêm de styles/prototipo.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.c1 {
+  background: var(--c1);
+}
+.c2 {
+  background: var(--c2);
+}
+.atraso {
+  background: var(--danger);
+}
+.vazio {
+  width: 100%;
+  background: var(--surface-2);
+}
+.grade {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.eixo {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.serie {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.ponto {
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.fim {
+  fill: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+}
+.quem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.num {
+  text-align: right;
+  line-height: 1.35;
+}
+.num strong {
+  color: var(--fg);
+}
+.ok {
+  color: var(--c1);
+  font-weight: 600;
+}
+.ruim {
+  color: var(--danger);
+  font-weight: 600;
+}
+.vazio-txt {
+  margin: 0;
+}
+.sem {
+  font-size: 12px;
+}
+.setor {
+  white-space: nowrap;
+}
+.claro {
+  color: #fff;
+}
+.forte {
+  font-weight: 700;
+}
