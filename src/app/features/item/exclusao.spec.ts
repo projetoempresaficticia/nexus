@@ -54,7 +54,10 @@ describe('Excluir na página do item', () => {
             listarComentarios: vi.fn().mockResolvedValue([]),
           },
         },
-        { provide: AnexosService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
+        {
+          provide: AnexosService,
+          useValue: { listar: vi.fn().mockResolvedValue([]), limpar: vi.fn() },
+        },
         {
           provide: ItensService,
           useValue: { listar: vi.fn().mockResolvedValue(ITENS), ...servico },
@@ -76,7 +79,7 @@ describe('Excluir na página do item', () => {
   });
 
   it('líder confirma com a contagem, exclui em cascata e volta ao projeto', async () => {
-    const excluir = vi.fn().mockResolvedValue({ apagados: 3, caminhos_storage: [] });
+    const excluir = vi.fn().mockResolvedValue({ apagados: 3, caminhos_storage: ['s/t/a.pdf'] });
     const { fixture, el } = await montar('lider', {
       contarDescendentes: vi.fn().mockResolvedValue(2),
       excluir,
@@ -104,6 +107,7 @@ describe('Excluir na página do item', () => {
     ]);
     expect(store.porId('p')).toBeTruthy();
     expect(navegar).toHaveBeenCalledWith('/item/p');
+    expect(TestBed.inject(AnexosService).limpar).toHaveBeenCalledWith(['s/t/a.pdf']);
   });
 
   it('cancelar não exclui', async () => {

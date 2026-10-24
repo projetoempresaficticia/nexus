@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-22 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-23 concluídas. Migrations a partir da T-09 e a Edge Function limpar-anexos por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -29,13 +29,14 @@
 - **T-20**: botão Excluir na página do item (líder/adm, ou criador sem filhos — ⚠️ regra a confirmar), confirmação com contagem (`contar_descendentes`), `ItensStore.excluir` tira o item e os descendentes do cache. Limpeza dos arquivos no Storage fica para a T-23 (caminhos já vêm do RPC).
 - **T-21**: recorrência ponta a ponta (RPC T-09 + modal + detalhes + selo ↻ + toast da próxima). ⚠️ "Diária" = +1 dia corrido (FLUXOS); protótipo usava dias úteis — a confirmar.
 - **T-22**: `ComentariosItemComponent` (listar, publicar sanitizado via `salvar_comentario`, editar só autor com "(editado)", apagar autor/líder com confirmação). Pendência: autor desativado aparece como "Pessoa removida" (a RLS de perfis só mostra ativos) — resolver na T-33 para cumprir US-04.
+- **T-23** (T-23a + T-23b): `AnexosService` (upload privado, link, URL assinada, imagem colada, limpar), `AnexosItemComponent`, diretiva `appImagensPrivadas`, editor com `data-caminho`, Edge Function `supabase/functions/limpar-anexos` (**por publicar no nexus-dev**).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-23** — Anexos: upload até 20 MB, link externo, colar imagem no comentário, Edge Functions `url-anexo` e `limpar-anexos`.
+- **T-24** — Solicitações: bloco no item, tela com abas e conversa, responder/aprovar/recusar/cancelar, contador.
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.
@@ -44,6 +45,7 @@ CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arq
 - **Todas as tabelas novas:** `grant` explícito a `authenticated` + RLS; funções de acesso em `privado`, chamadas como `(select privado.f())`.
 - **Seed no nexus-dev:** carregar o `supabase/seed.sql` foi recusado no pedido de confirmação (2026-10-23) — ⚠️ o Germano decide se carrega (dados fictícios; útil para testar as telas).
 - **Migrations pendentes no nexus-dev** (o `apply_migration` foi recusado na confirmação, provavelmente por ausência): a partir de `20261023195015_rpcs_itens.sql`. Aplicar em lote quando o Germano estiver presente (MCP `apply_migration`, por ordem de nome).
+- **Edge Functions por publicar no nexus-dev**: `limpar-anexos` (MCP `deploy_edge_function` ou `npx supabase functions deploy`).
 - **Para testar o login no nexus-dev** (o Germano, no painel): DEPLOY.md §Projeto nexus-dev passos 1–5 (URLs, desligar confirmação de e-mail, ligar o hook, seed, migrations).
 - **T-40:** trocar os secrets do GitHub para o nexus-prod. Plano free permite 2 projetos ativos e a org já tem `projetoempresaficticia` + `nexus-dev` → pausar um ou mudar de plano para criar a produção.
 

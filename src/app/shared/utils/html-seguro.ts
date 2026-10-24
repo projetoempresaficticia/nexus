@@ -23,7 +23,9 @@ const TAGS = [
   'blockquote',
   'span',
 ];
-const ATRIBUTOS = ['href', 'src', 'alt', 'class', 'data-uid', 'target', 'rel'];
+const ATRIBUTOS = ['href', 'src', 'alt', 'class', 'data-uid', 'data-caminho', 'target', 'rel'];
+/** Imagem colada fica no bucket privado: o HTML guarda o caminho e a tela pede uma URL assinada. */
+const CAMINHO_ANEXO = /^[\w-]+\/[\w-]+\/[\w.-]+$/;
 
 let ganchosInstalados = false;
 
@@ -42,10 +44,16 @@ function instalarGanchos(): void {
       el.removeAttribute('rel');
       el.removeAttribute('href');
     }
-    if (tag === 'IMG' && !/^https:/i.test(el.getAttribute('src') ?? '')) el.remove();
-    if (tag !== 'IMG') {
+    if (tag === 'IMG') {
+      const caminhoOk = CAMINHO_ANEXO.test(el.getAttribute('data-caminho') ?? '');
+      if (!caminhoOk) el.removeAttribute('data-caminho');
+      const srcOk = /^https:/i.test(el.getAttribute('src') ?? '');
+      if (!srcOk) el.removeAttribute('src');
+      if (!srcOk && !caminhoOk) el.remove();
+    } else {
       el.removeAttribute('src');
       el.removeAttribute('alt');
+      el.removeAttribute('data-caminho');
     }
     // só a pílula de menção usa class/data-uid
     const mencao =

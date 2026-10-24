@@ -49,6 +49,7 @@
               [(valor)]="motivo"
               [rotulo]="t.item.motivoAjuda"
               [pessoas]="pessoas()"
+              [enviarImagem]="enviarImagem"
             />
             <div class="acoes">
               <button type="button" class="btn sm" (click)="editandoMotivo.set(false)">
@@ -61,7 +62,11 @@
           } @else if (vazio(it.motivo_bloqueio_html)) {
             <p class="sem-motivo">{{ t.item.semMotivo }}</p>
           } @else {
-            <div class="rich" [innerHTML]="it.motivo_bloqueio_html | htmlSeguro"></div>
+            <div
+              class="rich"
+              [innerHTML]="it.motivo_bloqueio_html | htmlSeguro"
+              [appImagensPrivadas]="it.motivo_bloqueio_html"
+            ></div>
           }
         </section>
       }
@@ -80,6 +85,7 @@
             [(valor)]="descricao"
             [rotulo]="t.item.descricaoAjuda"
             [pessoas]="pessoas()"
+            [enviarImagem]="enviarImagem"
           />
           <div class="acoes">
             <button type="button" class="btn sm" (click)="editandoDescricao.set(false)">
@@ -92,7 +98,11 @@
         } @else if (vazio(it.descricao_html)) {
           <p class="muted sem">{{ t.item.semDescricao }}</p>
         } @else {
-          <div class="rich" [innerHTML]="it.descricao_html | htmlSeguro"></div>
+          <div
+            class="rich"
+            [innerHTML]="it.descricao_html | htmlSeguro"
+            [appImagensPrivadas]="it.descricao_html"
+          ></div>
         }
       </section>
 
