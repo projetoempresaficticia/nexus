@@ -43,6 +43,7 @@ reset role;
 set local role service_role;
 select lives_ok($$update public.anexos set drive_id = 'drv1' where id = '45200000-0000-0000-0000-000000000001'$$,
   'service_role grava drive_id');
+reset role;
 insert into public.anexos (item_id, nome, link_externo, drive_id, enviado_por)
   values ('35200000-0000-0000-0000-000000000002', 'b.pdf', 'https://drive.google.com/file/d/drv2/view', 'drv2',
           '15200000-0000-0000-0000-000000000001');
