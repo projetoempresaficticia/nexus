@@ -96,9 +96,9 @@
           type="button"
           role="tab"
           class="tab"
-          [class.on]="aba() === a[0]"
-          [attr.aria-selected]="aba() === a[0]"
-          (click)="aba.set(a[0])"
+          [class.on]="abaAtual() === a[0]"
+          [attr.aria-selected]="abaAtual() === a[0]"
+          (click)="abaAtual.set(a[0])"
         >
           {{ a[1] }} · {{ contagem()[a[0]] }}
         </button>
