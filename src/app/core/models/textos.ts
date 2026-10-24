@@ -232,7 +232,16 @@ export const TEXTOS = {
     para: (nome: string) => `Para ${nome}`,
     origem: (nivel: string, setor: string) => `${nivel} de origem · ${setor}`,
     leitura: 'Você vê este item em modo leitura porque o seu setor foi solicitado.',
-    abrirItem: (nivel: string) => `Abrir ${nivel}`,
+    abrirItem: (nivel: string) => `Abrir ${nivel.toLowerCase()}`,
+    verLeitura: (nivel: string) => `Ver ${nivel.toLowerCase()} (leitura)`,
+    resumoItem: (responsaveis: string, prazo: string) =>
+      `Responsável: ${responsaveis || 'ninguém'} · Prazo ${prazo || '—'}`,
+    dePara: (de: string, para: string, quando: string) => `${de} → ${para} · ${quando}`,
+    mensagemVazia: 'Escreva a mensagem antes de enviar.',
+    cancelarTitulo: 'Cancelar solicitação?',
+    cancelarMensagem:
+      'A solicitação é apagada e o item volta ao andamento se não houver outras pendentes.',
+    voltar: 'Fechar conversa',
     semNoItem: 'Se este item depende de alguém, crie uma solicitação. O status muda sozinho.',
     escolhaPessoa: 'Escolha a pessoa',
     textoObrigatorio: 'Descreva o que você precisa.',
