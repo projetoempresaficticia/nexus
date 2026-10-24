@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-19 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
+2026-10-24 — T-01 a T-20 concluídas. Migrations a partir da T-09 por aplicar no nexus-dev.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -26,13 +26,14 @@
 - **T-17**: `features/projetos` (grade `.pcard`, progresso por tarefas, parados abaixo, cartão "Sem projeto", "+ Novo projeto" para quem tem setores — qualquer vínculo cria projeto, DECISOES).
 - **T-18** (T-18a + T-18b): `features/item` — ItemPage (caminho, `app-titulo-editavel`, descrição, bloqueio, só leitura), `StatusItemComponent`, `DetalhesItemComponent` (responsáveis, prioridade, repetir, datas, projeto, setor, decide, progresso), `FilhosItemComponent`; `core/itens/permissoes.ts`.
 - **T-19**: `features/item/item.service.ts` (checklist direto na tabela com RLS; dependências via RPC), `ChecklistItemComponent` (otimista), `DependenciasItemComponent` (espera por / bloqueia; ciclo → erro do glossário).
+- **T-20**: botão Excluir na página do item (líder/adm, ou criador sem filhos — ⚠️ regra a confirmar), confirmação com contagem (`contar_descendentes`), `ItensStore.excluir` tira o item e os descendentes do cache. Limpeza dos arquivos no Storage fica para a T-23 (caminhos já vêm do RPC).
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 
 ## Em andamento
 - Nada.
 
 ## Próximo passo
-- **T-20** — Exclusão em cascata com confirmação (contar_descendentes + excluir_item).
+- **T-21** — Recorrência no modal e no item; toast da próxima ocorrência (boa parte já existe: RPC, modal, detalhes e toast).
 
 ## Como aplicar migrations no nexus-dev
 CI verde no PR → `apply_migration` pelo MCP do Supabase com o conteúdo do arquivo (nome = parte do nome do arquivo sem o timestamp) → `get_advisors` (security e performance). Nunca no projeto de produção sem confirmação.

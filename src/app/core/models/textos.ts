@@ -174,6 +174,13 @@ export const TEXTOS = {
     adicionarDependencia: 'Adicionar dependência',
     escolhaItem: 'Escolha o item que precisa terminar antes',
     removerDependencia: (nome: string) => `Remover dependência de ${nome}`,
+    excluir: 'Excluir',
+    excluirTitulo: 'Excluir item',
+    excluirConfirmacao: (nome: string, n: number) =>
+      n
+        ? `Excluir "${nome}"? Isto também apaga ${n} item(ns) abaixo, com comentários e anexos. Não dá para desfazer.`
+        : `Excluir "${nome}"? Os comentários e anexos dele também serão apagados. Não dá para desfazer.`,
+    excluidos: (n: number) => `${n} itens excluídos.`,
   },
   novoItem: {
     tituloTarefa: 'Nova tarefa',

@@ -15,6 +15,17 @@ export function podeEditarItem(
   );
 }
 
+/** Excluir: quem administra o setor; o criador só se o item não tem filhos (excluir_item, SEGURANCA.md §3). */
+export function podeExcluirItem(
+  item: Item,
+  qtdFilhos: number,
+  eu: string | null,
+  administrados: ReadonlySet<string>,
+): boolean {
+  if (!eu) return false;
+  return administrados.has(item.setor_id) || (item.criado_por === eu && qtdFilhos === 0);
+}
+
 /** Criar filho: ver o pai e ter vínculo/administrar o setor dele (criar_item). Contexto não conta. */
 export function podeCriarFilho(pai: Item, setoresVisiveis: ReadonlySet<string>): boolean {
   return (

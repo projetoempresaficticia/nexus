@@ -118,6 +118,38 @@ export class ItensStore {
     return item ? resultado : null;
   }
 
+  async contarDescendentes(id: string): Promise<number | null> {
+    try {
+      return await this.service.contarDescendentes(id);
+    } catch (e) {
+      this.toast.erro(e);
+      return null;
+    }
+  }
+
+  /** Exclui o item e tudo abaixo (US-13); tira do cache o item e os descendentes. */
+  async excluir(id: string): Promise<{ apagados: number; caminhos: string[] } | null> {
+    try {
+      const r = await this.service.excluir(id);
+      const abaixo = new Set([id]);
+      let mudou = true;
+      while (mudou) {
+        mudou = false;
+        for (const i of this.todos()) {
+          if (i.pai_id && abaixo.has(i.pai_id) && !abaixo.has(i.id)) {
+            abaixo.add(i.id);
+            mudou = true;
+          }
+        }
+      }
+      this.remover(abaixo);
+      return { apagados: r.apagados, caminhos: r.caminhos_storage };
+    } catch (e) {
+      this.toast.erro(e);
+      return null;
+    }
+  }
+
   async definirResponsaveis(id: string, perfis: string[]): Promise<boolean> {
     const item = await this.otimista(
       id,
