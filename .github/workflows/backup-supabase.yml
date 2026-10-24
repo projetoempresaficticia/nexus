@@ -110,12 +110,16 @@ jobs:
           # prontos em qualquer projeto novo — não precisam ser recriados, só repovoados com os dados.
           pg_dump "$SUPABASE_DB_URL" --schema-only -n public -n privado -f schema.sql
           # Dados: Nexus + auth (para as pessoas conseguirem entrar) + storage (imagens coladas).
-          # Fora: tabelas de Vectors (não usamos) e os schemas operacionais (net/cron/vault/realtime) —
-          # crescem a cada chamada e são recriados ao reaplicar supabase/agendamentos.sql (BACKUP.md §6).
+          # Fora: tabelas de Vectors (não usamos); os schemas operacionais (net/cron/vault/realtime) —
+          # crescem a cada chamada e são recriados ao reaplicar supabase/agendamentos.sql (BACKUP.md §6);
+          # e as tabelas de controle de versão do próprio Auth/Storage (schema_migrations/migrations) —
+          # só o dono (supabase_auth_admin/supabase_storage_admin) pode escrever nelas, e são da versão
+          # desses serviços no projeto, não dados do Nexus.
           # Sem --inserts: o pg_dump já usa COPY por padrão (mais rápido e compacto que INSERT).
           pg_dump "$SUPABASE_DB_URL" --data-only \
             -n public -n privado -n auth -n storage \
             --exclude-table=storage.buckets_vectors --exclude-table=storage.vector_indexes \
+            --exclude-table=auth.schema_migrations --exclude-table=storage.migrations \
             -f data.sql
           # "public" já existe em qualquer projeto novo (ou no banco local do teste abaixo); sem o
           # IF NOT EXISTS, restaurar falha com "schema public already exists" antes de criar qualquer
