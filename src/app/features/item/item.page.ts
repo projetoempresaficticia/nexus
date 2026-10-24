@@ -17,6 +17,7 @@ import { ToastService } from '../../shared/ui/toast.service';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { htmlVazio, sanitizar } from '../../shared/utils/html-seguro';
 import { ComentariosItemComponent } from './components/comentarios-item.component';
+import { AnexosItemComponent } from './components/anexos-item.component';
 import { ChecklistItemComponent } from './components/checklist-item.component';
 import { DependenciasItemComponent } from './components/dependencias-item.component';
 import { DetalhesItemComponent } from './components/detalhes-item.component';
@@ -41,6 +42,7 @@ import { StatusItemComponent } from './components/status-item.component';
     ChecklistItemComponent,
     DependenciasItemComponent,
     ComentariosItemComponent,
+    AnexosItemComponent,
   ],
   templateUrl: './item.page.html',
   styleUrl: './item.page.css',

@@ -11,6 +11,7 @@ import { Item } from '../../core/models/item.model';
 import { ConfirmacaoService } from '../../shared/ui/confirmacao.service';
 import { TituloEditavelComponent } from '../../shared/ui/titulo-editavel.component';
 import { ItemPage } from './item.page';
+import { AnexosService } from './anexos.service';
 import { ItemService } from './item.service';
 
 const ITENS: Item[] = [
@@ -50,6 +51,7 @@ async function montarPagina(
           listarComentarios: vi.fn().mockResolvedValue([]),
         },
       },
+      { provide: AnexosService, useValue: { listar: vi.fn().mockResolvedValue([]) } },
       {
         provide: ItensService,
         useValue: {
