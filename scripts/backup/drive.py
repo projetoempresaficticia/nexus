@@ -1,14 +1,15 @@
 """Backups do Nexus no Google Drive (Drive partilhado da empresa), via conta de serviço.
 
 Uso (no workflow .github/workflows/backup-supabase.yml):
-  python drive.py existe   <nome>            -> imprime "sim" ou "nao"
-  python drive.py enviar   <arquivo>         -> envia (substitui um de mesmo nome) e confere
-  python drive.py retencao <diarios> <meses> -> manda para a lixeira o que sair da retenção
+  python drive.py existe   <nome>                       -> imprime "sim" ou "nao"
+  python drive.py enviar   <arquivo>                    -> envia (substitui um de mesmo nome) e confere
+  python drive.py retencao <prefixo> <recentes> <meses> -> manda para a lixeira o que sair da retenção
+     prefixo: nexus-backup (banco, diário) ou nexus-anexos (arquivos do Storage, semanal)
 
 Variáveis: GDRIVE_SA_ARQUIVO (caminho do JSON da conta de serviço) e GDRIVE_FOLDER_ID.
 Nunca imprime o ID da pasta, o e-mail da conta de serviço nem conteúdo do backup.
 
-Retenção: os <diarios> backups mais recentes + o primeiro de cada um dos últimos <meses> meses.
+Retenção (por prefixo): os <recentes> mais novos + o primeiro de cada um dos últimos <meses> meses.
 Os demais vão para a LIXEIRA do Drive partilhado (esvaziada sozinha após 30 dias); o papel
 "Gestor de conteúdo" basta para isso, ao contrário da exclusão definitiva.
 """
@@ -22,7 +23,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-PADRAO = re.compile(r"^nexus-backup-(\d{4})-(\d{2})-(\d{2})\.sql\.gz\.gpg$")
+PADRAO = re.compile(r"^(nexus-backup|nexus-anexos)-(\d{4})-(\d{2})-(\d{2})\.(sql\.gz|tar)\.gpg$")
 COMUM = {"supportsAllDrives": True}
 
 
@@ -84,14 +85,14 @@ def enviar(drive, pasta, caminho):
     print(f"enviado: {nome} ({os.path.getsize(caminho)} bytes)")
 
 
-def retencao(drive, pasta, diarios, meses):
+def retencao(drive, pasta, prefixo, recentes, meses):
     backups = []
     for a in listar(drive, pasta):
         m = PADRAO.match(a["name"])
-        if m:
-            backups.append((date(int(m[1]), int(m[2]), int(m[3])), a))
+        if m and m[1] == prefixo:
+            backups.append((date(int(m[2]), int(m[3]), int(m[4])), a))
     backups.sort(key=lambda x: x[0], reverse=True)
-    manter = {a["id"] for _, a in backups[:diarios]}
+    manter = {a["id"] for _, a in backups[:recentes]}
     hoje = date.today()
     limite = (hoje.year * 12 + hoje.month - 1) - (meses - 1)
     primeiros = {}
@@ -104,7 +105,7 @@ def retencao(drive, pasta, diarios, meses):
         if a["id"] not in manter:
             lixeira(drive, a["id"])
             apagados += 1
-    print(f"retenção: {len(backups) - apagados} mantidos, {apagados} para a lixeira")
+    print(f"retenção {prefixo}: {len(backups) - apagados} mantidos, {apagados} para a lixeira")
 
 
 def main():
@@ -117,7 +118,9 @@ def main():
     elif comando == "enviar":
         enviar(drive, pasta, sys.argv[2])
     elif comando == "retencao":
-        retencao(drive, pasta, int(sys.argv[2]), int(sys.argv[3]))
+        if sys.argv[2] not in ("nexus-backup", "nexus-anexos"):
+            sys.exit(f"prefixo desconhecido: {sys.argv[2]}")
+        retencao(drive, pasta, sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
     else:
         sys.exit(f"comando desconhecido: {comando}")
 
