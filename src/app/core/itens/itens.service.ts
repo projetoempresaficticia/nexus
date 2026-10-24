@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { CamposEditaveis, Item, NovoItem } from '../models/item.model';
 import { StatusItem } from '../models/rotulos';
 import { lancarSeErro } from '../services/erro-api';
+import { buscarTodas } from '../services/paginar';
 import { SUPABASE } from '../supabase.client';
 
 export interface ResultadoStatus {
@@ -19,14 +20,18 @@ export interface ResultadoExclusao {
 export class ItensService {
   private readonly supabase = inject(SUPABASE);
 
+  /** Todos os itens visíveis, em páginas de 1000 (o PostgREST corta acima disso). */
   async listar(): Promise<Item[]> {
-    const { data, error } = await this.supabase
-      .from('vw_itens')
-      .select('*')
-      .order('ordem')
-      .order('criado_em');
-    lancarSeErro(error);
-    return (data ?? []) as unknown as Item[];
+    const itens = await buscarTodas((de, ate) =>
+      this.supabase
+        .from('vw_itens')
+        .select('*')
+        .order('ordem')
+        .order('criado_em')
+        .order('id')
+        .range(de, ate),
+    );
+    return itens as unknown as Item[];
   }
 
   async obter(id: string): Promise<Item | null> {

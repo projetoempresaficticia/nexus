@@ -54,7 +54,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-36** Notificações: Edge Function `enviar-notificacoes`, templates, pg_cron (2 min + lembrete diário 08:00 Lisboa). — Dep.: T-10 · US-30
 
 ## Fase 4 — Polimento
-- [ ] **T-37** Desempenho: medir as métricas do PRD (inclui < 2 s do tempo real e < 500 ms da reabertura), revisar cache das stores e consultas lentas (`get_advisors`). — Dep.: T-16..T-31
+- [x] **T-37** Desempenho: medir as métricas do PRD (inclui < 2 s do tempo real e < 500 ms da reabertura), revisar cache das stores e consultas lentas (`get_advisors`). — Dep.: T-16..T-31
 - [ ] **T-38** Responsividade, acessibilidade e comparação visual tela a tela com o protótipo. — Dep.: T-37
 - [ ] **T-39** E2E Playwright do fluxo principal (login local → criar tarefa → solicitação → responder → concluir) + teste com **duas sessões** a ver a mesma lista (tempo real). — Dep.: T-24, T-43
 
