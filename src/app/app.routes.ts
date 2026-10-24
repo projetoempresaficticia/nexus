@@ -31,8 +31,8 @@ export const routes: Routes = [
       {
         path: 'produtividade',
         canActivate: [liderGuard],
-        loadComponent: emBreve,
-        data: { titulo: m.produtividade },
+        loadComponent: () =>
+          import('./features/produtividade/produtividade.page').then((x) => x.ProdutividadePage),
         title: m.produtividade,
       },
       {
