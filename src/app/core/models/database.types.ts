@@ -389,14 +389,14 @@ isOneToOne: false
                   ]
                 },"solicitacao_mensagens": {
                   Row: {
-                    "autor_id": string,"criado_em": string,"id": string,"solicitacao_id": string,"texto_html": string
+                    "autor_id": string,"criado_em": string,"editado_em": string | null,"id": string,"solicitacao_id": string,"texto_html": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "autor_id": string,"criado_em"?: string,"id"?: string,"solicitacao_id": string,"texto_html": string
+                    "autor_id": string,"criado_em"?: string,"editado_em"?: string | null,"id"?: string,"solicitacao_id": string,"texto_html": string
                   }
                   Update: {
-                    "autor_id"?: string,"criado_em"?: string,"id"?: string,"solicitacao_id"?: string,"texto_html"?: string
+                    "autor_id"?: string,"criado_em"?: string,"editado_em"?: string | null,"id"?: string,"solicitacao_id"?: string,"texto_html"?: string
                   }
                   Relationships: [
                     {
@@ -415,14 +415,14 @@ isOneToOne: false
                   ]
                 },"solicitacoes": {
                   Row: {
-                    "criado_em": string,"de_id": string,"id": string,"item_id": string,"legacy_id": string | null,"para_id": string,"respondido_em": string | null,"status": Database["public"]['Enums']["status_solicitacao"],"texto_html": string,"tipo": Database["public"]['Enums']["tipo_solicitacao"]
+                    "criado_em": string,"de_id": string,"editado_em": string | null,"id": string,"item_id": string,"legacy_id": string | null,"para_id": string,"respondido_em": string | null,"status": Database["public"]['Enums']["status_solicitacao"],"texto_html": string,"tipo": Database["public"]['Enums']["tipo_solicitacao"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "criado_em"?: string,"de_id": string,"id"?: string,"item_id": string,"legacy_id"?: string | null,"para_id": string,"respondido_em"?: string | null,"status"?: Database["public"]['Enums']["status_solicitacao"],"texto_html": string,"tipo": Database["public"]['Enums']["tipo_solicitacao"]
+                    "criado_em"?: string,"de_id": string,"editado_em"?: string | null,"id"?: string,"item_id": string,"legacy_id"?: string | null,"para_id": string,"respondido_em"?: string | null,"status"?: Database["public"]['Enums']["status_solicitacao"],"texto_html": string,"tipo": Database["public"]['Enums']["tipo_solicitacao"]
                   }
                   Update: {
-                    "criado_em"?: string,"de_id"?: string,"id"?: string,"item_id"?: string,"legacy_id"?: string | null,"para_id"?: string,"respondido_em"?: string | null,"status"?: Database["public"]['Enums']["status_solicitacao"],"texto_html"?: string,"tipo"?: Database["public"]['Enums']["tipo_solicitacao"]
+                    "criado_em"?: string,"de_id"?: string,"editado_em"?: string | null,"id"?: string,"item_id"?: string,"legacy_id"?: string | null,"para_id"?: string,"respondido_em"?: string | null,"status"?: Database["public"]['Enums']["status_solicitacao"],"texto_html"?: string,"tipo"?: Database["public"]['Enums']["tipo_solicitacao"]
                   }
                   Relationships: [
                     {
@@ -660,6 +660,9 @@ isOneToOne: false
                            },
 "definir_responsaveis":
 { Args: { "p_item": string,"p_perfis": (string)[] }; Returns: (string)[]
+                           },
+"editar_solicitacao":
+{ Args: { "p_id": string,"p_texto_html": string }; Returns: Json
                            },
 "excluir_item":
 { Args: { "p_id": string }; Returns: Json
