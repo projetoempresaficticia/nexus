@@ -1,0 +1,61 @@
+<app-cabecalho [titulo]="t.projetos.titulo" [subtitulo]="t.projetos.quantos(cartoes().length)">
+  @if (acesso.opcoesSetor().length) {
+    <button type="button" class="btn primary" (click)="novo.set(true)">
+      {{ t.projetos.novo }}
+    </button>
+  }
+</app-cabecalho>
+
+@if (itens.carregando() && !itens.carregado()) {
+  <section class="panel"><app-carregando /></section>
+} @else if (!cartoes().length && !avulsas()) {
+  <section class="panel">
+    <app-vazio>{{ t.projetos.vazio }}</app-vazio>
+  </section>
+} @else {
+  <div class="grid-cards">
+    @for (c of cartoes(); track c.projeto.id) {
+      <a class="pcard" [routerLink]="['/item', c.projeto.id]">
+        <span class="topo">
+          <span class="row-sub">{{ c.setor }}</span>
+          @if (c.papel) {
+            <span class="pill" [class.s-lider]="c.lider">{{ c.papel }}</span>
+          }
+        </span>
+        <strong class="nome">{{ c.projeto.nome }}</strong>
+        <app-barra [percentual]="c.progresso?.percentual ?? 0" />
+        <span class="rodape">
+          <span class="muted">
+            {{
+              c.progresso
+                ? t.projetos.progresso(
+                    c.progresso.concluidos,
+                    c.progresso.total,
+                    c.progresso.percentual
+                  )
+                : t.projetos.semTarefas
+            }}
+          </span>
+          @if (c.parados) {
+            <span class="parados">{{ t.projetos.parados(c.parados) }}</span>
+          }
+        </span>
+      </a>
+    }
+    @if (avulsas()) {
+      <a class="pcard avulsas" routerLink="/tarefas">
+        <span class="topo"
+          ><span class="row-sub">{{ t.tarefas.semProjeto }}</span></span
+        >
+        <strong class="nome">{{ t.tarefas.semProjeto }}</strong>
+        <span class="rodape"
+          ><span class="muted">{{ t.projetos.avulsas(avulsas()) }}</span></span
+        >
+      </a>
+    }
+  </div>
+}
+
+@if (novo()) {
+  <app-novo-item-modal [nivel]="0" (fechar)="novo.set(false)" />
+}
