@@ -42,7 +42,10 @@ language plpgsql
 set search_path = ''
 as $$
 begin
-  if not privado.eh_admin() and (
+  -- current_user só é "authenticated" numa chamada direta (REST, como a pessoa logada); funções
+  -- internas (ex.: privado.ligar_perfil_ao_usuario, no 1º login) são security definer e rodam como
+  -- o dono — essas continuam liberadas, a trava é só para quem está mexendo direto na tabela.
+  if current_user = 'authenticated' and not privado.eh_admin() and (
     new.email is distinct from old.email or new.nome is distinct from old.nome or
     new.iniciais is distinct from old.iniciais or new.is_admin is distinct from old.is_admin or
     new.ativo is distinct from old.ativo or new.auth_id is distinct from old.auth_id or
