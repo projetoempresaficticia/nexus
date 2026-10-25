@@ -660,7 +660,8 @@ isOneToOne: false
 "iniciais": string,
 "is_admin": boolean,
 "legacy_id": string | null,
-"nome": string
+"nome": string,
+"receber_email_notificacoes": boolean
             }
                           SetofOptions: {
         from: "*"
@@ -757,7 +758,8 @@ isOneToOne: false
 "iniciais": string,
 "is_admin": boolean,
 "legacy_id": string | null,
-"nome": string
+"nome": string,
+"receber_email_notificacoes": boolean
             }
                           SetofOptions: {
         from: "*"
