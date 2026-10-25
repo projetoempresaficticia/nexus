@@ -29,15 +29,18 @@ export interface OpcaoPessoa {
         </span>
       }
       <input
+        #campo
         type="search"
         [attr.aria-label]="rotulo()"
         [placeholder]="t.novoItem.adicionarPessoa"
         [value]="busca()"
         (input)="busca.set($any($event.target).value)"
         (keydown.enter)="$event.preventDefault(); escolher(sugestoes()[0])"
+        (focus)="abrir()"
+        (blur)="fecharDaqui()"
       />
     </div>
-    @if (busca() && sugestoes().length) {
+    @if (aberto() && sugestoes().length) {
       <div class="lista" role="listbox" [attr.aria-label]="rotulo()">
         @for (p of sugestoes(); track p.id) {
           <button
@@ -45,7 +48,7 @@ export interface OpcaoPessoa {
             class="mi"
             role="option"
             aria-selected="false"
-            (click)="escolher(p)"
+            (click)="escolher(p); campo.focus()"
           >
             <app-avatar [pessoa]="p" [tamanho]="26" />{{ p.nome }}
           </button>
@@ -116,6 +119,8 @@ export class SeletorPessoasComponent {
   readonly euId = input<string | null>(null);
   readonly rotulo = input('Responsáveis');
   protected readonly busca = signal('');
+  /** Mostra a lista desde o foco, mesmo sem digitar nada — senão parece um campo de texto comum. */
+  protected readonly aberto = signal(false);
 
   protected readonly escolhidas = computed(() => {
     const porId = new Map(this.opcoes().map((p) => [p.id, p]));
@@ -136,6 +141,18 @@ export class SeletorPessoasComponent {
     if (!p) return;
     this.selecionados.update((ids) => [...ids, p.id]);
     this.busca.set('');
+  }
+
+  private fecharTimer?: ReturnType<typeof setTimeout>;
+
+  protected abrir(): void {
+    clearTimeout(this.fecharTimer);
+    this.aberto.set(true);
+  }
+
+  /** Fecha um instante depois do foco sair, para o clique numa opção (que também "desfoca") valer antes. */
+  protected fecharDaqui(): void {
+    this.fecharTimer = setTimeout(() => this.aberto.set(false), 150);
   }
 
   protected remover(id: string): void {
