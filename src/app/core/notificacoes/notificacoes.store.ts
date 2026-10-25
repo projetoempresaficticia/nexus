@@ -17,10 +17,25 @@ export class NotificacoesStore {
   readonly lista = this._lista.asReadonly();
   readonly carregado = this._carregado.asReadonly();
   readonly naoLidas = computed(() => this._lista().filter((n) => !n.lido_em).length);
+  private readonly _completo = signal(false);
+  /** A tela de Notificações (T-63) já pediu tudo — o sino não precisa truncar para 50 de novo. */
+  readonly completo = this._completo.asReadonly();
 
+  /** As 50 mais recentes — o sino, logo que o shell abre. */
   async carregar(): Promise<void> {
+    if (this._completo()) return;
     try {
       this._lista.set(await this.service.listar());
+    } finally {
+      this._carregado.set(true);
+    }
+  }
+
+  /** Todo o histórico — a tela de Notificações; depois disso o sino também passa a mostrar tudo. */
+  async carregarTudo(): Promise<void> {
+    try {
+      this._lista.set(await this.service.listarTodas());
+      this._completo.set(true);
     } finally {
       this._carregado.set(true);
     }
@@ -77,5 +92,6 @@ export class NotificacoesStore {
   limpar(): void {
     this._lista.set([]);
     this._carregado.set(false);
+    this._completo.set(false);
   }
 }

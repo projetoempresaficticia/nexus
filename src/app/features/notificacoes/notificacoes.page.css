@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.preferencia {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+}
+.preferencia input {
+  margin-top: 3px;
+}
+.lista {
+  display: flex;
+  flex-direction: column;
+}
+.item {
+  cursor: pointer;
+}
+.item.lida {
+  opacity: 0.7;
+}
+.bolinha {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+}
