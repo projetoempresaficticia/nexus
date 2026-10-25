@@ -150,9 +150,19 @@ export class SeletorPessoasComponent {
     this.aberto.set(true);
   }
 
-  /** Fecha um instante depois do foco sair, para o clique numa opção (que também "desfoca") valer antes. */
+  /**
+   * Fecha um instante depois do foco sair, para o clique numa opção (que também "desfoca") valer
+   * antes. Quem digitou um nome e só clicou fora (sem Enter nem clicar na opção) não devia perder a
+   * pessoa: se sobrou exatamente uma sugestão, ela entra sozinha. Senão, limpa o texto — ele nunca
+   * conta como responsável (só quem está em `escolhidas`), então não pode ficar parecendo que conta.
+   */
   protected fecharDaqui(): void {
-    this.fecharTimer = setTimeout(() => this.aberto.set(false), 150);
+    this.fecharTimer = setTimeout(() => {
+      this.aberto.set(false);
+      const unica = this.busca() && this.sugestoes().length === 1 ? this.sugestoes()[0] : undefined;
+      if (unica) this.escolher(unica);
+      else this.busca.set('');
+    }, 150);
   }
 
   protected remover(id: string): void {
