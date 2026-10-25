@@ -1,7 +1,7 @@
 # Estado atual
 
 ## Última sessão
-2026-10-24 — T-01 a T-37, T-43 a T-47 concluídas. T-48 a T-57 concluídas. nexus-dev em dia: 19 migrations e as Edge Functions limpar-anexos, enviar-notificacoes e enviar-anexo publicadas. **Backup diário e a cópia semanal dos anexos testados de ponta a ponta de verdade** (Drive, S3, restauro). **Login do Google ligado e funcionando** no nexus-dev; 2 pessoas cadastradas (germano@estudeemportugal.org e a conta externa aprovada, ambas Adm).
+2026-10-25 — T-01 a T-37, T-43 a T-47 concluídas. T-48 a T-59 concluídas. nexus-dev em dia (**por aplicar a migration da T-59**: `npx supabase db push`) e as Edge Functions limpar-anexos, enviar-notificacoes e enviar-anexo publicadas. **Backup diário e a cópia semanal dos anexos testados de ponta a ponta de verdade** (Drive, S3, restauro). **Login do Google ligado e funcionando** no nexus-dev; 2 pessoas cadastradas (germano@estudeemportugal.org e a conta externa aprovada, ambas Adm). Sino de notificações (T-59) pronto no código.
 
 ## Feito
 - Documentação completa em `docs/`, `CLAUDE.md`, configuração do Claude Code em `.claude/`, padrão de commits (`.gitmessage`, `.githooks/`, template de PR).
@@ -58,6 +58,8 @@
 - **T-52**: migration `20261024162347_anexos_drive.sql` + pgTAP 016; Edge Function `enviar-anexo` e `limpar-anexos` atualizada, `_shared/drive.ts` (conta de serviço por WebCrypto, testado no Vitest). Pasta "Anexos do Nexus" criada no Drive partilhado e os secrets `GDRIVE_SERVICE_ACCOUNT_JSON`/`GDRIVE_ANEXOS_FOLDER_ID` gravados — anexos já vão para o Drive.
 - **T-55**: página `/sem-acesso` com a marca do Nexus; mensagem passa a orientar a entrar em contato com a gestão para fazer o cadastro (em vez de "fale com um administrador do sistema").
 - **T-56** / **T-57**: `privado.email_permitido` deixa entrar quem é de `@estudeemportugal.org` **ou** uma conta externa explicitamente aprovada (hoje: `projetoempresaficticia@gmail.com`, que administra GitHub/Google Cloud/Cloudflare); usada pela CHECK de `perfis.email` e pelo hook de login. A T-56 esqueceu de dar `USAGE` no schema `privado` para `supabase_auth_admin` (o papel que o Auth usa de verdade) e quebrou o login real por algumas horas — corrigido na T-57 (pgTAP 018 prova por ACL, já que o banco de teste não deixa trocar de papel). **Login do Google ligado e testado** no nexus-dev.
+- **T-58**: a caixa "‹ Hoje ›" do Mês/Semana/Linha do tempo usava a classe `.nav`, igual à da barra lateral (fundo escuro, coluna); renomeada para `.periodo-nav`.
+- **T-59**: `notificacoes` ganha `lido_em` (sino) e `perfis` ganha `receber_email_notificacoes` (default ligado); RLS por pessoa (sem RPC — `grant update` de coluna, mesmo padrão de `editado_em`); tempo real ligado (publicação + `replica identity full`); `enviar-notificacoes` pula quem desligou o e-mail. `NotificacoesStore`/`NotificacoesSinoComponent` na barra lateral, com o painel listando as 50 mais recentes e o interruptor de preferência. pgTAP 019; migration `20261025005030_central_notificacoes.sql` **por aplicar no nexus-dev**.
 - **nexus-dev em dia (2026-10-24, à noite):** as 19 migrations aplicadas, `enviar-anexo`/`limpar-anexos`/`enviar-notificacoes` publicadas, backup e cópia de anexos testados de ponta a ponta, login do Google ligado e funcionando.
 - Node 24.22.1; hooks e `commit.template` ativos localmente.
 

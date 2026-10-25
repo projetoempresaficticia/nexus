@@ -44,6 +44,8 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-51b** Líder renomeia, move, desativa e exclui os subsetores abaixo dele (nunca o próprio setor nem os de cima). — Dep.: T-51 · Pedido do Germano · US-05
 - [x] **T-56** Login aceita contas externas explicitamente aprovadas (além de `@estudeemportugal.org`), numa função só usada pela CHECK de `perfis` e pelo hook de login. — Dep.: T-12 · Pedido do Germano · US-02
 - [x] **T-57** Corrige o login real: faltava `USAGE` no schema `privado` para `supabase_auth_admin` (a T-56 passou a chamar uma função de lá de dentro do hook). — Dep.: T-56
+- [x] **T-58** Corrige o "‹ Hoje ›" empilhado e escuro no Mês/Semana/Linha do tempo (classe `.nav` colidia com a da barra lateral). — Pedido do Germano · US-24, US-25
+- [x] **T-59** Sino de notificações dentro do app + preferência "também por e-mail" por pessoa. — Dep.: T-36 · Pedido do Germano · US-30
 - [x] **T-50** Cópia semanal dos arquivos dos anexos (Storage) para o Google Drive, encriptada, com guia de restauro (BACKUP.md §8). — Dep.: T-48
 - [x] **T-49** E-mail pelo SMTP do Google Workspace em `_shared/email.ts` (senha de app; porta 465). — Dep.: T-36
 - [x] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40

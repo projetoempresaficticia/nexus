@@ -28,6 +28,7 @@ Pessoa do sistema. Criada pelo Adm **antes** do primeiro login; ligada ao `auth.
 | iniciais | text | sim | | 2–3 letras, gerado pelo app |
 | is_admin | boolean | sim | false | adm do sistema |
 | ativo | boolean | sim | true | |
+| receber_email_notificacoes | boolean | sim | true | desligar não para o sino, só o e-mail (T-59); só a própria pessoa muda a sua |
 | criado_em | timestamptz | sim | now() | |
 | desativado_em | timestamptz | não | | |
 | legacy_id | text | não | | UNIQUE |
@@ -193,19 +194,22 @@ Preenchida **só por triggers** (auditoria simples de `itens`, `solicitacoes`, `
 | criado_em | timestamptz | default now() |
 
 ### notificacoes
-Fila de e-mails. Inserida por triggers/RPCs; consumida pela Edge Function `enviar-notificacoes`.
+Alimenta o sino (T-59) **e** a fila de e-mails. Inserida por triggers/RPCs; a Edge Function
+`enviar-notificacoes` consome o que ainda não foi enviado e respeita `perfis.receber_email_notificacoes`.
 | coluna | tipo | notas |
 |---|---|---|
 | id | uuid | PK |
 | tipo | tipo_notificacao | |
-| destinatario_id | uuid | FK → perfis(id) |
+| destinatario_id | uuid | FK → perfis(id); dono da linha (RLS) |
+| autor_id | uuid | FK → perfis(id); default `meu_perfil_id()` (T-36) |
 | item_id | uuid | null permitido |
-| dados | jsonb | assunto, trecho, link |
+| dados | jsonb | `nome` do item + extras por tipo (ver API.md) |
 | criado_em | timestamptz | default now() |
-| enviado_em | timestamptz | null = pendente |
+| enviado_em | timestamptz | null = e-mail pendente |
 | tentativas | smallint | default 0 |
-| erro | text | |
-Regra: não notificar a própria pessoa que fez a ação.
+| erro | text | motivo do e-mail não ter saído (`destinatario_inativo`, `preferencia_desligada`, …) |
+| lido_em | timestamptz | null = não lida no sino; carimbado no banco, não pelo navegador (T-59) |
+Regra: não notificar a própria pessoa que fez a ação. RLS: cada pessoa só lê e só marca como lida (`lido_em`) as suas.
 
 ## Funções de acesso
 Ficam no schema `privado` (fora da API): `meu_perfil_id`, `eh_admin`, `setores_descendentes`, `setores_visiveis`, `setores_administrados`, `administra_setor`, e as próximas (`itens_envolvidos`, `pode_ver_item`, `pode_editar_item`). Trigger `setores_impede_ciclo`. Ver SEGURANCA.md §2.

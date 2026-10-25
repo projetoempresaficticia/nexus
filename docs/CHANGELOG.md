@@ -9,6 +9,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Site passa a ser publicado no Cloudflare Pages (a partir do repositório privado) e o banco ganha backup diário encriptado no Google Drive, com teste automático de restauro e guia de recuperação (T-48).
 
 ### Corrigido
+- 2026-10-25 — Botões "‹ Hoje ›" nas visões Mês, Semana e Linha do tempo apareciam empilhados e com o fundo escuro da barra lateral (T-58).
 - 2026-10-24 — Login real pelo Google quebrado logo depois da T-56 (faltava uma permissão para o papel que o Auth usa de verdade); corrigido no mesmo dia, sem ninguém perder acesso (T-57).
 - 2026-10-24 — Backup diário: a primeira execução real falhava — o dump não funcionava com o usuário restrito de leitura, e a cópia semanal dos anexos falhava quando o Storage estava vazio. Os dois foram corrigidos (T-48).
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
@@ -18,6 +19,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Página de acesso não autorizado (quando a conta não está cadastrada ou está inativa) ganha a marca do Nexus e passa a orientar a pessoa a entrar em contato com a gestão para fazer o cadastro.
 
 ### Adicionado
+- 2026-10-25 — Sino de notificações na barra lateral: lista os avisos (atribuição, menção, comentário, solicitação, lembrete de prazo), marca como lidas e deixa cada pessoa escolher se também quer receber por e-mail (T-59).
 - 2026-10-24 — Anexos vão para o Google Drive da empresa, numa pasta por setor; o Nexus guarda o link (abre para quem é da empresa) e, ao remover o anexo ou excluir o item, o arquivo vai para a lixeira do Drive (T-52).
 - 2026-10-24 — Setores para líderes: o líder abre a tela Setores e organiza os subsetores abaixo dele (renomear, mover, desativar, excluir vazio); o próprio setor e os de cima continuam só com o Adm (T-51b).
 - 2026-10-24 — Setores: excluir setor vazio (com o motivo quando não dá) e organizar a hierarquia arrastando um setor para dentro de outro ou para "setor principal" (T-51).
