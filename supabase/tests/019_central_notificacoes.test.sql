@@ -15,7 +15,10 @@ insert into public.notificacoes (id, tipo, destinatario_id, dados) values
   ('29000000-0000-0000-0000-000000000001', 'mencao', '19000000-0000-0000-0000-000000000001', '{"nome":"Tarefa X"}'),
   ('29000000-0000-0000-0000-000000000002', 'mencao', '19000000-0000-0000-0000-000000000002', '{"nome":"Tarefa Y"}');
 
-select col_default_is('public.perfis', 'receber_email_notificacoes', 'true', 'por padrão, recebe e-mail');
+select is(
+  (select column_default from information_schema.columns
+   where table_schema = 'public' and table_name = 'perfis' and column_name = 'receber_email_notificacoes'),
+  'true', 'por padrão, recebe e-mail');
 
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-000000000f59","role":"authenticated"}';
@@ -38,7 +41,7 @@ select lives_ok($$update public.perfis set receber_email_notificacoes = false wh
 select is((select receber_email_notificacoes from public.perfis where id = '19000000-0000-0000-0000-000000000001'), false,
   'preferência ficou salva');
 select throws_ok($$update public.perfis set nome = 'Outro Nome' where id = '19000000-0000-0000-0000-000000000001'$$,
-  '42501', null, 'não muda o próprio nome por esse caminho (coluna não liberada)');
+  'P0001', 'sem_permissao', 'não muda o próprio nome por esse caminho (trigger barra)');
 
 update public.perfis set receber_email_notificacoes = false where id = '19000000-0000-0000-0000-000000000002';
 select is((select receber_email_notificacoes from public.perfis where id = '19000000-0000-0000-0000-000000000002'), true,
