@@ -351,14 +351,14 @@ isOneToOne: false
                   ]
                 },"notificacoes": {
                   Row: {
-                    "autor_id": string | null,"criado_em": string,"dados": NonNullable<Json>,"destinatario_id": string,"enviado_em": string | null,"erro": string | null,"id": string,"item_id": string | null,"tentativas": number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id": string | null,"criado_em": string,"dados": NonNullable<Json>,"destinatario_id": string,"enviado_em": string | null,"erro": string | null,"id": string,"item_id": string | null,"lido_em": string | null,"tentativas": number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id": string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id": string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"lido_em"?: string | null,"tentativas"?: number,"tipo": Database["public"]['Enums']["tipo_notificacao"]
                   }
                   Update: {
-                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id"?: string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"tentativas"?: number,"tipo"?: Database["public"]['Enums']["tipo_notificacao"]
+                    "autor_id"?: string | null,"criado_em"?: string,"dados"?: NonNullable<Json>,"destinatario_id"?: string,"enviado_em"?: string | null,"erro"?: string | null,"id"?: string,"item_id"?: string | null,"lido_em"?: string | null,"tentativas"?: number,"tipo"?: Database["public"]['Enums']["tipo_notificacao"]
                   }
                   Relationships: [
                     {
@@ -395,14 +395,14 @@ isOneToOne: false
                   ]
                 },"perfis": {
                   Row: {
-                    "ativo": boolean,"auth_id": string | null,"criado_em": string,"desativado_em": string | null,"email": string,"id": string,"iniciais": string,"is_admin": boolean,"legacy_id": string | null,"nome": string
+                    "ativo": boolean,"auth_id": string | null,"criado_em": string,"desativado_em": string | null,"email": string,"id": string,"iniciais": string,"is_admin": boolean,"legacy_id": string | null,"nome": string,"receber_email_notificacoes": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email": string,"id"?: string,"iniciais": string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome": string
+                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email": string,"id"?: string,"iniciais": string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome": string,"receber_email_notificacoes"?: boolean
                   }
                   Update: {
-                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email"?: string,"id"?: string,"iniciais"?: string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome"?: string
+                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email"?: string,"id"?: string,"iniciais"?: string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome"?: string,"receber_email_notificacoes"?: boolean
                   }
                   Relationships: [
                     
@@ -660,7 +660,8 @@ isOneToOne: false
 "iniciais": string,
 "is_admin": boolean,
 "legacy_id": string | null,
-"nome": string
+"nome": string,
+"receber_email_notificacoes": boolean
             }
                           SetofOptions: {
         from: "*"
@@ -757,7 +758,8 @@ isOneToOne: false
 "iniciais": string,
 "is_admin": boolean,
 "legacy_id": string | null,
-"nome": string
+"nome": string,
+"receber_email_notificacoes": boolean
             }
                           SetofOptions: {
         from: "*"

@@ -1,6 +1,7 @@
 import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { AcessoStore } from '../auth/acesso.store';
 import { ItensStore } from '../itens/itens.store';
+import { NotificacoesStore } from '../notificacoes/notificacoes.store';
 import { SolicitacoesStore } from '../solicitacoes/solicitacoes.store';
 import { RealtimeService } from './realtime.service';
 
@@ -16,6 +17,7 @@ export class SincronizacaoService {
   private readonly realtime = inject(RealtimeService);
   private readonly itens = inject(ItensStore);
   private readonly solicitacoes = inject(SolicitacoesStore);
+  private readonly notificacoes = inject(NotificacoesStore);
   private readonly acesso = inject(AcessoStore);
   private readonly documento = inject(DOCUMENT);
   private desfazer: (() => void)[] = [];
@@ -29,6 +31,7 @@ export class SincronizacaoService {
         void this.solicitacoes.sincronizar(e);
         if (!e || e.tabela === 'solicitacoes') void this.acesso.recontarPendentes();
       }),
+      this.realtime.ouvir(['notificacoes'], (e) => void this.notificacoes.sincronizar(e)),
       this.escutar(this.documento.defaultView, 'offline', () => this.realtime.semInternet()),
       this.escutar(this.documento, 'visibilitychange', () => this.mudouVisibilidade()),
     ];

@@ -22,6 +22,14 @@ KPIs: Abertas ("tarefas e subtarefas") · Atrasadas ("prazo vencido") · Bloquea
 Produtividade: Pontualidade · Ciclo médio · Tempo parado · Concluídas · "vs. período anterior". Períodos: Últimas 4 semanas · Últimas 12 semanas · Este mês · Mês passado. Pessoa: "Toda a equipe (N)".
 Equipe: "Minha linha de decisão" — "A quem você responde em cada setor. Aprovações sobem por esta linha." · "Sem líder definido".
 
+### Sino de notificações (T-59)
+"Notificações" · "Marcar todas como lidas" · "Nenhuma notificação ainda." · "Também por e-mail" — "Com isto
+desligado, os avisos continuam aqui no sino, só não vão por e-mail." A frase de cada notificação usa o mesmo
+tom dos e-mails (§E-mails automáticos), sem o trecho citado: "{autor} incluiu você como responsável em
+"{item}"." · "{autor} mencionou você em "{item}"." · "{autor} comentou em "{item}"." · "{autor} precisa de
+você: {tipo} em "{item}"." · "Sua solicitação em "{item}" foi {resultado}." · ""{item}" vence amanhã." ·
+"Bem-vindo(a) ao Nexus!"
+
 ## Botões
 + Nova tarefa · + Novo projeto · Mover para projeto · Tirar do projeto · Editar título · + Nova subtarefa · Criar · Salvar · Cancelar · Excluir · Reabrir · Comentar · Editar · Apagar · Anexar arquivo · Colar link · Nova solicitação · Enviar · Resolver · Aprovar · Recusar · Cancelar solicitação · Ver · Adicionar passo · Adicionar dependência · Cadastrar pessoa · Desativar · Reativar · Reatribuir itens · Novo setor · Entrar com Google.
 

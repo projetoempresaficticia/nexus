@@ -29,4 +29,13 @@ export class AcessoService {
     lancarSeErro(error);
     return count ?? 0;
   }
+
+  /** Receber (ou não) os avisos também por e-mail, além do sino (T-59). Só a própria pessoa muda a sua. */
+  async atualizarPreferenciaEmail(perfilId: string, valor: boolean): Promise<void> {
+    const { error } = await this.supabase
+      .from('perfis')
+      .update({ receber_email_notificacoes: valor })
+      .eq('id', perfilId);
+    lancarSeErro(error);
+  }
 }

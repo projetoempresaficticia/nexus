@@ -29,6 +29,7 @@ export function dadosIniciais(
       iniciais: 'AR',
       is_admin: isAdmin,
       ativo: true,
+      receber_email_notificacoes: true,
       criado_em: '2026-10-01T00:00:00Z',
       desativado_em: null,
       legacy_id: null,

@@ -42,6 +42,8 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 |---|---|---|---|---|
 | Perfis — ver | todos | pessoas ativas (para atribuir/mencionar) | pessoas ativas | pessoas ativas |
 | Perfis — criar/editar/desativar | ✅ | ❌ | ❌ | ❌ |
+| Perfil — a própria preferência de e-mail (T-59) | ✅ | ✅ só a sua | ✅ só a sua | ✅ só a sua |
+| Notificações — ver/marcar como lida (T-59) | ✅ só as suas | ✅ só as suas | ✅ só as suas | ✅ só as suas |
 | Setores — ver | todos | visíveis | visíveis | ❌ |
 | Setor — excluir (`excluir_setor`) | ✅ só setor vazio | ✅ só subsetor vazio abaixo dos que lidera | ❌ | ❌ |
 | Setores — criar | ✅ | ✅ só **abaixo** de um setor que administra (nunca na raiz nem acima) | ❌ | ❌ |
@@ -150,8 +152,15 @@ create policy hist_select on historico for select to authenticated
   using ((select eh_admin())
          or (tabela = 'itens' and pode_ver_item(registro_id)));
 
--- notificacoes: nenhuma política para authenticated (só service_role da Edge Function)
+-- notificacoes: cada pessoa lê e marca como lidas só as suas (T-59); o resto (escrever notificação
+-- nova, mandar e-mail) continua só por função/service_role
 alter table notificacoes enable row level security;
+create policy notif_select on notificacoes for select to authenticated
+  using (destinatario_id = (select meu_perfil_id()));
+create policy notif_marcar_lida on notificacoes for update to authenticated
+  using (destinatario_id = (select meu_perfil_id()))
+  with check (destinatario_id = (select meu_perfil_id()));
+-- grant update (lido_em) ...; a coluna é carimbada por trigger, não pelo que o navegador manda
 ```
 
 ### Storage (bucket `anexos`)

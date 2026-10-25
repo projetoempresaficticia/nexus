@@ -12,6 +12,7 @@ export const TABELAS_TEMPO_REAL = [
   'checklist_itens',
   'dependencias',
   'anexos',
+  'notificacoes',
 ] as const;
 export type TabelaTempoReal = (typeof TABELAS_TEMPO_REAL)[number];
 

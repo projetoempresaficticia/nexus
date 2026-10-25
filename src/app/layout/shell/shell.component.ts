@@ -4,10 +4,12 @@ import { AcessoStore } from '../../core/auth/acesso.store';
 import { AuthService } from '../../core/auth/auth.service';
 import { ItensStore } from '../../core/itens/itens.store';
 import { TEXTOS } from '../../core/models/textos';
+import { NotificacoesStore } from '../../core/notificacoes/notificacoes.store';
 import { RealtimeService } from '../../core/services/realtime.service';
 import { SincronizacaoService } from '../../core/services/sincronizacao.service';
 import { TemaService } from '../../core/services/tema.service';
 import { SolicitacoesStore } from '../../core/solicitacoes/solicitacoes.store';
+import { NotificacoesSinoComponent } from './notificacoes-sino.component';
 
 interface ItemMenu {
   rota: string;
@@ -18,7 +20,7 @@ interface ItemMenu {
 /** Barra lateral escura + área de trabalho (DESIGN.md §Navegação). O menu muda conforme o perfil. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificacoesSinoComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css',
 })
@@ -29,6 +31,7 @@ export class ShellComponent {
   private readonly router = inject(Router);
   private readonly itensStore = inject(ItensStore);
   private readonly solicitacoes = inject(SolicitacoesStore);
+  private readonly notificacoes = inject(NotificacoesStore);
   protected readonly t = TEXTOS;
   protected readonly realtime = inject(RealtimeService);
 
@@ -43,6 +46,8 @@ export class ShellComponent {
     const sincronizacao = inject(SincronizacaoService);
     sincronizacao.iniciar();
     inject(DestroyRef).onDestroy(() => void sincronizacao.parar());
+    // Para a contagem do sino já aparecer certa antes de alguém abrir o painel (T-59).
+    void this.notificacoes.carregar();
   }
 
   protected readonly itens = computed<ItemMenu[]>(() => {
@@ -87,6 +92,7 @@ export class ShellComponent {
     this.acesso.limpar();
     this.itensStore.limpar();
     this.solicitacoes.limpar();
+    this.notificacoes.limpar();
     await this.router.navigateByUrl('/login');
   }
 }

@@ -49,11 +49,12 @@ select is_empty($$select 1 from public.historico where registro_id = '33000000-0
   'atualizado_em não polui o histórico');
 
 -- ---------------------------------------------------------------- notificações e realtime
-select ok(not has_table_privilege('authenticated', 'public.notificacoes', 'select'), 'app não lê a fila de notificações');
+-- Desde a T-59, cada pessoa lê as próprias notificações (sino) — ver pgTAP 019.
+select ok(has_table_privilege('authenticated', 'public.notificacoes', 'select'), 'app lê a fila de notificações (T-59: o sino)');
 select ok((select bool_and(exists (select 1 from pg_publication_tables p
   where p.pubname = 'supabase_realtime' and p.schemaname = 'public' and p.tablename = t))
   from unnest(array['itens','item_responsaveis','checklist_itens','dependencias','solicitacoes',
-                    'solicitacao_mensagens','comentarios','anexos']) as t), 'as 8 tabelas estão no Realtime');
+                    'solicitacao_mensagens','comentarios','anexos','notificacoes']) as t), 'as 9 tabelas estão no Realtime');
 select ok((select relreplident = 'f' from pg_class where oid = 'public.itens'::regclass), 'itens com replica identity full');
 
 -- ---------------------------------------------------------------- vw_itens como Rui (responsável de T)

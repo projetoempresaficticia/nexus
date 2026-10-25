@@ -41,7 +41,7 @@ Colaboradores da Prepara Portugal / Estude em Portugal com conta Google `@estude
 > Mudanças face ao v26 (pedidas em 2026-10-22): tarefas sem projeto, vários responsáveis, título editável, visibilidade só do que envolve o membro, tempo real.
 
 ## 5. Versão 2 (depois do MVP)
-- Notificações dentro do app (sino) além do e-mail.
+- ~~Notificações dentro do app (sino) além do e-mail.~~ Adiantado — feito na T-59 (2026-10-25, pedido do Germano).
 - Exportar relatórios para Excel/PDF.
 - Fila offline (ações guardadas sem internet e enviadas depois).
 - Integração com o Nexus no Notion (visão da chefe).

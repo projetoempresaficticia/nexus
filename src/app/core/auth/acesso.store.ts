@@ -189,6 +189,31 @@ export class AcessoStore {
     }
   }
 
+  /** Liga/desliga o e-mail de avisos (T-59); o sino continua avisando dentro do app de qualquer jeito. */
+  async atualizarPreferenciaEmail(valor: boolean): Promise<void> {
+    const antes = this._dados();
+    if (!antes) return;
+    const depois: DadosIniciais = {
+      ...antes,
+      perfil: { ...antes.perfil, receber_email_notificacoes: valor },
+    };
+    this._dados.set(depois);
+    void this.cache.gravar('acesso', {
+      dados: depois,
+      pendentes: this._pendentes(),
+    } satisfies Retrato);
+    try {
+      await this.service.atualizarPreferenciaEmail(antes.perfil.id, valor);
+    } catch (e) {
+      this._dados.set(antes);
+      void this.cache.gravar('acesso', {
+        dados: antes,
+        pendentes: this._pendentes(),
+      } satisfies Retrato);
+      throw e;
+    }
+  }
+
   limpar(): void {
     this._inativos.set([]);
     this._dados.set(null);
