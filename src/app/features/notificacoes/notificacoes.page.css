@@ -4,15 +4,24 @@
   gap: 16px;
   min-width: 0;
 }
+.rotinas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+}
+.rotinas h3 {
+  margin: 0;
+}
+.rotinas-subtitulo {
+  margin-top: 10px;
+}
 .preferencia {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 6px 0;
   cursor: pointer;
-}
-.preferencia input {
-  margin-top: 3px;
 }
 .lista {
   display: flex;
