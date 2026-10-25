@@ -67,7 +67,10 @@ export class UsuariosService {
 
   /** O Adm marca/desmarca uma pessoa como conta de teste (T-65): nunca recebe e-mail de verdade. */
   async atualizarContaTeste(id: string, valor: boolean): Promise<void> {
-    const { error } = await this.supabase.from('perfis').update({ conta_teste: valor }).eq('id', id);
+    const { error } = await this.supabase
+      .from('perfis')
+      .update({ conta_teste: valor })
+      .eq('id', id);
     lancarSeErro(error);
   }
 

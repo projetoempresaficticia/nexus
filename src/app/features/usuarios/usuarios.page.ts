@@ -120,7 +120,9 @@ export class UsuariosPage {
     try {
       await this.service.atualizarContaTeste(u.id, valor);
     } catch (e) {
-      this.usuarios.update((l) => l.map((x) => (x.id === u.id ? { ...x, conta_teste: !valor } : x)));
+      this.usuarios.update((l) =>
+        l.map((x) => (x.id === u.id ? { ...x, conta_teste: !valor } : x)),
+      );
       this.toast.erro(e);
     }
   }

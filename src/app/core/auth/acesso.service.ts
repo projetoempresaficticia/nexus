@@ -32,7 +32,10 @@ export class AcessoService {
   }
 
   /** Liga/desliga uma ou mais categorias de e-mail (T-65). Só a própria pessoa muda a sua. */
-  async atualizarPreferenciasEmail(perfilId: string, patch: Partial<PreferenciasEmail>): Promise<void> {
+  async atualizarPreferenciasEmail(
+    perfilId: string,
+    patch: Partial<PreferenciasEmail>,
+  ): Promise<void> {
     const { error } = await this.supabase.from('perfis').update(patch).eq('id', perfilId);
     lancarSeErro(error);
   }
