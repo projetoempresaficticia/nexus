@@ -54,6 +54,11 @@ Deno.serve(async (req) => {
         await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'destinatario_inativo' }).eq('id', n.id);
         continue;
       }
+      if (!destino.receber_email_notificacoes) {
+        // Desligou o e-mail (T-59): fica só no sino, dentro do app; não tenta de novo
+        await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'preferencia_desligada' }).eq('id', n.id);
+        continue;
+      }
       const email = montarEmail(await dados(admin, n, destino.nome, appUrl));
       await enviarEmail({ para: destino.email, ...email });
       await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: null }).eq('id', n.id);
@@ -72,8 +77,12 @@ Deno.serve(async (req) => {
 
 async function perfil(admin: SupabaseClient, id: string | null) {
   if (!id) return null;
-  const { data } = await admin.from('perfis').select('nome, email, ativo').eq('id', id).maybeSingle();
-  return data as { nome: string; email: string; ativo: boolean } | null;
+  const { data } = await admin
+    .from('perfis')
+    .select('nome, email, ativo, receber_email_notificacoes')
+    .eq('id', id)
+    .maybeSingle();
+  return data as { nome: string; email: string; ativo: boolean; receber_email_notificacoes: boolean } | null;
 }
 
 /** Junta o que o modelo precisa: autor, item, trecho, outros responsáveis, setores, link. */
