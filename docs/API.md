@@ -74,7 +74,7 @@ O handler entrega o evento à store certa, que faz *merge* por `id` (ignora even
 | `url-anexo` | download de anexo | verifica `pode_ver_item`; devolve URL assinada (60 s) | JWT |
 | `enviar-anexo` | anexar arquivo (FormData: `item_id`, `comentario_id?`, `arquivo`) | sobe para o Drive partilhado (pasta do setor, criada na 1.ª vez e achada por `appProperties.nexus_setor_id`), dá leitura ao domínio pelo link, grava a linha com o login da pessoa (RLS) e completa `drive_id` com a service role; devolve o anexo. Erros: `arquivo_grande` (413), `sem_permissao` (403), `drive_falhou` (502), `drive_nao_configurado` (503 → o Angular usa o Storage) | JWT + RLS do item |
 | `limpar-anexos` | após `excluir_item` e anexo apagado | remove objetos do Storage e manda para a lixeira do Drive os arquivos da fila `anexos_drive_lixeira` (lote de 100) | JWT + verifica que o registo já não existe; a fila vem do banco |
-| `enviar-notificacoes` | pg_cron (2 min) | lê `notificacoes` pendentes (lote 50), monta e-mail (GLOSSARIO_UI §E-mails), envia, marca enviado/erro; máx. 3 tentativas. Pula (marca `enviado_em`, erro `preferencia_desligada`) quem desligou `perfis.receber_email_notificacoes` — a notificação já está no sino de qualquer jeito (T-59) | segredo do cron |
+| `enviar-notificacoes` | pg_cron (2 min) | lê `notificacoes` pendentes (lote 50), monta e-mail (GLOSSARIO_UI §E-mails), envia, marca enviado/erro; máx. 3 tentativas. Pula (marca `enviado_em`) quem é `conta_teste` (erro `conta_teste`) ou desligou a categoria de `tipo_notificacao` correspondente (erro `categoria_desligada`, coluna `perfis.notif_*`, T-65) — a notificação já está no sino/painel de qualquer jeito (T-59) | segredo do cron |
 
 ## Integrações externas
 - **Google OAuth** (Auth do Supabase).

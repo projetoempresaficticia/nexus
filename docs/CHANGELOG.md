@@ -17,6 +17,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Listas com mais de 1000 itens, solicitações ou entregas deixavam de vir completas (limite do servidor); agora são buscadas em páginas (T-37).
 
 ### Modificado
+- 2026-10-25 — O painel de notificações (`/notificacoes`) troca o único interruptor "também por e-mail" por 6 categorias independentes (item atribuído, bloqueios, aprovações, solicitações respondidas, menções/comentários, resumo semanal), cada uma com a frase do pedido do Germano; o sino passa a ter um link "Ver tudo e preferências de e-mail" em vez do interruptor. Tela Usuários: o Adm marca quem é "conta de teste" (nunca recebe e-mail de verdade) e mantém os botões de emergência para ligar/desligar as 6 categorias de todo mundo de uma vez (T-65).
 - 2026-10-24 — Login aceita, além do e-mail da empresa, contas externas explicitamente aprovadas e cadastradas (hoje: a conta que administra GitHub/Google Cloud/Cloudflare) (T-56).
 - 2026-10-24 — Página de acesso não autorizado (quando a conta não está cadastrada ou está inativa) ganha a marca do Nexus e passa a orientar a pessoa a entrar em contato com a gestão para fazer o cadastro.
 
