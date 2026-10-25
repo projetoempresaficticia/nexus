@@ -17,7 +17,7 @@ insert into public.notificacoes (id, tipo, destinatario_id, dados) values
 
 select is(
   (select column_default from information_schema.columns
-   where table_schema = 'public' and table_name = 'perfis' and column_name = 'receber_email_notificacoes'),
+   where table_schema = 'public' and table_name = 'perfis' and column_name = 'notif_atribuicao'),
   'true', 'por padrão, recebe e-mail');
 
 set local role authenticated;
@@ -36,15 +36,15 @@ update public.notificacoes set lido_em = now() where id = '29000000-0000-0000-00
 select is((select lido_em from public.notificacoes where id = '29000000-0000-0000-0000-000000000002'), null,
   'não marca a notificação de outra pessoa (RLS filtra a linha; 0 linhas afetadas)');
 
-select lives_ok($$update public.perfis set receber_email_notificacoes = false where id = '19000000-0000-0000-0000-000000000001'$$,
+select lives_ok($$update public.perfis set notif_atribuicao = false where id = '19000000-0000-0000-0000-000000000001'$$,
   'Ana desliga a própria preferência de e-mail');
-select is((select receber_email_notificacoes from public.perfis where id = '19000000-0000-0000-0000-000000000001'), false,
+select is((select notif_atribuicao from public.perfis where id = '19000000-0000-0000-0000-000000000001'), false,
   'preferência ficou salva');
 select throws_ok($$update public.perfis set nome = 'Outro Nome' where id = '19000000-0000-0000-0000-000000000001'$$,
   'P0001', 'sem_permissao', 'não muda o próprio nome por esse caminho (trigger barra)');
 
-update public.perfis set receber_email_notificacoes = false where id = '19000000-0000-0000-0000-000000000002';
-select is((select receber_email_notificacoes from public.perfis where id = '19000000-0000-0000-0000-000000000002'), true,
+update public.perfis set notif_atribuicao = false where id = '19000000-0000-0000-0000-000000000002';
+select is((select notif_atribuicao from public.perfis where id = '19000000-0000-0000-0000-000000000002'), true,
   'não muda a preferência de outra pessoa (RLS filtra a linha)');
 
 select * from finish();
