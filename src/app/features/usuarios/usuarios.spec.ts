@@ -18,7 +18,7 @@ const USUARIOS: Usuario[] = [
     ativo: true,
     is_admin: true,
     desativado_em: null,
-    receber_email_notificacoes: true,
+    conta_teste: false,
     vinculos: [],
   },
   {
@@ -29,7 +29,7 @@ const USUARIOS: Usuario[] = [
     ativo: true,
     is_admin: false,
     desativado_em: null,
-    receber_email_notificacoes: true,
+    conta_teste: false,
     vinculos: [{ setor_id: SETORES.sucesso, papel: 'lider' }],
   },
   {
@@ -40,7 +40,7 @@ const USUARIOS: Usuario[] = [
     ativo: false,
     is_admin: false,
     desativado_em: '2026-09-01T00:00:00Z',
-    receber_email_notificacoes: true,
+    conta_teste: false,
     vinculos: [],
   },
 ];
@@ -199,29 +199,27 @@ describe('UsuariosPage (US-03, US-04)', () => {
     ).toBe(false);
   });
 
-  describe('preferência de e-mail por pessoa (T-60)', () => {
-    it('muda na hora; volta se o servidor recusar', async () => {
-      const atualizarPreferenciaEmail = vi.fn().mockRejectedValue(new ErroApi('rede'));
-      const { el, estabilizar } = await montar({ atualizarPreferenciaEmail });
+  describe('conta de teste e e-mails em massa (T-65)', () => {
+    it('marcar conta de teste muda na hora; volta se o servidor recusar', async () => {
+      const atualizarContaTeste = vi.fn().mockRejectedValue(new ErroApi('rede'));
+      const { el, estabilizar } = await montar({ atualizarContaTeste });
       const erro = vi.spyOn(TestBed.inject(ToastService), 'erro');
-      const caixa = el.querySelector('.email-pessoa input') as HTMLInputElement;
-      expect(caixa.checked).toBe(true);
-      caixa.checked = false;
+      const caixa = el.querySelector('.conta-teste-pessoa input') as HTMLInputElement;
+      expect(caixa.checked).toBe(false);
+      caixa.checked = true;
       caixa.dispatchEvent(new Event('change'));
       await estabilizar();
-      expect(atualizarPreferenciaEmail).toHaveBeenCalledWith('p-eu', false);
+      expect(atualizarContaTeste).toHaveBeenCalledWith('p-eu', true);
       expect(erro).toHaveBeenCalled();
     });
 
-    it('ligar/desligar para todos pede confirmação e atualiza as pessoas ativas', async () => {
+    it('ligar/desligar e-mail para todos pede confirmação', async () => {
       const atualizarPreferenciaEmailTodos = vi.fn().mockResolvedValue(undefined);
-      const { el, estabilizar, botao } = await montar({ atualizarPreferenciaEmailTodos });
+      const { estabilizar, botao } = await montar({ atualizarPreferenciaEmailTodos });
       vi.spyOn(TestBed.inject(ConfirmacaoService), 'perguntar').mockResolvedValue(true);
       botao('Desligar e-mail para todos').click();
       await estabilizar();
       expect(atualizarPreferenciaEmailTodos).toHaveBeenCalledWith(false);
-      const caixas = [...el.querySelectorAll('.email-pessoa input')] as HTMLInputElement[];
-      expect(caixas.every((c) => !c.checked)).toBe(true);
     });
   });
 });

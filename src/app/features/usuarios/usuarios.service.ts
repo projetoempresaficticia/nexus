@@ -2,19 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { Tables } from '../../core/models/database.types';
 import { VinculoResumo } from '../../core/models/acesso.model';
 import { StatusItem } from '../../core/models/rotulos';
+import { CATEGORIAS_NOTIFICACAO, PreferenciasEmail } from '../../core/notificacoes/categorias';
 import { lancarSeErro } from '../../core/services/erro-api';
 import { SUPABASE } from '../../core/supabase.client';
 
 export type Usuario = Pick<
   Tables<'perfis'>,
-  | 'id'
-  | 'nome'
-  | 'email'
-  | 'iniciais'
-  | 'ativo'
-  | 'is_admin'
-  | 'desativado_em'
-  | 'receber_email_notificacoes'
+  'id' | 'nome' | 'email' | 'iniciais' | 'ativo' | 'is_admin' | 'desativado_em' | 'conta_teste'
 > & { vinculos: VinculoResumo[] };
 
 /** Item aberto de quem foi desativado (resposta de desativar_usuario). */
@@ -36,7 +30,7 @@ export class UsuariosService {
     const { data, error } = await this.supabase
       .from('perfis')
       .select(
-        'id, nome, email, iniciais, ativo, is_admin, desativado_em, receber_email_notificacoes, vinculos(setor_id, papel)',
+        'id, nome, email, iniciais, ativo, is_admin, desativado_em, conta_teste, vinculos(setor_id, papel)',
       )
       .order('nome');
     lancarSeErro(error);
@@ -71,21 +65,18 @@ export class UsuariosService {
     lancarSeErro(error);
   }
 
-  /** O Adm muda o e-mail de notificações de uma pessoa (T-60); cada um também muda o seu, pelo sino. */
-  async atualizarPreferenciaEmail(id: string, valor: boolean): Promise<void> {
-    const { error } = await this.supabase
-      .from('perfis')
-      .update({ receber_email_notificacoes: valor })
-      .eq('id', id);
+  /** O Adm marca/desmarca uma pessoa como conta de teste (T-65): nunca recebe e-mail de verdade. */
+  async atualizarContaTeste(id: string, valor: boolean): Promise<void> {
+    const { error } = await this.supabase.from('perfis').update({ conta_teste: valor }).eq('id', id);
     lancarSeErro(error);
   }
 
-  /** Liga/desliga o e-mail de notificações para todas as pessoas ativas de uma vez. */
+  /** Liga/desliga as 6 categorias de e-mail para todas as pessoas ativas de uma vez (emergência). */
   async atualizarPreferenciaEmailTodos(valor: boolean): Promise<void> {
-    const { error } = await this.supabase
-      .from('perfis')
-      .update({ receber_email_notificacoes: valor })
-      .eq('ativo', true);
+    const patch = Object.fromEntries(
+      CATEGORIAS_NOTIFICACAO.map((c) => [c, valor]),
+    ) as PreferenciasEmail;
+    const { error } = await this.supabase.from('perfis').update(patch).eq('ativo', true);
     lancarSeErro(error);
   }
 
