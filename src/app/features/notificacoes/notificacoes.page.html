@@ -1,0 +1,39 @@
+<app-cabecalho [titulo]="t.notificacoes.titulo" [subtitulo]="subtitulo()" [mostrarSetor]="false">
+  @if (notificacoes.naoLidas() > 0) {
+    <button type="button" class="btn sm" (click)="notificacoes.marcarTodasLidas()">
+      {{ t.notificacoes.marcarTodasLidas }}
+    </button>
+  }
+</app-cabecalho>
+
+<label class="preferencia card">
+  <input
+    type="checkbox"
+    [checked]="receberEmail()"
+    (change)="mudarPreferencia($any($event.target).checked)"
+  />
+  <span>
+    {{ t.notificacoes.receberEmail }}
+    <span class="row-sub">{{ t.notificacoes.receberEmailAjuda }}</span>
+  </span>
+</label>
+
+@if (!notificacoes.carregado()) {
+  <section class="panel"><app-carregando /></section>
+} @else {
+  <section class="panel lista">
+    @for (n of notificacoes.lista(); track n.id) {
+      <button type="button" class="row item" [class.lida]="!!n.lido_em" (click)="abrir(n)">
+        @if (!n.lido_em) {
+          <span class="bolinha" aria-hidden="true"></span>
+        }
+        <span class="row-main">
+          <strong class="texto">{{ resumo(n) }}</strong>
+          <span class="row-sub">{{ dataHora(n.criado_em) }}</span>
+        </span>
+      </button>
+    } @empty {
+      <div class="empty">{{ t.notificacoes.nenhuma }}</div>
+    }
+  </section>
+}

@@ -39,7 +39,7 @@ describe('ShellComponent', () => {
 
   it('membro vê Minhas tarefas, sem Painel', async () => {
     const { menu } = await montar(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]));
-    expect(menu).toEqual(['Minhas tarefas', 'Projetos', 'Solicitações', 'Equipe']);
+    expect(menu).toEqual(['Minhas tarefas', 'Projetos', 'Solicitações', 'Equipe', 'Notificações']);
   });
 
   it('líder vê Painel, Produtividade e Setores, sem Usuários', async () => {
@@ -53,6 +53,7 @@ describe('ShellComponent', () => {
       'Tarefas',
       'Solicitações',
       'Equipe',
+      'Notificações',
       'Setores',
     ]);
   });

@@ -62,6 +62,12 @@ export const routes: Routes = [
         title: m.equipe,
       },
       {
+        path: 'notificacoes',
+        loadComponent: () =>
+          import('./features/notificacoes/notificacoes.page').then((x) => x.NotificacoesPage),
+        title: m.notificacoes,
+      },
+      {
         path: 'usuarios',
         canActivate: [adminGuard],
         loadComponent: () =>

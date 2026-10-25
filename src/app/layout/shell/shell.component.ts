@@ -57,12 +57,18 @@ export class ShellComponent {
       texto: m.solicitacoes,
       contador: this.acesso.pendentes(),
     };
+    const notificacoes = {
+      rota: '/notificacoes',
+      texto: m.notificacoes,
+      contador: this.notificacoes.naoLidas(),
+    };
     if (!this.acesso.ehLider()) {
       return [
         { rota: '/tarefas', texto: m.minhasTarefas },
         { rota: '/projetos', texto: m.projetos },
         solicitacoes,
         { rota: '/equipe', texto: m.equipe },
+        notificacoes,
       ];
     }
     const itens: ItemMenu[] = [
@@ -72,6 +78,7 @@ export class ShellComponent {
       { rota: '/tarefas', texto: m.tarefas },
       solicitacoes,
       { rota: '/equipe', texto: m.equipe },
+      notificacoes,
     ];
     if (this.acesso.ehAdmin()) {
       itens.push({ rota: '/usuarios', texto: m.usuarios });
