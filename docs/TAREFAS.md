@@ -50,6 +50,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-61** Ícone da aba do navegador com a marca do Nexus (era o padrão do Angular). — US-31
 - [x] **T-62** Campo de Responsável mostra as pessoas ao focar, não só ao digitar (confundia e prejudicava as métricas). — Pedido do Germano · US-35
 - [x] **T-63** Tela Notificações (menu, todo mundo): todo o histórico, não só as 50 do sino. — Dep.: T-59 · Pedido do Germano · US-30
+- [x] **T-64** Campo de Responsável: a T-62 só abria a lista ao focar, mas quem digitava e saía sem clicar numa opção ficava com o texto pendurado, sem ninguém de verdade marcado. Agora sobra uma sugestão → entra sozinha; senão, limpa. — Dep.: T-62 · Pedido do Germano · US-35
 - [x] **T-50** Cópia semanal dos arquivos dos anexos (Storage) para o Google Drive, encriptada, com guia de restauro (BACKUP.md §8). — Dep.: T-48
 - [x] **T-49** E-mail pelo SMTP do Google Workspace em `_shared/email.ts` (senha de app; porta 465). — Dep.: T-36
 - [x] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40

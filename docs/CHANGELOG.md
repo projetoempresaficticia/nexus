@@ -10,7 +10,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 
 ### Corrigido
 - 2026-10-25 — Ícone da aba do navegador ainda era o padrão do Angular; agora é a marca do Nexus.
-- 2026-10-25 — Campo de Responsável (nova tarefa, item) só mostrava as pessoas depois de digitar um nome; parecia um texto comum e, sem escolher da lista, a atribuição não ficava ligada a um perfil de verdade (prejudicava as métricas). Agora a lista abre ao focar o campo.
+- 2026-10-25 — Campo de Responsável (nova tarefa, item): quem digitava um nome e saía do campo sem clicar numa opção ficava com o texto pendurado ali, parecendo uma pessoa marcada — sem ninguém de verdade ligado ao item (prejudicava as métricas). Agora a lista abre ao focar o campo e, ao sair, só entra uma pessoa se sobrou exatamente uma sugestão; senão, o texto é limpo.
 - 2026-10-25 — Botões "‹ Hoje ›" nas visões Mês, Semana e Linha do tempo apareciam empilhados e com o fundo escuro da barra lateral (T-58).
 - 2026-10-24 — Login real pelo Google quebrado logo depois da T-56 (faltava uma permissão para o papel que o Auth usa de verdade); corrigido no mesmo dia, sem ninguém perder acesso (T-57).
 - 2026-10-24 — Backup diário: a primeira execução real falhava — o dump não funcionava com o usuário restrito de leitura, e a cópia semanal dos anexos falhava quando o Storage estava vazio. Os dois foram corrigidos (T-48).

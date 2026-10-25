@@ -61,4 +61,48 @@ describe('SeletorPessoasComponent (busca de pessoas)', () => {
     fixture.detectChanges();
     expect(el.querySelector('.chip')).toBeNull();
   });
+
+  describe('sair do campo sem clicar numa opção (T-64 — não pode "parecer" marcado sem estar)', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('digitou um nome que bate só com uma pessoa: ela entra sozinha ao sair do campo', () => {
+      const { fixture, el } = montar();
+      const input = el.querySelector('input') as HTMLInputElement;
+      input.dispatchEvent(new Event('focus'));
+      input.value = 'bru';
+      input.dispatchEvent(new Event('input'));
+      input.dispatchEvent(new Event('blur'));
+      vi.advanceTimersByTime(150);
+      fixture.detectChanges();
+      expect(el.querySelector('.chip')?.textContent).toContain('Bruno Costa');
+      expect(input.value).toBe('');
+    });
+
+    it('digitou algo que não bate com ninguém: o campo some sozinho, nada fica marcado', () => {
+      const { fixture, el } = montar();
+      const input = el.querySelector('input') as HTMLInputElement;
+      input.dispatchEvent(new Event('focus'));
+      input.value = 'zzz';
+      input.dispatchEvent(new Event('input'));
+      input.dispatchEvent(new Event('blur'));
+      vi.advanceTimersByTime(150);
+      fixture.detectChanges();
+      expect(el.querySelector('.chip')).toBeNull();
+      expect(input.value).toBe('');
+    });
+
+    it('bate com mais de uma pessoa ("o" está em Ribeiro e em Bruno/Costa): não adivinha, só limpa', () => {
+      const { fixture, el } = montar();
+      const input = el.querySelector('input') as HTMLInputElement;
+      input.dispatchEvent(new Event('focus'));
+      input.value = 'o';
+      input.dispatchEvent(new Event('input'));
+      input.dispatchEvent(new Event('blur'));
+      vi.advanceTimersByTime(150);
+      fixture.detectChanges();
+      expect(el.querySelectorAll('.chip')).toHaveLength(0);
+      expect(input.value).toBe('');
+    });
+  });
 });
