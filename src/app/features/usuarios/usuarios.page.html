@@ -19,6 +19,14 @@
     />
     {{ t.usuarios.mostrarInativos }}
   </label>
+  <span class="email-todos">
+    <button type="button" class="btn sm" (click)="mudarPreferenciaTodos(true)">
+      {{ t.usuarios.ligarEmailTodos }}
+    </button>
+    <button type="button" class="btn sm" (click)="mudarPreferenciaTodos(false)">
+      {{ t.usuarios.desligarEmailTodos }}
+    </button>
+  </span>
 </div>
 
 @if (!carregado()) {
@@ -50,6 +58,14 @@
           u.ativo ? t.usuarios.ativo : t.usuarios.inativo
         }}</span>
         @if (u.ativo) {
+          <label class="hint email-pessoa">
+            <input
+              type="checkbox"
+              [checked]="u.receber_email_notificacoes"
+              (change)="alternarPreferencia(u)"
+            />
+            {{ t.usuarios.emailColuna }}
+          </label>
           <button type="button" class="btn sm" (click)="editando.set(u)">
             {{ t.usuarios.vinculos }}
           </button>

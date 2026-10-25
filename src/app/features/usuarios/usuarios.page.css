@@ -31,3 +31,14 @@
   gap: 6px;
   flex: 1 1 240px;
 }
+.email-todos {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.email-pessoa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}

@@ -487,6 +487,14 @@ export const TEXTOS = {
     reatribuir: 'Reatribuir',
     depoisReatribuo: 'Fazer depois',
     reatribuidos: (n: number, nome: string) => `${n} item(ns) agora são de ${nome}.`,
+    emailColuna: 'E-mail',
+    ligarEmailTodos: 'Ligar e-mail para todos',
+    desligarEmailTodos: 'Desligar e-mail para todos',
+    ligarEmailTodosTitulo: 'Ligar o e-mail de notificações para todos?',
+    desligarEmailTodosTitulo: 'Desligar o e-mail de notificações para todos?',
+    emailTodosTexto:
+      'Vale para quem está ativo agora. O sino continua avisando dentro do app de qualquer jeito; cada pessoa pode mudar a sua depois.',
+    emailTodosFeito: 'Preferência de e-mail atualizada para todos.',
   },
   setores: {
     titulo: 'Setores',

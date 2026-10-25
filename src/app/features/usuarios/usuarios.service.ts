@@ -7,7 +7,14 @@ import { SUPABASE } from '../../core/supabase.client';
 
 export type Usuario = Pick<
   Tables<'perfis'>,
-  'id' | 'nome' | 'email' | 'iniciais' | 'ativo' | 'is_admin' | 'desativado_em'
+  | 'id'
+  | 'nome'
+  | 'email'
+  | 'iniciais'
+  | 'ativo'
+  | 'is_admin'
+  | 'desativado_em'
+  | 'receber_email_notificacoes'
 > & { vinculos: VinculoResumo[] };
 
 /** Item aberto de quem foi desativado (resposta de desativar_usuario). */
@@ -29,7 +36,7 @@ export class UsuariosService {
     const { data, error } = await this.supabase
       .from('perfis')
       .select(
-        'id, nome, email, iniciais, ativo, is_admin, desativado_em, vinculos(setor_id, papel)',
+        'id, nome, email, iniciais, ativo, is_admin, desativado_em, receber_email_notificacoes, vinculos(setor_id, papel)',
       )
       .order('nome');
     lancarSeErro(error);
@@ -61,6 +68,24 @@ export class UsuariosService {
 
   async reativar(id: string): Promise<void> {
     const { error } = await this.supabase.rpc('reativar_usuario', { p_id: id });
+    lancarSeErro(error);
+  }
+
+  /** O Adm muda o e-mail de notificações de uma pessoa (T-60); cada um também muda o seu, pelo sino. */
+  async atualizarPreferenciaEmail(id: string, valor: boolean): Promise<void> {
+    const { error } = await this.supabase
+      .from('perfis')
+      .update({ receber_email_notificacoes: valor })
+      .eq('id', id);
+    lancarSeErro(error);
+  }
+
+  /** Liga/desliga o e-mail de notificações para todas as pessoas ativas de uma vez. */
+  async atualizarPreferenciaEmailTodos(valor: boolean): Promise<void> {
+    const { error } = await this.supabase
+      .from('perfis')
+      .update({ receber_email_notificacoes: valor })
+      .eq('ativo', true);
     lancarSeErro(error);
   }
 
