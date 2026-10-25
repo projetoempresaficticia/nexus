@@ -4,7 +4,7 @@
   flex-direction: column;
   gap: 14px;
 }
-.nav {
+.periodo-nav {
   display: flex;
   align-items: center;
   gap: 6px;
