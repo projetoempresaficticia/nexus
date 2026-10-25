@@ -395,14 +395,14 @@ isOneToOne: false
                   ]
                 },"perfis": {
                   Row: {
-                    "ativo": boolean,"auth_id": string | null,"criado_em": string,"desativado_em": string | null,"email": string,"id": string,"iniciais": string,"is_admin": boolean,"legacy_id": string | null,"nome": string,"notif_atribuicao": boolean,"notif_bloqueios": boolean,"notif_aprovacoes": boolean,"notif_solicitacoes": boolean,"notif_mencoes_comentarios": boolean,"notif_resumo_semanal": boolean,"conta_teste": boolean
+                    "ativo": boolean,"auth_id": string | null,"conta_teste": boolean,"criado_em": string,"desativado_em": string | null,"email": string,"id": string,"iniciais": string,"is_admin": boolean,"legacy_id": string | null,"nome": string,"notif_aprovacoes": boolean,"notif_atribuicao": boolean,"notif_bloqueios": boolean,"notif_mencoes_comentarios": boolean,"notif_resumo_semanal": boolean,"notif_solicitacoes": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email": string,"id"?: string,"iniciais": string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome": string,"notif_atribuicao"?: boolean,"notif_bloqueios"?: boolean,"notif_aprovacoes"?: boolean,"notif_solicitacoes"?: boolean,"notif_mencoes_comentarios"?: boolean,"notif_resumo_semanal"?: boolean,"conta_teste"?: boolean
+                    "ativo"?: boolean,"auth_id"?: string | null,"conta_teste"?: boolean,"criado_em"?: string,"desativado_em"?: string | null,"email": string,"id"?: string,"iniciais": string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome": string,"notif_aprovacoes"?: boolean,"notif_atribuicao"?: boolean,"notif_bloqueios"?: boolean,"notif_mencoes_comentarios"?: boolean,"notif_resumo_semanal"?: boolean,"notif_solicitacoes"?: boolean
                   }
                   Update: {
-                    "ativo"?: boolean,"auth_id"?: string | null,"criado_em"?: string,"desativado_em"?: string | null,"email"?: string,"id"?: string,"iniciais"?: string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome"?: string,"notif_atribuicao"?: boolean,"notif_bloqueios"?: boolean,"notif_aprovacoes"?: boolean,"notif_solicitacoes"?: boolean,"notif_mencoes_comentarios"?: boolean,"notif_resumo_semanal"?: boolean,"conta_teste"?: boolean
+                    "ativo"?: boolean,"auth_id"?: string | null,"conta_teste"?: boolean,"criado_em"?: string,"desativado_em"?: string | null,"email"?: string,"id"?: string,"iniciais"?: string,"is_admin"?: boolean,"legacy_id"?: string | null,"nome"?: string,"notif_aprovacoes"?: boolean,"notif_atribuicao"?: boolean,"notif_bloqueios"?: boolean,"notif_mencoes_comentarios"?: boolean,"notif_resumo_semanal"?: boolean,"notif_solicitacoes"?: boolean
                   }
                   Relationships: [
                     
@@ -653,6 +653,7 @@ isOneToOne: false
 { Args: { "p_email": string,"p_nome": string,"p_vinculos"?: Json }; Returns: {
               "ativo": boolean,
 "auth_id": string | null,
+"conta_teste": boolean,
 "criado_em": string,
 "desativado_em": string | null,
 "email": string,
@@ -661,13 +662,12 @@ isOneToOne: false
 "is_admin": boolean,
 "legacy_id": string | null,
 "nome": string,
+"notif_aprovacoes": boolean,
 "notif_atribuicao": boolean,
 "notif_bloqueios": boolean,
-"notif_aprovacoes": boolean,
-"notif_solicitacoes": boolean,
 "notif_mencoes_comentarios": boolean,
 "notif_resumo_semanal": boolean,
-"conta_teste": boolean
+"notif_solicitacoes": boolean
             }
                           SetofOptions: {
         from: "*"
@@ -757,6 +757,7 @@ isOneToOne: false
 { Args: { "p_id": string }; Returns: {
               "ativo": boolean,
 "auth_id": string | null,
+"conta_teste": boolean,
 "criado_em": string,
 "desativado_em": string | null,
 "email": string,
@@ -765,13 +766,12 @@ isOneToOne: false
 "is_admin": boolean,
 "legacy_id": string | null,
 "nome": string,
+"notif_aprovacoes": boolean,
 "notif_atribuicao": boolean,
 "notif_bloqueios": boolean,
-"notif_aprovacoes": boolean,
-"notif_solicitacoes": boolean,
 "notif_mencoes_comentarios": boolean,
 "notif_resumo_semanal": boolean,
-"conta_teste": boolean
+"notif_solicitacoes": boolean
             }
                           SetofOptions: {
         from: "*"
