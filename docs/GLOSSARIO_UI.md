@@ -22,9 +22,11 @@ KPIs: Abertas ("tarefas e subtarefas") · Atrasadas ("prazo vencido") · Bloquea
 Produtividade: Pontualidade · Ciclo médio · Tempo parado · Concluídas · "vs. período anterior". Períodos: Últimas 4 semanas · Últimas 12 semanas · Este mês · Mês passado. Pessoa: "Toda a equipe (N)".
 Equipe: "Minha linha de decisão" — "A quem você responde em cada setor. Aprovações sobem por esta linha." · "Sem líder definido".
 
-### Sino de notificações (T-59)
-"Notificações" · "Marcar todas como lidas" · "Nenhuma notificação ainda." · "Também por e-mail" — "Com isto
-desligado, os avisos continuam aqui no sino, só não vão por e-mail." A frase de cada notificação usa o mesmo
+### Sino de notificações (T-59) e tela Notificações (T-63, menu de todo mundo)
+"Notificações" · "Marcar todas como lidas" · "Nenhuma notificação ainda." · subtítulo da tela: "N não lida(s)"
+ou "Tudo em dia por aqui." · "Também por e-mail" — "Com isto desligado, os avisos continuam aqui no sino, só
+não vão por e-mail." A tela mostra todo o histórico (o sino, só as 50 últimas); a frase de cada notificação
+usa o mesmo
 tom dos e-mails (§E-mails automáticos), sem o trecho citado: "{autor} incluiu você como responsável em
 "{item}"." · "{autor} mencionou você em "{item}"." · "{autor} comentou em "{item}"." · "{autor} precisa de
 você: {tipo} em "{item}"." · "Sua solicitação em "{item}" foi {resultado}." · ""{item}" vence amanhã." ·

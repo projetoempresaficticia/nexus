@@ -21,6 +21,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Página de acesso não autorizado (quando a conta não está cadastrada ou está inativa) ganha a marca do Nexus e passa a orientar a pessoa a entrar em contato com a gestão para fazer o cadastro.
 
 ### Adicionado
+- 2026-10-25 — Tela Notificações (menu, todo mundo): todo o histórico de avisos, não só os 50 do sino (T-63).
 - 2026-10-25 — Tela Usuários: o Adm liga/desliga o e-mail de notificações de uma pessoa, ou de todas de uma vez (T-60).
 - 2026-10-25 — Sino de notificações na barra lateral: lista os avisos (atribuição, menção, comentário, solicitação, lembrete de prazo), marca como lidas e deixa cada pessoa escolher se também quer receber por e-mail (T-59).
 - 2026-10-24 — Anexos vão para o Google Drive da empresa, numa pasta por setor; o Nexus guarda o link (abre para quem é da empresa) e, ao remover o anexo ou excluir o item, o arquivo vai para a lixeira do Drive (T-52).
