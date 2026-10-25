@@ -92,6 +92,7 @@ describe('NovoItemModal', () => {
     (el.querySelector('.chip .x') as HTMLElement).click();
     await fixture.whenStable();
     const busca = el.querySelector('input[type=search]') as HTMLInputElement;
+    busca.dispatchEvent(new Event('focus'));
     digitar(busca, 'a');
     await fixture.whenStable();
     const nomes = () => [...el.querySelectorAll('.lista .mi')].map((b) => b.textContent?.trim());
