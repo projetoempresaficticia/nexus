@@ -54,9 +54,14 @@ Deno.serve(async (req) => {
         await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'destinatario_inativo' }).eq('id', n.id);
         continue;
       }
-      if (!destino.receber_email_notificacoes) {
-        // Desligou o e-mail (T-59): fica só no sino, dentro do app; não tenta de novo
-        await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'preferencia_desligada' }).eq('id', n.id);
+      if (destino.conta_teste) {
+        // Conta de teste (T-65): nunca manda e-mail de verdade, não importa a preferência
+        await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'conta_teste' }).eq('id', n.id);
+        continue;
+      }
+      if (!categoriaPermitida(n, destino)) {
+        // Essa categoria está desligada (T-65): fica só no sino, dentro do app; não tenta de novo
+        await admin.from('notificacoes').update({ enviado_em: new Date().toISOString(), erro: 'categoria_desligada' }).eq('id', n.id);
         continue;
       }
       const email = montarEmail(await dados(admin, n, destino.nome, appUrl));
@@ -75,14 +80,45 @@ Deno.serve(async (req) => {
   return json({ enviados, falhas });
 });
 
-async function perfil(admin: SupabaseClient, id: string | null) {
+interface Destino {
+  nome: string;
+  email: string;
+  ativo: boolean;
+  conta_teste: boolean;
+  notif_atribuicao: boolean;
+  notif_bloqueios: boolean;
+  notif_aprovacoes: boolean;
+  notif_solicitacoes: boolean;
+  notif_mencoes_comentarios: boolean;
+}
+
+async function perfil(admin: SupabaseClient, id: string | null): Promise<Destino | null> {
   if (!id) return null;
   const { data } = await admin
     .from('perfis')
-    .select('nome, email, ativo, receber_email_notificacoes')
+    .select(
+      'nome, email, ativo, conta_teste, notif_atribuicao, notif_bloqueios, notif_aprovacoes, notif_solicitacoes, notif_mencoes_comentarios',
+    )
     .eq('id', id)
     .maybeSingle();
-  return data as { nome: string; email: string; ativo: boolean; receber_email_notificacoes: boolean } | null;
+  return data as Destino | null;
+}
+
+/** Categoria de e-mail da notificação (T-65); boas-vindas e lembrete de prazo não têm categoria, sempre vão. */
+function categoriaPermitida(n: Notificacao, destino: Destino): boolean {
+  switch (n.tipo) {
+    case 'atribuicao':
+      return destino.notif_atribuicao;
+    case 'solicitacao_recebida':
+      return n.dados.tipo === 'aprovacao' ? destino.notif_aprovacoes : destino.notif_bloqueios;
+    case 'solicitacao_respondida':
+      return destino.notif_solicitacoes;
+    case 'mencao':
+    case 'comentario':
+      return destino.notif_mencoes_comentarios;
+    default:
+      return true;
+  }
 }
 
 /** Junta o que o modelo precisa: autor, item, trecho, outros responsáveis, setores, link. */

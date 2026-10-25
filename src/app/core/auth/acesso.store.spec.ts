@@ -114,9 +114,9 @@ describe('AcessoStore', () => {
     });
   });
 
-  describe('preferência de e-mail (T-59)', () => {
+  describe('preferência de e-mail (T-65)', () => {
     it('muda na hora (otimista) e persiste', async () => {
-      const atualizarPreferenciaEmail = vi.fn().mockResolvedValue(undefined);
+      const atualizarPreferenciasEmail = vi.fn().mockResolvedValue(undefined);
       TestBed.configureTestingModule({
         providers: [
           {
@@ -124,16 +124,16 @@ describe('AcessoStore', () => {
             useValue: {
               carregarInicial: vi.fn().mockResolvedValue(dadosIniciais([])),
               contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
-              atualizarPreferenciaEmail,
+              atualizarPreferenciasEmail,
             },
           },
         ],
       });
       const store = TestBed.inject(AcessoStore);
       await store.carregar();
-      await store.atualizarPreferenciaEmail(false);
-      expect(store.perfil()?.receber_email_notificacoes).toBe(false);
-      expect(atualizarPreferenciaEmail).toHaveBeenCalledWith('p-eu', false);
+      await store.atualizarPreferenciaEmail('notif_atribuicao', false);
+      expect(store.perfil()?.notif_atribuicao).toBe(false);
+      expect(atualizarPreferenciasEmail).toHaveBeenCalledWith('p-eu', { notif_atribuicao: false });
     });
 
     it('se o servidor recusar, volta ao valor de antes', async () => {
@@ -144,15 +144,15 @@ describe('AcessoStore', () => {
             useValue: {
               carregarInicial: vi.fn().mockResolvedValue(dadosIniciais([])),
               contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
-              atualizarPreferenciaEmail: vi.fn().mockRejectedValue(new ErroApi('rede')),
+              atualizarPreferenciasEmail: vi.fn().mockRejectedValue(new ErroApi('rede')),
             },
           },
         ],
       });
       const store = TestBed.inject(AcessoStore);
       await store.carregar();
-      await expect(store.atualizarPreferenciaEmail(false)).rejects.toThrow();
-      expect(store.perfil()?.receber_email_notificacoes).toBe(true);
+      await expect(store.atualizarPreferenciaEmail('notif_atribuicao', false)).rejects.toThrow();
+      expect(store.perfil()?.notif_atribuicao).toBe(true);
     });
   });
 });

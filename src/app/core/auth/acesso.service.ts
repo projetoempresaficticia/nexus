@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { DadosIniciais, Pessoa } from '../models/acesso.model';
+import { PreferenciasEmail } from '../notificacoes/categorias';
 import { lancarSeErro } from '../services/erro-api';
 import { SUPABASE } from '../supabase.client';
 
@@ -30,12 +31,12 @@ export class AcessoService {
     return count ?? 0;
   }
 
-  /** Receber (ou não) os avisos também por e-mail, além do sino (T-59). Só a própria pessoa muda a sua. */
-  async atualizarPreferenciaEmail(perfilId: string, valor: boolean): Promise<void> {
-    const { error } = await this.supabase
-      .from('perfis')
-      .update({ receber_email_notificacoes: valor })
-      .eq('id', perfilId);
+  /** Liga/desliga uma ou mais categorias de e-mail (T-65). Só a própria pessoa muda a sua. */
+  async atualizarPreferenciasEmail(
+    perfilId: string,
+    patch: Partial<PreferenciasEmail>,
+  ): Promise<void> {
+    const { error } = await this.supabase.from('perfis').update(patch).eq('id', perfilId);
     lancarSeErro(error);
   }
 }

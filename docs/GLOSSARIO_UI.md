@@ -24,19 +24,28 @@ Equipe: "Minha linha de decisão" — "A quem você responde em cada setor. Apro
 
 ### Sino de notificações (T-59) e tela Notificações (T-63, menu de todo mundo)
 "Notificações" · "Marcar todas como lidas" · "Nenhuma notificação ainda." · subtítulo da tela: "N não lida(s)"
-ou "Tudo em dia por aqui." · "Também por e-mail" — "Com isto desligado, os avisos continuam aqui no sino, só
-não vão por e-mail." A tela mostra todo o histórico (o sino, só as 50 últimas); a frase de cada notificação
-usa o mesmo
+ou "Tudo em dia por aqui." · no sino, em vez do interruptor: link "Ver tudo e preferências de e-mail" que
+leva para `/notificacoes` (T-65). A tela mostra todo o histórico (o sino, só as 50 últimas); a frase de cada
+notificação usa o mesmo
 tom dos e-mails (§E-mails automáticos), sem o trecho citado: "{autor} incluiu você como responsável em
 "{item}"." · "{autor} mencionou você em "{item}"." · "{autor} comentou em "{item}"." · "{autor} precisa de
 você: {tipo} em "{item}"." · "Sua solicitação em "{item}" foi {resultado}." · ""{item}" vence amanhã." ·
 "Bem-vindo(a) ao Nexus!"
 
-### Preferência de e-mail na tela Usuários (T-60, só Adm)
-Uma caixinha "E-mail" ao lado de cada pessoa ativa, para ligar/desligar a dela; dois botões no topo —
-"Ligar e-mail para todos" / "Desligar e-mail para todos" — pedem confirmação: "Ligar/Desligar o e-mail de
-notificações para todos?" — "Vale para quem está ativo agora. O sino continua avisando dentro do app de
-qualquer jeito; cada pessoa pode mudar a sua depois." Depois: "Preferência de e-mail atualizada para todos."
+### Painel "Notificações e rotinas" (T-65, dentro da tela Notificações)
+Título: "Notificações e rotinas". Ajuda: "E-mails de aviso (atribuições, solicitações, menções, bloqueios) e
+resumo semanal. Ninguém recebe aviso do que ele mesmo fez, e contas de teste nunca recebem e-mail."
+Subtítulo da lista: "Enviar e-mails de notificação". As 6 caixinhas, cada uma liga/desliga na hora:
+"Item atribuído a mim" · "Pediram informação ou ação a mim (bloqueia o item)" · "Pediram minha aprovação" ·
+"Responderam a uma solicitação minha" · "Menções e comentários nos meus itens" · "Resumo semanal (líderes)".
+
+### Conta de teste e e-mail em massa na tela Usuários (T-65, só Adm)
+Uma caixinha "Conta de teste" ao lado de cada pessoa ativa — "Nunca recebe e-mail de verdade, não importa a
+preferência da pessoa." — e dois botões de emergência no topo — "Ligar e-mail para todos" / "Desligar e-mail
+para todos" — pedem confirmação: "Ligar/Desligar o e-mail de notificações para todos?" — "Vale para quem
+está ativo agora. O sino continua avisando dentro do app de qualquer jeito; cada pessoa pode mudar a sua
+depois." Depois: "Preferência de e-mail atualizada para todos." O ajuste fino de cada categoria fica na
+própria tela `/notificacoes` da pessoa.
 
 ## Botões
 + Nova tarefa · + Novo projeto · Mover para projeto · Tirar do projeto · Editar título · + Nova subtarefa · Criar · Salvar · Cancelar · Excluir · Reabrir · Comentar · Editar · Apagar · Anexar arquivo · Colar link · Nova solicitação · Enviar · Resolver · Aprovar · Recusar · Cancelar solicitação · Ver · Adicionar passo · Adicionar dependência · Cadastrar pessoa · Desativar · Reativar · Reatribuir itens · Novo setor · Entrar com Google.

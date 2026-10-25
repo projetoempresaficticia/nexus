@@ -28,7 +28,13 @@ Pessoa do sistema. Criada pelo Adm **antes** do primeiro login; ligada ao `auth.
 | iniciais | text | sim | | 2–3 letras, gerado pelo app |
 | is_admin | boolean | sim | false | adm do sistema |
 | ativo | boolean | sim | true | |
-| receber_email_notificacoes | boolean | sim | true | desligar não para o sino, só o e-mail (T-59); só a própria pessoa muda a sua |
+| notif_atribuicao | boolean | sim | true | e-mail quando um item é atribuído à pessoa (T-65); só a própria pessoa muda a sua |
+| notif_bloqueios | boolean | sim | true | e-mail quando pedem informação/ação (solicitação que bloqueia o item) a ela (T-65) |
+| notif_aprovacoes | boolean | sim | true | e-mail quando pedem a aprovação dela (T-65) |
+| notif_solicitacoes | boolean | sim | true | e-mail quando respondem a uma solicitação que ela abriu (T-65) |
+| notif_mencoes_comentarios | boolean | sim | true | e-mail de menção ou comentário nos itens dela (T-65) |
+| notif_resumo_semanal | boolean | sim | true | e-mail semanal com as métricas do setor, só para líderes/Adm (T-65; o envio em si é da T-66) |
+| conta_teste | boolean | sim | false | Adm marca; nunca recebe e-mail de verdade, não importa a preferência (T-65) |
 | criado_em | timestamptz | sim | now() | |
 | desativado_em | timestamptz | não | | |
 | legacy_id | text | não | | UNIQUE |
@@ -195,7 +201,7 @@ Preenchida **só por triggers** (auditoria simples de `itens`, `solicitacoes`, `
 
 ### notificacoes
 Alimenta o sino (T-59) **e** a fila de e-mails. Inserida por triggers/RPCs; a Edge Function
-`enviar-notificacoes` consome o que ainda não foi enviado e respeita `perfis.receber_email_notificacoes`.
+`enviar-notificacoes` consome o que ainda não foi enviado e respeita `perfis.conta_teste` (nunca envia) e a categoria de `tipo_notificacao` correspondente (`notif_*`, T-65).
 | coluna | tipo | notas |
 |---|---|---|
 | id | uuid | PK |

@@ -1,6 +1,5 @@
-import { Component, DestroyRef, ElementRef, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { AcessoStore } from '../../core/auth/acesso.store';
+import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { TEXTOS } from '../../core/models/textos';
 import { Notificacao } from '../../core/notificacoes/notificacoes.service';
 import { NotificacoesStore } from '../../core/notificacoes/notificacoes.store';
@@ -13,6 +12,7 @@ import { resumoNotificacao } from '../../shared/utils/notificacoes-texto';
  */
 @Component({
   selector: 'app-notificacoes-sino',
+  imports: [RouterLink],
   host: { '(document:keydown.escape)': 'aberto.set(false)' },
   template: `
     <div class="sino-wrap">
@@ -69,17 +69,9 @@ import { resumoNotificacao } from '../../shared/utils/notificacoes-texto';
             }
           </div>
 
-          <label class="preferencia">
-            <input
-              type="checkbox"
-              [checked]="receberEmail()"
-              (change)="mudarPreferencia($any($event.target).checked)"
-            />
-            <span>
-              {{ t.notificacoes.receberEmail }}
-              <span class="ajuda">{{ t.notificacoes.receberEmailAjuda }}</span>
-            </span>
-          </label>
+          <a class="preferencia" routerLink="/notificacoes" (click)="aberto.set(false)">
+            {{ t.notificacoes.verTudo }}
+          </a>
         </div>
       }
     </div>
@@ -187,37 +179,28 @@ import { resumoNotificacao } from '../../shared/utils/notificacoes-texto';
       text-align: center;
     }
     .preferencia {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
+      display: block;
       padding: 10px 14px;
       border-top: 1px solid var(--line);
       font-size: 13px;
-      cursor: pointer;
+      font-weight: 600;
+      color: var(--accent);
+      text-align: center;
+      text-decoration: none;
     }
-    .preferencia input {
-      margin-top: 2px;
-    }
-    .ajuda {
-      display: block;
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 400;
+    .preferencia:hover {
+      background: var(--surface-2);
     }
   `,
 })
 export class NotificacoesSinoComponent {
   protected readonly notificacoes = inject(NotificacoesStore);
-  private readonly acesso = inject(AcessoStore);
   private readonly router = inject(Router);
   protected readonly t = TEXTOS;
   protected readonly dataHora = dataHora;
 
   protected readonly aberto = signal(false);
   protected readonly naoLidas = this.notificacoes.naoLidas;
-  protected readonly receberEmail = computed(
-    () => this.acesso.perfil()?.receber_email_notificacoes ?? true,
-  );
 
   constructor() {
     // A busca inicial é do shell (precisa da contagem antes de alguém abrir o painel).
@@ -251,9 +234,5 @@ export class NotificacoesSinoComponent {
         ? `/item/${n.item_id}`
         : null;
     if (destino) await this.router.navigateByUrl(destino);
-  }
-
-  protected mudarPreferencia(valor: boolean): void {
-    void this.acesso.atualizarPreferenciaEmail(valor);
   }
 }

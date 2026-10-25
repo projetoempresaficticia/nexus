@@ -60,9 +60,21 @@ export const TEXTOS = {
     semNaoLidas: 'Tudo em dia por aqui.',
     marcarTodasLidas: 'Marcar todas como lidas',
     nenhuma: 'Nenhuma notificação ainda.',
-    receberEmail: 'Também por e-mail',
-    receberEmailAjuda:
-      'Com isto desligado, os avisos continuam aqui no sino, só não vão por e-mail.',
+    verTudo: 'Ver tudo e preferências de e-mail',
+    rotinasTitulo: 'Notificações e rotinas',
+    rotinasAjuda:
+      'E-mails de aviso (atribuições, solicitações, menções, bloqueios) e resumo semanal. Ninguém recebe aviso do que ele mesmo fez, e contas de teste nunca recebem e-mail.',
+    enviarEmails: 'Enviar e-mails de notificação',
+    categorias: {
+      notif_atribuicao: 'Item atribuído a mim',
+      notif_bloqueios: 'Pediram informação ou ação a mim (bloqueia o item)',
+      notif_aprovacoes: 'Pediram minha aprovação',
+      notif_solicitacoes: 'Responderam a uma solicitação minha',
+      notif_mencoes_comentarios: 'Menções e comentários nos meus itens',
+      notif_resumo_semanal: 'Resumo semanal (líderes)',
+    },
+    contaTeste: 'Conta de teste',
+    contaTesteAjuda: 'Nunca recebe e-mail de verdade, não importa a preferência da pessoa.',
   },
   setor: { rotulo: 'Setor', todos: 'Todos os meus setores' },
   comum: {
@@ -489,7 +501,6 @@ export const TEXTOS = {
     reatribuir: 'Reatribuir',
     depoisReatribuo: 'Fazer depois',
     reatribuidos: (n: number, nome: string) => `${n} item(ns) agora são de ${nome}.`,
-    emailColuna: 'E-mail',
     ligarEmailTodos: 'Ligar e-mail para todos',
     desligarEmailTodos: 'Desligar e-mail para todos',
     ligarEmailTodosTitulo: 'Ligar o e-mail de notificações para todos?',

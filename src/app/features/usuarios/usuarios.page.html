@@ -58,13 +58,9 @@
           u.ativo ? t.usuarios.ativo : t.usuarios.inativo
         }}</span>
         @if (u.ativo) {
-          <label class="hint email-pessoa">
-            <input
-              type="checkbox"
-              [checked]="u.receber_email_notificacoes"
-              (change)="alternarPreferencia(u)"
-            />
-            {{ t.usuarios.emailColuna }}
+          <label class="hint conta-teste-pessoa" [attr.title]="t.notificacoes.contaTesteAjuda">
+            <input type="checkbox" [checked]="u.conta_teste" (change)="alternarContaTeste(u)" />
+            {{ t.notificacoes.contaTeste }}
           </label>
           <button type="button" class="btn sm" (click)="editando.set(u)">
             {{ t.usuarios.vinculos }}

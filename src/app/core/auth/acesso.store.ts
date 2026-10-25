@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ancestrais, descendentes, ordenarArvore } from '../../shared/utils/arvore';
 import { DadosIniciais, Papel, Pessoa } from '../models/acesso.model';
+import { CategoriaNotificacao } from '../notificacoes/categorias';
 import { CacheLocalService } from '../services/cache-local.service';
 import { ErroApi } from '../services/erro-api';
 import { AcessoService } from './acesso.service';
@@ -189,13 +190,13 @@ export class AcessoStore {
     }
   }
 
-  /** Liga/desliga o e-mail de avisos (T-59); o sino continua avisando dentro do app de qualquer jeito. */
-  async atualizarPreferenciaEmail(valor: boolean): Promise<void> {
+  /** Liga/desliga uma categoria de e-mail (T-65); o sino continua avisando dentro do app de qualquer jeito. */
+  async atualizarPreferenciaEmail(categoria: CategoriaNotificacao, valor: boolean): Promise<void> {
     const antes = this._dados();
     if (!antes) return;
     const depois: DadosIniciais = {
       ...antes,
-      perfil: { ...antes.perfil, receber_email_notificacoes: valor },
+      perfil: { ...antes.perfil, [categoria]: valor },
     };
     this._dados.set(depois);
     void this.cache.gravar('acesso', {
@@ -203,7 +204,7 @@ export class AcessoStore {
       pendentes: this._pendentes(),
     } satisfies Retrato);
     try {
-      await this.service.atualizarPreferenciaEmail(antes.perfil.id, valor);
+      await this.service.atualizarPreferenciasEmail(antes.perfil.id, { [categoria]: valor });
     } catch (e) {
       this._dados.set(antes);
       void this.cache.gravar('acesso', {

@@ -6,17 +6,21 @@
   }
 </app-cabecalho>
 
-<label class="preferencia card">
-  <input
-    type="checkbox"
-    [checked]="receberEmail()"
-    (change)="mudarPreferencia($any($event.target).checked)"
-  />
-  <span>
-    {{ t.notificacoes.receberEmail }}
-    <span class="row-sub">{{ t.notificacoes.receberEmailAjuda }}</span>
-  </span>
-</label>
+<section class="card rotinas">
+  <h3>{{ t.notificacoes.rotinasTitulo }}</h3>
+  <p class="row-sub">{{ t.notificacoes.rotinasAjuda }}</p>
+  <strong class="rotinas-subtitulo">{{ t.notificacoes.enviarEmails }}</strong>
+  @for (categoria of categorias; track categoria) {
+    <label class="preferencia">
+      <input
+        type="checkbox"
+        [checked]="ligada(categoria)"
+        (change)="mudarPreferencia(categoria, $any($event.target).checked)"
+      />
+      {{ t.notificacoes.categorias[categoria] }}
+    </label>
+  }
+</section>
 
 @if (!notificacoes.carregado()) {
   <section class="panel"><app-carregando /></section>

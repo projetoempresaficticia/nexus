@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { TEXTOS } from '../../core/models/textos';
+import { CATEGORIAS_NOTIFICACAO, CategoriaNotificacao } from '../../core/notificacoes/categorias';
 import { Notificacao } from '../../core/notificacoes/notificacoes.service';
 import { NotificacoesStore } from '../../core/notificacoes/notificacoes.store';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
@@ -22,10 +23,8 @@ export class NotificacoesPage {
   private readonly router = inject(Router);
   protected readonly t = TEXTOS;
   protected readonly dataHora = dataHora;
+  protected readonly categorias = CATEGORIAS_NOTIFICACAO;
 
-  protected readonly receberEmail = computed(
-    () => this.acesso.perfil()?.receber_email_notificacoes ?? true,
-  );
   protected readonly subtitulo = computed(() => {
     const n = this.notificacoes.naoLidas();
     return n ? this.t.notificacoes.naoLidas(n) : this.t.notificacoes.semNaoLidas;
@@ -54,7 +53,11 @@ export class NotificacoesPage {
     if (destino) await this.router.navigateByUrl(destino);
   }
 
-  protected mudarPreferencia(valor: boolean): void {
-    void this.acesso.atualizarPreferenciaEmail(valor);
+  protected ligada(categoria: CategoriaNotificacao): boolean {
+    return this.acesso.perfil()?.[categoria] ?? true;
+  }
+
+  protected mudarPreferencia(categoria: CategoriaNotificacao, valor: boolean): void {
+    void this.acesso.atualizarPreferenciaEmail(categoria, valor);
   }
 }

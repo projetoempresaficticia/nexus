@@ -24,10 +24,7 @@ const n = (id: string, extra: Partial<Notificacao> = {}): Notificacao => ({
   ...extra,
 });
 
-async function montar(
-  notificacoes: Notificacao[],
-  atualizarPreferenciaEmail = vi.fn().mockResolvedValue(undefined),
-) {
+async function montar(notificacoes: Notificacao[]) {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
@@ -36,7 +33,6 @@ async function montar(
         useValue: {
           carregarInicial: vi.fn().mockResolvedValue(dadosIniciais([], [], false)),
           contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
-          atualizarPreferenciaEmail,
         },
       },
       {
@@ -99,17 +95,15 @@ describe('NotificacoesSinoComponent (T-59)', () => {
     expect(el.querySelector('.painel')).toBeNull();
   });
 
-  it('o interruptor de e-mail reflete e muda a preferência da pessoa', async () => {
-    const atualizarPreferenciaEmail = vi.fn().mockResolvedValue(undefined);
-    const fixture = await montar([], atualizarPreferenciaEmail);
+  it('o link leva para a página de notificações e fecha o painel', async () => {
+    const fixture = await montar([]);
     const el = fixture.nativeElement as HTMLElement;
     el.querySelector('.sino')!.dispatchEvent(new Event('click', { bubbles: true }));
     await fixture.whenStable();
-    const caixa = el.querySelector('.preferencia input') as HTMLInputElement;
-    expect(caixa.checked).toBe(true);
-    caixa.checked = false;
-    caixa.dispatchEvent(new Event('change'));
+    const link = el.querySelector('.preferencia') as HTMLAnchorElement;
+    expect(link.textContent?.trim()).toBe(TEXTOS.notificacoes.verTudo);
+    link.dispatchEvent(new Event('click', { bubbles: true }));
     await fixture.whenStable();
-    expect(atualizarPreferenciaEmail).toHaveBeenCalledWith('p-eu', false);
+    expect(el.querySelector('.painel')).toBeNull();
   });
 });
