@@ -52,6 +52,16 @@ export const TEXTOS = {
     paraEscuro: 'Mudar para tema escuro',
   },
   tempoReal: { ao_vivo: 'Ao vivo', reconectando: 'Reconectando…' },
+  notificacoes: {
+    titulo: 'Notificações',
+    abrir: 'Notificações',
+    naoLidas: (n: number) => `${n} não lida${n === 1 ? '' : 's'}`,
+    marcarTodasLidas: 'Marcar todas como lidas',
+    nenhuma: 'Nenhuma notificação ainda.',
+    receberEmail: 'Também por e-mail',
+    receberEmailAjuda:
+      'Com isto desligado, os avisos continuam aqui no sino, só não vão por e-mail.',
+  },
   setor: { rotulo: 'Setor', todos: 'Todos os meus setores' },
   comum: {
     carregando: 'Carregando…',
