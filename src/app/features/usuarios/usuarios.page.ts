@@ -112,4 +112,40 @@ export class UsuariosPage {
       this.toast.erro(e);
     }
   }
+
+  /** Muda o e-mail de notificações de uma pessoa, na hora; volta atrás se o servidor recusar (T-60). */
+  protected async alternarPreferencia(u: Usuario): Promise<void> {
+    const valor = !u.receber_email_notificacoes;
+    this.usuarios.update((l) =>
+      l.map((x) => (x.id === u.id ? { ...x, receber_email_notificacoes: valor } : x)),
+    );
+    try {
+      await this.service.atualizarPreferenciaEmail(u.id, valor);
+    } catch (e) {
+      this.usuarios.update((l) =>
+        l.map((x) => (x.id === u.id ? { ...x, receber_email_notificacoes: !valor } : x)),
+      );
+      this.toast.erro(e);
+    }
+  }
+
+  protected async mudarPreferenciaTodos(valor: boolean): Promise<void> {
+    const sim = await this.confirmacao.perguntar({
+      titulo: valor
+        ? this.t.usuarios.ligarEmailTodosTitulo
+        : this.t.usuarios.desligarEmailTodosTitulo,
+      mensagem: this.t.usuarios.emailTodosTexto,
+      confirmar: this.t.comum.confirmar,
+    });
+    if (!sim) return;
+    try {
+      await this.service.atualizarPreferenciaEmailTodos(valor);
+      this.usuarios.update((l) =>
+        l.map((x) => (x.ativo ? { ...x, receber_email_notificacoes: valor } : x)),
+      );
+      this.toast.sucesso(this.t.usuarios.emailTodosFeito);
+    } catch (e) {
+      this.toast.erro(e);
+    }
+  }
 }
