@@ -16,8 +16,9 @@ describe('RealtimeService', () => {
     realtime.ligar();
     realtime.ligar();
     expect(supabase.channel).toHaveBeenCalledTimes(1);
-    expect(supabase.canal.tabelas).toHaveLength(8);
+    expect(supabase.canal.tabelas).toHaveLength(9);
     expect(supabase.canal.tabelas).toContain('solicitacao_mensagens');
+    expect(supabase.canal.tabelas).toContain('notificacoes');
     expect(realtime.estado()).toBe('ligando');
     supabase.canal.status('SUBSCRIBED');
     expect(realtime.estado()).toBe('ao_vivo');
