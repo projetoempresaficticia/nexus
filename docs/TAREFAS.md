@@ -46,6 +46,7 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 - [x] **T-57** Corrige o login real: faltava `USAGE` no schema `privado` para `supabase_auth_admin` (a T-56 passou a chamar uma função de lá de dentro do hook). — Dep.: T-56
 - [x] **T-58** Corrige o "‹ Hoje ›" empilhado e escuro no Mês/Semana/Linha do tempo (classe `.nav` colidia com a da barra lateral). — Pedido do Germano · US-24, US-25
 - [x] **T-59** Sino de notificações dentro do app + preferência "também por e-mail" por pessoa. — Dep.: T-36 · Pedido do Germano · US-30
+- [x] **T-60** Usuários: o Adm liga/desliga o e-mail de notificações de uma pessoa ou de todas de uma vez. — Dep.: T-59 · Pedido do Germano · US-30
 - [x] **T-50** Cópia semanal dos arquivos dos anexos (Storage) para o Google Drive, encriptada, com guia de restauro (BACKUP.md §8). — Dep.: T-48
 - [x] **T-49** E-mail pelo SMTP do Google Workspace em `_shared/email.ts` (senha de app; porta 465). — Dep.: T-36
 - [x] **T-47** Checklist: @menção no passo (a pessoa marcada recebe aviso) e editar o texto com duplo clique. — Dep.: T-19, T-22 · US-40
@@ -70,5 +71,5 @@ Legenda: **Dep.** = tarefas que precisam estar concluídas antes.
 
 ## Fase 5 — Produção e virada
 - [ ] **T-40** Projeto Supabase de produção (região UE), Google OAuth em produção, URLs de redirect do GitHub Pages, segredos, `db push` e deploy das functions **com confirmação do Germano**; cadastrar os 2 admins. — Dep.: T-36, T-38, T-39
-- [ ] **T-41** `scripts/importar-v26.ts` com `--dry-run`, mapeamento das abas e upsert por `legacy_id`. — Dep.: T-40 · US-33
+- [ ] **T-41** `scripts/importar-v26.ts` com `--dry-run`, mapeamento das abas e upsert por `legacy_id`. **Pausada em 2026-10-25**: Germano enviou a planilha real (`Configurações`, `Notificações`, `Setores`, `Usuários`, `Vínculos`, `Itens`, `Checklist`, `Solicitações`, `Mensagens`, `Comentários`, `Anexos`, `Histórico`) e confirmou trazer tudo, inclusive o Histórico (924 linhas) e as Notificações antigas (61 linhas, só marcadas como já lidas — **sem mandar e-mail**, sem passar pelas triggers de notificação: `session_replication_role = replica` durante a carga, como no restauro do backup). Falta: (a) o banco de destino (nexus-dev só para testar, ou já criar a produção — T-40) e (b) uma mudança que o Germano disse que precisa fazer antes, ainda não detalhada. — Dep.: T-40 · US-33
 - [ ] **T-42** Virada: congelar v26, importação final, checklist de validação, aviso à equipa, trocar link. — Dep.: T-41

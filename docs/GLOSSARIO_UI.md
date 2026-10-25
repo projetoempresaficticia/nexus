@@ -30,6 +30,12 @@ tom dos e-mails (§E-mails automáticos), sem o trecho citado: "{autor} incluiu 
 você: {tipo} em "{item}"." · "Sua solicitação em "{item}" foi {resultado}." · ""{item}" vence amanhã." ·
 "Bem-vindo(a) ao Nexus!"
 
+### Preferência de e-mail na tela Usuários (T-60, só Adm)
+Uma caixinha "E-mail" ao lado de cada pessoa ativa, para ligar/desligar a dela; dois botões no topo —
+"Ligar e-mail para todos" / "Desligar e-mail para todos" — pedem confirmação: "Ligar/Desligar o e-mail de
+notificações para todos?" — "Vale para quem está ativo agora. O sino continua avisando dentro do app de
+qualquer jeito; cada pessoa pode mudar a sua depois." Depois: "Preferência de e-mail atualizada para todos."
+
 ## Botões
 + Nova tarefa · + Novo projeto · Mover para projeto · Tirar do projeto · Editar título · + Nova subtarefa · Criar · Salvar · Cancelar · Excluir · Reabrir · Comentar · Editar · Apagar · Anexar arquivo · Colar link · Nova solicitação · Enviar · Resolver · Aprovar · Recusar · Cancelar solicitação · Ver · Adicionar passo · Adicionar dependência · Cadastrar pessoa · Desativar · Reativar · Reatribuir itens · Novo setor · Entrar com Google.
 

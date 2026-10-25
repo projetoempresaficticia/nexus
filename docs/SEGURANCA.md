@@ -42,7 +42,7 @@ Membros **não** veem o setor inteiro: veem só o que os envolve. Líderes veem 
 |---|---|---|---|---|
 | Perfis — ver | todos | pessoas ativas (para atribuir/mencionar) | pessoas ativas | pessoas ativas |
 | Perfis — criar/editar/desativar | ✅ | ❌ | ❌ | ❌ |
-| Perfil — a própria preferência de e-mail (T-59) | ✅ | ✅ só a sua | ✅ só a sua | ✅ só a sua |
+| Perfil — preferência de e-mail (T-59/T-60) | ✅ qualquer pessoa, ou todas de uma vez | ✅ só a sua | ✅ só a sua | ✅ só a sua |
 | Notificações — ver/marcar como lida (T-59) | ✅ só as suas | ✅ só as suas | ✅ só as suas | ✅ só as suas |
 | Setores — ver | todos | visíveis | visíveis | ❌ |
 | Setor — excluir (`excluir_setor`) | ✅ só setor vazio | ✅ só subsetor vazio abaixo dos que lidera | ❌ | ❌ |
