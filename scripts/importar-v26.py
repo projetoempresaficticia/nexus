@@ -10,7 +10,9 @@ e o histórico vem só do que a própria planilha já tinha). Revise o arquivo g
 rodar (`npx supabase db query --file saida.sql --linked`, ou local sem `--linked`).
 
 Decisões de negócio confirmadas com o Germano em 2026-10-25 (docs/DECISOES.md):
-- Vínculo "Adm" na planilha -> is_admin=true no perfil (além do vínculo normal como líder).
+- Vínculo "Adm" na planilha -> só papel 'lider' no vínculo, **sem** mexer em is_admin.
+  (Tentamos is_admin=true primeiro, mas o Germano corrigiu: "Adm" na planilha era um papel
+  do setor, não administrador do sistema todo — só Germano e a conta externa são Adm de verdade.)
 - Itens com ativo=False (exclusão "mole" do v26) NÃO entram — o v2 não tem esse conceito.
 - Notificações antigas NÃO entram (tipos não batem 1 pra 1 com os de hoje; baixo valor).
 - Aba "Configurações" (ajustes do app antigo) NÃO entra — hoje isso é código/segredo.
@@ -97,18 +99,14 @@ out = ['-- Importação Nexus v26 -> v2 (T-41). Rodar com session_replication_ro
 usr_id = {}
 email_perfil = {}
 
-admins_por_vinculo = {v['usuario_id'] for v in linhas('Vínculos') if str(v['perfil']).strip().lower() == 'adm'}
-
 usuarios = list(linhas('Usuários'))
 for u in usuarios:
     email = u['email'].strip().lower()
-    is_admin = u['id'] in admins_por_vinculo
     if email in EXISTENTES:
         pid = EXISTENTES[email]
         usr_id[u['id']] = pid
         email_perfil[email] = pid
-        extra = ', is_admin=true' if is_admin else ''
-        out.append(f"update public.perfis set legacy_id={sql_str(u['id'])}{extra} where id='{pid}';")
+        out.append(f"update public.perfis set legacy_id={sql_str(u['id'])} where id='{pid}';")
         continue
     pid = novo_id()
     usr_id[u['id']] = pid
@@ -116,7 +114,7 @@ for u in usuarios:
     out.append(
         "insert into public.perfis (id, auth_id, email, nome, iniciais, is_admin, ativo, criado_em, legacy_id) values ("
         f"'{pid}', null, {sql_str(email)}, {sql_str(u['nome'])}, {sql_str(u['iniciais'])}, "
-        f"{sql_bool(is_admin)}, {sql_bool(u['ativo'])}, {sql_ts(u['criado_em'])}, {sql_str(u['id'])});"
+        f"false, {sql_bool(u['ativo'])}, {sql_ts(u['criado_em'])}, {sql_str(u['id'])});"
     )
 
 
