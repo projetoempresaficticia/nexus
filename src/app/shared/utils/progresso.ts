@@ -17,8 +17,8 @@ export function progressoPorFilhos(filhos: readonly Item[]): Progresso | null {
   };
 }
 
-/** Quantos itens abaixo estão parados (bloqueados ou aguardando aprovação). */
-export function paradosAbaixo(raiz: string, todos: readonly Item[]): number {
+/** Todos os ids abaixo de `raiz` na árvore de itens (filhos, netos...), sem incluir a própria raiz. */
+function idsAbaixo(raiz: string, todos: readonly Item[]): Set<string> {
   const abaixo = new Set([raiz]);
   let mudou = true;
   while (mudou) {
@@ -30,10 +30,20 @@ export function paradosAbaixo(raiz: string, todos: readonly Item[]): number {
       }
     }
   }
+  abaixo.delete(raiz);
+  return abaixo;
+}
+
+/** Quantos itens abaixo estão parados (bloqueados ou aguardando aprovação). */
+export function paradosAbaixo(raiz: string, todos: readonly Item[]): number {
+  const abaixo = idsAbaixo(raiz, todos);
   return todos.filter(
-    (i) =>
-      i.id !== raiz &&
-      abaixo.has(i.id) &&
-      (i.status === 'bloqueada' || i.status === 'aguardando_aprovacao'),
+    (i) => abaixo.has(i.id) && (i.status === 'bloqueada' || i.status === 'aguardando_aprovacao'),
   ).length;
+}
+
+/** Se alguém é responsável por algum item abaixo de `raiz` (ex.: projeto → tarefas → subtarefas). */
+export function ehResponsavelAbaixo(raiz: string, pessoa: string, todos: readonly Item[]): boolean {
+  const abaixo = idsAbaixo(raiz, todos);
+  return todos.some((i) => abaixo.has(i.id) && i.responsaveis.includes(pessoa));
 }

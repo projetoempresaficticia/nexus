@@ -6,6 +6,20 @@
   }
 </app-cabecalho>
 
+@if (pessoasFiltro().length) {
+  <div class="viewbar">
+    <label class="field-inline">
+      {{ t.tarefas.pessoa.rotulo }}
+      <select (change)="pessoaEscolhida.set($any($event.target).value)">
+        <option value="" [selected]="!pessoa()">{{ t.tarefas.pessoa.todas }}</option>
+        @for (p of pessoasFiltro(); track p.id) {
+          <option [value]="p.id" [selected]="pessoa() === p.id">{{ p.nome }}</option>
+        }
+      </select>
+    </label>
+  </div>
+}
+
 @if (itens.carregando() && !itens.carregado()) {
   <section class="panel"><app-carregando /></section>
 } @else if (!cartoes().length && !avulsas()) {
