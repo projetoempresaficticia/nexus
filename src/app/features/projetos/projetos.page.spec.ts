@@ -63,4 +63,63 @@ describe('ProjetosPage', () => {
     expect(cartoes[1].textContent).toContain('1 tarefa(s) fora de projetos');
     expect(el.querySelector('.btn.primary')?.textContent).toContain('+ Novo projeto');
   });
+
+  it('filtro por pessoa (líder) só mostra projetos com a pessoa responsável abaixo', async () => {
+    const itensComResponsavel = [
+      item({ id: 'p', nivel: 0, nome: 'Turmas', setor_id: SETORES.sucesso }),
+      item({ id: 't1', pai_id: 'p', status: 'concluida', responsaveis: ['p-ana'] }),
+      item({ id: 'p2', nivel: 0, nome: 'Marketing', setor_id: SETORES.sucesso }),
+      item({ id: 't2', pai_id: 'p2', responsaveis: ['p-bruno'] }),
+    ];
+    const dados = dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]);
+    dados.pessoas = [
+      {
+        id: 'p-ana',
+        nome: 'Ana Ribeiro',
+        iniciais: 'AR',
+        email: 'ana@x',
+        vinculos: [{ setor_id: SETORES.sucesso, papel: 'membro' }],
+      },
+      {
+        id: 'p-bruno',
+        nome: 'Bruno Costa',
+        iniciais: 'BC',
+        email: 'bruno@x',
+        vinculos: [{ setor_id: SETORES.sucesso, papel: 'membro' }],
+      },
+    ];
+    TestBed.configureTestingModule({
+      imports: [ProjetosPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AcessoService,
+          useValue: {
+            carregarInicial: vi.fn().mockResolvedValue(dados),
+            contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
+          },
+        },
+        {
+          provide: ItensService,
+          useValue: { listar: vi.fn().mockResolvedValue(itensComResponsavel) },
+        },
+      ],
+    });
+    await TestBed.inject(AcessoStore).carregar();
+    const fixture = TestBed.createComponent(ProjetosPage);
+    await fixture.whenStable();
+    await new Promise((r) => setTimeout(r));
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelectorAll('.pcard').length).toBe(2);
+    const select = el.querySelector('.viewbar select') as HTMLSelectElement;
+    select.value = 'p-ana';
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+
+    const filtrados = el.querySelectorAll('.pcard');
+    expect(filtrados.length).toBe(1);
+    expect(filtrados[0].textContent).toContain('Turmas');
+  });
 });
