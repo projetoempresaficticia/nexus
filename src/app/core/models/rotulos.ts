@@ -22,6 +22,7 @@ export const ORDEM_STATUS: StatusItem[] = [
   'aguardando_aprovacao',
   'concluida',
 ];
+export const ORDEM_PRIORIDADE: Prioridade[] = ['alta', 'media', 'baixa'];
 
 /** Cor da bolinha de prioridade (DESIGN.md): Alta danger, Média bloq-fg, Baixa muted. */
 export const PRIORIDADE: Record<Prioridade, { texto: string; cor: string }> = {

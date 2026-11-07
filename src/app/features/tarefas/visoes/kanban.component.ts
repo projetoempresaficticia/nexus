@@ -6,6 +6,7 @@ import { ItensStore } from '../../../core/itens/itens.store';
 import { podeEditarItem } from '../../../core/itens/permissoes';
 import { Item } from '../../../core/models/item.model';
 import {
+  ORDEM_PRIORIDADE,
   ORDEM_STATUS,
   PRIORIDADE,
   Prioridade,
@@ -43,8 +44,6 @@ const COR_STATUS: Record<StatusItem, string> = {
   aguardando_aprovacao: 'var(--aprov-fg)',
   concluida: 'var(--done-fg)',
 };
-const ORDEM_PRIORIDADE: Prioridade[] = ['alta', 'media', 'baixa'];
-
 /** Kanban por status, prioridade ou projeto; arrastar (CDK) ou "Mover para…" pelo teclado (US-22). */
 @Component({
   selector: 'app-kanban',

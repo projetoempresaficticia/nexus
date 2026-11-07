@@ -7,6 +7,7 @@ import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { BarraComponent } from '../../shared/ui/barra.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
+import { CriterioOrdenacao, ordenarItens } from '../../shared/utils/ordenar';
 import {
   ehResponsavelAbaixo,
   paradosAbaixo,
@@ -96,28 +97,35 @@ export class ProjetosPage {
     return this.pessoasFiltro().some((p) => p.id === id) ? id : '';
   });
 
+  /** Ordem dos cartões de projeto (T-70). Guardada fora do componente, igual ao filtro de pessoa. */
+  protected readonly ordenarPor = this.filtros.ordenarPor;
+  protected readonly ordenarOpcoes: [CriterioOrdenacao, string][] = [
+    ['nome', this.t.ordenar.nome],
+    ['prazo', this.t.ordenar.prazo],
+    ['prioridade', this.t.ordenar.prioridade],
+    ['recente', this.t.ordenar.recente],
+  ];
+
   protected readonly cartoes = computed(() => {
     const todos = this.itens.todos();
     const pessoa = this.pessoa();
-    return todos
-      .filter(
-        (i) =>
-          i.nivel === 0 &&
-          this.noFiltro(i.setor_id) &&
-          (!pessoa || ehResponsavelAbaixo(i.id, pessoa, todos)),
-      )
-      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
-      .map((p) => {
-        const papel = this.acesso.opcoesSetor().find((o) => o.id === p.setor_id)?.papel ?? null;
-        return {
-          projeto: p,
-          setor: this.acesso.nomeSetor(p.setor_id),
-          papel: papel ? this.t.papel[papel] : null,
-          lider: papel === 'lider',
-          progresso: progressoPorFilhos(todos.filter((f) => f.pai_id === p.id)),
-          parados: paradosAbaixo(p.id, todos),
-        };
-      });
+    const projetos = todos.filter(
+      (i) =>
+        i.nivel === 0 &&
+        this.noFiltro(i.setor_id) &&
+        (!pessoa || ehResponsavelAbaixo(i.id, pessoa, todos)),
+    );
+    return ordenarItens(projetos, this.ordenarPor()).map((p) => {
+      const papel = this.acesso.opcoesSetor().find((o) => o.id === p.setor_id)?.papel ?? null;
+      return {
+        projeto: p,
+        setor: this.acesso.nomeSetor(p.setor_id),
+        papel: papel ? this.t.papel[papel] : null,
+        lider: papel === 'lider',
+        progresso: progressoPorFilhos(todos.filter((f) => f.pai_id === p.id)),
+        parados: paradosAbaixo(p.id, todos),
+      };
+    });
   });
 
   protected readonly avulsas = computed(

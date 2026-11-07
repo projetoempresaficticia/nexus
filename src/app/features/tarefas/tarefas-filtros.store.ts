@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { ORDEM_STATUS, StatusItem } from '../../core/models/rotulos';
 import { TEXTOS } from '../../core/models/textos';
 import { hojeIso } from '../../shared/utils/datas';
+import { CriterioOrdenacao } from '../../shared/utils/ordenar';
 
 export type Aba = keyof typeof TEXTOS.tarefas.abas;
 export type Visao = keyof typeof TEXTOS.tarefas.visoes;
@@ -24,6 +25,8 @@ export class TarefasFiltrosStore {
   readonly refCalendario = signal(hojeIso());
   /** Quais status aparecem; todos marcados = sem filtro nenhum. */
   readonly status = signal<ReadonlySet<StatusItem>>(new Set(ORDEM_STATUS));
+  /** Ordem da Lista e dos cartões dentro de cada coluna do Kanban (T-70). */
+  readonly ordenarPor = signal<CriterioOrdenacao>('prazo');
 
   limpar(): void {
     this.abaAtual.set('todas');
@@ -33,5 +36,6 @@ export class TarefasFiltrosStore {
     this.pessoaEscolhida.set('');
     this.refCalendario.set(hojeIso());
     this.status.set(new Set(ORDEM_STATUS));
+    this.ordenarPor.set('prazo');
   }
 }
