@@ -226,6 +226,26 @@ describe('TarefasPage', () => {
     ]);
   });
 
+  it('busca por nome filtra em qualquer visão (US-21, T-71)', async () => {
+    const { fixture, el } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    const busca = el.querySelector('.busca') as HTMLInputElement;
+    busca.value = 'cal';
+    busca.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    expect(textos(el, 'app-linha-item strong')).toEqual(['Calendário']);
+
+    busca.value = '';
+    busca.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    expect(textos(el, 'app-linha-item strong')).toEqual([
+      'Calendário',
+      'Boas-vindas',
+      'Responder dúvidas',
+    ]);
+  });
+
   it('filtro de status esconde quem não está marcado (US-22)', async () => {
     const { fixture, el } = await montar(
       dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),

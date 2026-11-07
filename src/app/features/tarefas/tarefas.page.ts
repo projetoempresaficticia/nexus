@@ -120,6 +120,9 @@ export class TarefasPage {
     ['recente', this.t.ordenar.recente],
   ];
 
+  /** Busca por nome (T-71): vale em qualquer visão, igual aos outros filtros. */
+  protected readonly busca = this.filtros.busca;
+
   /**
    * Filtro por pessoa (US-39): só para quem lidera; lista quem tem vínculo nos setores que eu
    * administro (e abaixo) dentro do setor do cabeçalho. '' = todas.
@@ -155,6 +158,7 @@ export class TarefasPage {
     const filtro = this.acesso.setorFiltro();
     const setores = new Set(this.acesso.setoresDoFiltro());
     const status = this.statusEscolhido();
+    const termo = this.busca().trim().toLocaleLowerCase('pt');
     const filtrados = this.itens
       .todos()
       .filter(
@@ -163,6 +167,7 @@ export class TarefasPage {
           !i.meu_envolvimento.includes('contexto') &&
           (filtro === 'todos' || setores.has(i.setor_id)) &&
           status.has(i.status) &&
+          (!termo || i.nome.toLocaleLowerCase('pt').includes(termo)) &&
           (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
           (!this.pessoa() || i.responsaveis.includes(this.pessoa())),
       );
@@ -187,9 +192,11 @@ export class TarefasPage {
     const minhas = this.quem() === 'minhas';
     const pessoa = this.pessoa();
     const status = this.statusEscolhido();
+    const termo = this.busca().trim().toLocaleLowerCase('pt');
     return (i: Item) =>
       !i.meu_envolvimento.includes('contexto') &&
       status.has(i.status) &&
+      (!termo || i.nome.toLocaleLowerCase('pt').includes(termo)) &&
       (!pessoa || i.responsaveis.includes(pessoa)) &&
       (!soMeus || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
       (!minhas || i.responsaveis.includes(eu));

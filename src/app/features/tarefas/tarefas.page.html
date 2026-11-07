@@ -33,6 +33,14 @@
 }
 
 <div class="viewbar">
+  <input
+    class="busca"
+    type="search"
+    [placeholder]="t.tarefas.buscar"
+    [attr.aria-label]="t.tarefas.buscar"
+    [value]="busca()"
+    (input)="busca.set($any($event.target).value)"
+  />
   <div class="views" role="tablist" [attr.aria-label]="t.tarefas.visao">
     @for (v of visoes(); track v[0]) {
       <button
