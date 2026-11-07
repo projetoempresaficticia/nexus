@@ -7,6 +7,7 @@ import { BarraComponent } from './barra.component';
 import { ConfirmacaoService } from './confirmacao.service';
 import { ModalComponent } from './modal.component';
 import { PillStatusComponent } from './pill-status.component';
+import { RolagemTopoComponent } from './rolagem-topo.component';
 import { ToastService } from './toast.service';
 
 const pessoa = (n: number) => ({ nome: `Pessoa ${n}`, iniciais: `P${n}` });
@@ -89,6 +90,31 @@ describe('ModalComponent', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     await fixture.whenStable();
     expect(fixture.componentInstance.aberto()).toBe(false);
+  });
+});
+
+@Component({
+  imports: [RolagemTopoComponent],
+  template: `<app-rolagem-topo><div style="width: 2000px">conteúdo largo</div></app-rolagem-topo>`,
+})
+class HostRolagemTopo {}
+
+describe('RolagemTopoComponent', () => {
+  it('a barra de cima e a de baixo rolam juntas', async () => {
+    const fixture = TestBed.createComponent(HostRolagemTopo);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    const topo = el.querySelector('.rt-topo') as HTMLElement;
+    const conteudo = el.querySelector('.rt-conteudo') as HTMLElement;
+    expect(conteudo.textContent).toContain('conteúdo largo');
+
+    conteudo.scrollLeft = 50;
+    conteudo.dispatchEvent(new Event('scroll'));
+    expect(topo.scrollLeft).toBe(50);
+
+    topo.scrollLeft = 80;
+    topo.dispatchEvent(new Event('scroll'));
+    expect(conteudo.scrollLeft).toBe(80);
   });
 });
 

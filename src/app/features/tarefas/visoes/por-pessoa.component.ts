@@ -11,6 +11,7 @@ import { TEXTOS } from '../../../core/models/textos';
 import { ErroApi } from '../../../core/services/erro-api';
 import { AvatarComponent } from '../../../shared/ui/avatar.component';
 import { NivelComponent } from '../../../shared/ui/nivel.component';
+import { RolagemTopoComponent } from '../../../shared/ui/rolagem-topo.component';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { dataCurta, hojeIso } from '../../../shared/utils/datas';
 import { estaAtrasado, estaParado, setoresDaPessoa } from './equipe';
@@ -18,13 +19,20 @@ import { estaAtrasado, estaParado, setoresDaPessoa } from './equipe';
 /** Quadro com uma coluna por pessoa; arrastar troca o responsável (US-26). */
 @Component({
   selector: 'app-por-pessoa',
-  imports: [CdkDropListGroup, CdkDropList, CdkDrag, AvatarComponent, NivelComponent],
+  imports: [
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    AvatarComponent,
+    NivelComponent,
+    RolagemTopoComponent,
+  ],
   template: `
     <div class="bar-tools">
       <span class="hint">{{ t.tarefas.pessoaVisao.dica }}</span>
     </div>
     @if (colunas().length) {
-      <div class="kanban-wrap">
+      <app-rolagem-topo>
         <div
           class="kanban"
           cdkDropListGroup
@@ -90,7 +98,7 @@ import { estaAtrasado, estaParado, setoresDaPessoa } from './equipe';
             </section>
           }
         </div>
-      </div>
+      </app-rolagem-topo>
     } @else {
       <div class="empty">{{ t.tarefas.pessoaVisao.vazio }}</div>
     }
