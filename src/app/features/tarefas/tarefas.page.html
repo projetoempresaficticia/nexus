@@ -90,6 +90,14 @@
       </select>
     </label>
   }
+  <label class="field-inline">
+    {{ t.ordenar.rotulo }}
+    <select (change)="ordenarPor.set($any($event.target).value)">
+      @for (o of ordenarOpcoes; track o[0]) {
+        <option [value]="o[0]" [selected]="ordenarPor() === o[0]">{{ o[1] }}</option>
+      }
+    </select>
+  </label>
 </div>
 
 @if (itens.carregando() && !itens.carregado()) {

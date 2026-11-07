@@ -188,9 +188,10 @@ describe('TarefasPage', () => {
     expect(textos(el, 'app-linha-item strong')).toEqual(['Do Bruno']);
   });
 
-  it('membro não tem filtro por pessoa', async () => {
+  it('membro não tem filtro por pessoa, mas continua com o de ordenar', async () => {
     const { el } = await montar(dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]));
-    expect(el.querySelector('.viewbar select')).toBeNull();
+    expect(el.querySelector('.viewbar')?.textContent).not.toContain('Pessoa');
+    expect(el.querySelector('.viewbar')?.textContent).toContain('Ordenar por');
   });
 
   it('?aba=concluidas (vindo do Painel) abre a Lista nessa aba', async () => {
@@ -201,6 +202,28 @@ describe('TarefasPage', () => {
     await fixture.whenStable();
     expect(el.querySelector('.tab.on')?.textContent).toContain('Concluídas');
     expect(textos(el, 'app-linha-item strong')).toEqual(['Caixa partilhada']);
+  });
+
+  it('ordenar por nome muda a ordem da Lista (US-22, T-70)', async () => {
+    const { fixture, el } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    expect(textos(el, 'app-linha-item strong')).toEqual([
+      'Calendário',
+      'Boas-vindas',
+      'Responder dúvidas',
+    ]);
+    const select = [...el.querySelectorAll('.field-inline select')].find((s) =>
+      s.closest('.field-inline')?.textContent?.includes('Ordenar por'),
+    ) as HTMLSelectElement;
+    select.value = 'nome';
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(textos(el, 'app-linha-item strong')).toEqual([
+      'Boas-vindas',
+      'Calendário',
+      'Responder dúvidas',
+    ]);
   });
 
   it('filtro de status esconde quem não está marcado (US-22)', async () => {

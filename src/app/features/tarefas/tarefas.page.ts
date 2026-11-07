@@ -10,6 +10,7 @@ import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { LinhaItemComponent } from '../../shared/ui/linha-item.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
+import { CriterioOrdenacao, ordenarItens } from '../../shared/utils/ordenar';
 import { Aba, TarefasFiltrosStore, Visao } from './tarefas-filtros.store';
 import { NovoItemModal } from './novo-item.modal';
 import { AgendaComponent } from './visoes/agenda.component';
@@ -110,6 +111,15 @@ export class TarefasPage {
     this.filtros.status.set(new Set(marcar ? this.statusLista : []));
   }
 
+  /** Ordem da Lista e dos cartões em cada coluna do Kanban (T-70). */
+  protected readonly ordenarPor = this.filtros.ordenarPor;
+  protected readonly ordenarOpcoes: [CriterioOrdenacao, string][] = [
+    ['prazo', this.t.ordenar.prazo],
+    ['prioridade', this.t.ordenar.prioridade],
+    ['nome', this.t.ordenar.nome],
+    ['recente', this.t.ordenar.recente],
+  ];
+
   /**
    * Filtro por pessoa (US-39): só para quem lidera; lista quem tem vínculo nos setores que eu
    * administro (e abaixo) dentro do setor do cabeçalho. '' = todas.
@@ -140,12 +150,12 @@ export class TarefasPage {
     this.acesso.ehLider() ? this.t.tarefas.tituloLider : this.t.tarefas.tituloMembro,
   );
 
-  /** Tarefas e subtarefas dos setores do filtro (contexto não entra como linha). */
+  /** Tarefas e subtarefas dos setores do filtro (contexto não entra como linha), já na ordem escolhida. */
   protected readonly base = computed(() => {
     const filtro = this.acesso.setorFiltro();
     const setores = new Set(this.acesso.setoresDoFiltro());
     const status = this.statusEscolhido();
-    return this.itens
+    const filtrados = this.itens
       .todos()
       .filter(
         (i) =>
@@ -156,6 +166,7 @@ export class TarefasPage {
           (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
           (!this.pessoa() || i.responsaveis.includes(this.pessoa())),
       );
+    return ordenarItens(filtrados, this.ordenarPor());
   });
   protected readonly itensVisao = computed(() => {
     const eu = this.acesso.perfil()?.id ?? '';
@@ -227,7 +238,7 @@ export class TarefasPage {
     const avulsas = porProjeto.get('');
     if (avulsas)
       grupos.push({ id: '', nome: this.t.tarefas.semProjeto, contexto: false, itens: avulsas });
-    return grupos.map((g) => ({ ...g, itens: this.ordenar(g.itens) }));
+    return grupos;
   });
 
   /** "+N mais" no Mês abre a Semana daquele dia. */
@@ -252,14 +263,5 @@ export class TarefasPage {
     };
     document.addEventListener('click', fechar);
     inject(DestroyRef).onDestroy(() => document.removeEventListener('click', fechar));
-  }
-
-  /** Tarefa seguida das suas subtarefas; depois por prazo. */
-  private ordenar(itens: Item[]): Item[] {
-    const chave = (i: Item) => {
-      const tarefa = i.nivel === 2 && i.pai_id ? this.itens.porId(i.pai_id) : i;
-      return `${tarefa?.prazo ?? '9999'}|${tarefa?.id}|${i.nivel}|${i.prazo ?? '9999'}`;
-    };
-    return [...itens].sort((a, b) => chave(a).localeCompare(chave(b)));
   }
 }
