@@ -1,15 +1,16 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensStore } from '../../core/itens/itens.store';
 import { Item } from '../../core/models/item.model';
+import { ORDEM_STATUS, STATUS_ITEM, StatusItem } from '../../core/models/rotulos';
 import { TEXTOS } from '../../core/models/textos';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
 import { LinhaItemComponent } from '../../shared/ui/linha-item.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
-import { hojeIso } from '../../shared/utils/datas';
+import { Aba, TarefasFiltrosStore, Visao } from './tarefas-filtros.store';
 import { NovoItemModal } from './novo-item.modal';
 import { AgendaComponent } from './visoes/agenda.component';
 import { ArvoreComponent } from './visoes/arvore.component';
@@ -19,9 +20,6 @@ import { CargaComponent } from './visoes/carga.component';
 import { GanttComponent } from './visoes/gantt.component';
 import { PorPessoaComponent } from './visoes/por-pessoa.component';
 import { KanbanComponent } from './visoes/kanban.component';
-
-type Aba = keyof typeof TEXTOS.tarefas.abas;
-type Visao = keyof typeof TEXTOS.tarefas.visoes;
 
 const FILTROS: Record<Aba, (i: Item, eu: string | null) => boolean> = {
   todas: (i) => i.status !== 'concluida',
@@ -60,6 +58,7 @@ interface Grupo {
     CargaComponent,
     NgTemplateOutlet,
   ],
+  host: { '(document:keydown.escape)': 'statusAberto.set(false)' },
   templateUrl: './tarefas.page.html',
   styleUrl: './tarefas.page.css',
 })
@@ -67,16 +66,18 @@ export class TarefasPage {
   protected readonly acesso = inject(AcessoStore);
   protected readonly itens = inject(ItensStore);
   protected readonly t = TEXTOS;
+  /** Guardados fora do componente (T-69): voltar de uma tarefa não reseta o que foi escolhido. */
+  private readonly filtros = inject(TarefasFiltrosStore);
 
-  protected readonly abaAtual = signal<Aba>('todas');
+  protected readonly abaAtual = this.filtros.abaAtual;
   /** ?aba= vindo dos KPIs do Painel. */
   readonly aba = input<string>();
-  protected readonly visao = signal<Visao>('lista');
-  protected readonly soMeus = signal(false);
+  protected readonly visao = this.filtros.visao;
+  protected readonly soMeus = this.filtros.soMeus;
   /** Mês/semana mostrados no calendário; continua igual ao trocar entre Mês e Semana. */
-  protected readonly refCalendario = signal(hojeIso());
+  protected readonly refCalendario = this.filtros.refCalendario;
   /** Visões além da Lista: "Todos" ou "Só as minhas" (sou responsável). */
-  protected readonly quem = signal<'todos' | 'minhas'>('todos');
+  protected readonly quem = this.filtros.quem;
   protected readonly deQuem = [
     ['todos', this.t.tarefas.deQuem.todos],
     ['minhas', this.t.tarefas.deQuem.minhas],
@@ -84,10 +85,36 @@ export class TarefasPage {
   protected readonly novo = signal(false);
 
   /**
+   * Filtro por status (US-22): quais status aparecem em qualquer visão. Todos marcados = sem
+   * filtro nenhum (como sempre foi).
+   */
+  protected readonly statusLista = ORDEM_STATUS;
+  protected readonly statusEscolhido = this.filtros.status;
+  protected readonly statusAberto = signal(false);
+  protected readonly statusTexto = computed(() => {
+    const n = this.statusEscolhido().size;
+    return n === this.statusLista.length
+      ? this.t.tarefas.status.todos
+      : this.t.tarefas.status.alguns(n);
+  });
+  protected statusRotulo(s: StatusItem): string {
+    return STATUS_ITEM[s].texto;
+  }
+  protected alternarStatus(s: StatusItem, marcado: boolean): void {
+    const atual = new Set(this.statusEscolhido());
+    if (marcado) atual.add(s);
+    else atual.delete(s);
+    this.filtros.status.set(atual);
+  }
+  protected marcarTodosStatus(marcar: boolean): void {
+    this.filtros.status.set(new Set(marcar ? this.statusLista : []));
+  }
+
+  /**
    * Filtro por pessoa (US-39): só para quem lidera; lista quem tem vínculo nos setores que eu
    * administro (e abaixo) dentro do setor do cabeçalho. '' = todas.
    */
-  protected readonly pessoaEscolhida = signal('');
+  protected readonly pessoaEscolhida = this.filtros.pessoaEscolhida;
   protected readonly pessoasFiltro = computed(() => {
     if (!this.acesso.ehLider()) return [];
     const adm = this.acesso.administrados();
@@ -117,6 +144,7 @@ export class TarefasPage {
   protected readonly base = computed(() => {
     const filtro = this.acesso.setorFiltro();
     const setores = new Set(this.acesso.setoresDoFiltro());
+    const status = this.statusEscolhido();
     return this.itens
       .todos()
       .filter(
@@ -124,6 +152,7 @@ export class TarefasPage {
           i.nivel > 0 &&
           !i.meu_envolvimento.includes('contexto') &&
           (filtro === 'todos' || setores.has(i.setor_id)) &&
+          status.has(i.status) &&
           (!this.soMeus() || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
           (!this.pessoa() || i.responsaveis.includes(this.pessoa())),
       );
@@ -146,8 +175,10 @@ export class TarefasPage {
     const soMeus = this.soMeus();
     const minhas = this.quem() === 'minhas';
     const pessoa = this.pessoa();
+    const status = this.statusEscolhido();
     return (i: Item) =>
       !i.meu_envolvimento.includes('contexto') &&
+      status.has(i.status) &&
       (!pessoa || i.responsaveis.includes(pessoa)) &&
       (!soMeus || i.meu_envolvimento.some((e) => DIRETO.includes(e))) &&
       (!minhas || i.responsaveis.includes(eu));
@@ -214,6 +245,13 @@ export class TarefasPage {
       }
     });
     void this.itens.carregar();
+
+    // Fecha o painel de status ao clicar fora dele (igual ao sino de notificações).
+    const fechar = (evento: MouseEvent) => {
+      if (!(evento.target as HTMLElement).closest('.status-filtro')) this.statusAberto.set(false);
+    };
+    document.addEventListener('click', fechar);
+    inject(DestroyRef).onDestroy(() => document.removeEventListener('click', fechar));
   }
 
   /** Tarefa seguida das suas subtarefas; depois por prazo. */

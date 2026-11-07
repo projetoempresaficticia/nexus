@@ -13,6 +13,7 @@ import {
   progressoPorFilhos,
 } from '../../shared/utils/progresso';
 import { NovoItemModal } from '../tarefas/novo-item.modal';
+import { ProjetosFiltrosStore } from './projetos-filtros.store';
 
 /** Grade de projetos com progresso e parados (US-07); cartão "Sem projeto" para as tarefas avulsas (US-34). */
 @Component({
@@ -69,15 +70,17 @@ export class ProjetosPage {
   protected readonly itens = inject(ItensStore);
   protected readonly t = TEXTOS;
   protected readonly novo = signal(false);
+  private readonly filtros = inject(ProjetosFiltrosStore);
 
   private readonly noFiltro = (setorId: string) =>
     this.acesso.setorFiltro() === 'todos' || this.acesso.setoresDoFiltro().includes(setorId);
 
   /**
    * Filtro por pessoa (igual ao de Tarefas, US-39): só para quem lidera; lista quem tem vínculo
-   * nos setores que eu administro dentro do setor do cabeçalho. '' = todas.
+   * nos setores que eu administro dentro do setor do cabeçalho. '' = todas. Guardado fora do
+   * componente (T-69): voltar de um projeto não reseta a escolha.
    */
-  protected readonly pessoaEscolhida = signal('');
+  protected readonly pessoaEscolhida = this.filtros.pessoaEscolhida;
   protected readonly pessoasFiltro = computed(() => {
     if (!this.acesso.ehLider()) return [];
     const adm = this.acesso.administrados();

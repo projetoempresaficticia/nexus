@@ -121,5 +121,15 @@ describe('ProjetosPage', () => {
     const filtrados = el.querySelectorAll('.pcard');
     expect(filtrados.length).toBe(1);
     expect(filtrados[0].textContent).toContain('Turmas');
+
+    // Sair da tela (ex.: abrir um projeto) e voltar não reseta a escolha (T-69).
+    fixture.destroy();
+    const segunda = TestBed.createComponent(ProjetosPage);
+    await segunda.whenStable();
+    await new Promise((r) => setTimeout(r));
+    await segunda.whenStable();
+    const el2 = segunda.nativeElement as HTMLElement;
+    expect(el2.querySelectorAll('.pcard').length).toBe(1);
+    expect((el2.querySelector('.viewbar select') as HTMLSelectElement).value).toBe('p-ana');
   });
 });

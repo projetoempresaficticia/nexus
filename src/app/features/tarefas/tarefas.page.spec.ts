@@ -202,4 +202,39 @@ describe('TarefasPage', () => {
     expect(el.querySelector('.tab.on')?.textContent).toContain('Concluídas');
     expect(textos(el, 'app-linha-item strong')).toEqual(['Caixa partilhada']);
   });
+
+  it('filtro de status esconde quem não está marcado (US-22)', async () => {
+    const { fixture, el } = await montar(
+      dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]),
+    );
+    expect(textos(el, 'app-linha-item strong')).toEqual([
+      'Calendário',
+      'Boas-vindas',
+      'Responder dúvidas',
+    ]);
+    (el.querySelector('.status-filtro button') as HTMLElement).click();
+    await fixture.whenStable();
+    const bloqueada = [...el.querySelectorAll('.status-item')].find((l) =>
+      l.textContent?.includes('Bloqueada'),
+    )!;
+    (bloqueada.querySelector('input') as HTMLInputElement).click();
+    await fixture.whenStable();
+    expect(textos(el, 'app-linha-item strong')).toEqual(['Calendário', 'Responder dúvidas']);
+  });
+
+  it('os filtros continuam depois de sair da tela e voltar (US-22, T-69)', async () => {
+    const dados = dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'membro' }]);
+    const { fixture, el } = await montar(dados);
+    [...el.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Kanban')!.click();
+    await fixture.whenStable();
+    fixture.destroy();
+
+    // Mesmo TestBed (mesmo injetor) = o que aconteceria ao voltar de uma tarefa pra Tarefas.
+    const segunda = TestBed.createComponent(TarefasPage);
+    await segunda.whenStable();
+    await new Promise((r) => setTimeout(r));
+    await segunda.whenStable();
+    const el2 = segunda.nativeElement as HTMLElement;
+    expect(el2.querySelector('.views button.on')?.textContent?.trim()).toBe('Kanban');
+  });
 });

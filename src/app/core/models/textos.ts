@@ -113,6 +113,13 @@ export const TEXTOS = {
     visao: 'Visualização',
     deQuem: { rotulo: 'De quem', todos: 'Todos', minhas: 'Só as minhas' },
     pessoa: { rotulo: 'Pessoa', todas: 'Todas as pessoas' },
+    status: {
+      rotulo: 'Status',
+      todos: 'Todos os status',
+      alguns: (n: number) => `${n} status`,
+      marcarTodos: 'Marcar todos',
+      desmarcarTodos: 'Desmarcar todos',
+    },
     kanban: {
       agruparPor: 'Agrupar por',
       grupos: { status: 'Status', prioridade: 'Prioridade', projeto: 'Projeto' },

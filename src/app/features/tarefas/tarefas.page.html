@@ -46,6 +46,39 @@
       </button>
     }
   </div>
+  <div class="status-filtro">
+    <button
+      type="button"
+      class="btn sm"
+      [attr.aria-expanded]="statusAberto()"
+      aria-haspopup="menu"
+      (click)="statusAberto.set(!statusAberto())"
+    >
+      {{ t.tarefas.status.rotulo }}: {{ statusTexto() }}
+    </button>
+    @if (statusAberto()) {
+      <div class="status-pop pop" role="menu" [attr.aria-label]="t.tarefas.status.rotulo">
+        <div class="status-acoes">
+          <button type="button" class="btn sm ghost" (click)="marcarTodosStatus(true)">
+            {{ t.tarefas.status.marcarTodos }}
+          </button>
+          <button type="button" class="btn sm ghost" (click)="marcarTodosStatus(false)">
+            {{ t.tarefas.status.desmarcarTodos }}
+          </button>
+        </div>
+        @for (s of statusLista; track s) {
+          <label class="status-item">
+            <input
+              type="checkbox"
+              [checked]="statusEscolhido().has(s)"
+              (change)="alternarStatus(s, $any($event.target).checked)"
+            />
+            {{ statusRotulo(s) }}
+          </label>
+        }
+      </div>
+    }
+  </div>
   @if (pessoasFiltro().length) {
     <label class="field-inline">
       {{ t.tarefas.pessoa.rotulo }}
