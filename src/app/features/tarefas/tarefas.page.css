@@ -4,6 +4,16 @@
   gap: 20px;
   min-width: 0;
 }
+.busca {
+  flex: 1 1 220px;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--fg);
+}
 .banner {
   padding: 14px 18px;
   text-decoration: none;

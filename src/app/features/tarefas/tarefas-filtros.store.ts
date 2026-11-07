@@ -27,6 +27,8 @@ export class TarefasFiltrosStore {
   readonly status = signal<ReadonlySet<StatusItem>>(new Set(ORDEM_STATUS));
   /** Ordem da Lista e dos cartões dentro de cada coluna do Kanban (T-70). */
   readonly ordenarPor = signal<CriterioOrdenacao>('prazo');
+  /** Busca por nome (T-71); '' = sem busca. */
+  readonly busca = signal('');
 
   limpar(): void {
     this.abaAtual.set('todas');
@@ -37,5 +39,6 @@ export class TarefasFiltrosStore {
     this.refCalendario.set(hojeIso());
     this.status.set(new Set(ORDEM_STATUS));
     this.ordenarPor.set('prazo');
+    this.busca.set('');
   }
 }

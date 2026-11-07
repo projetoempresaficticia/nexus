@@ -118,6 +118,7 @@ export const TEXTOS = {
         ? 'Há 1 solicitação esperando a sua resposta'
         : `Há ${n} solicitações esperando a sua resposta`,
     visao: 'Visualização',
+    buscar: 'Buscar tarefa por nome',
     deQuem: { rotulo: 'De quem', todos: 'Todos', minhas: 'Só as minhas' },
     pessoa: { rotulo: 'Pessoa', todas: 'Todas as pessoas' },
     status: {
