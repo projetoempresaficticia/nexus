@@ -16,6 +16,7 @@ describe('TarefasFiltrosStore', () => {
     store.quem.set('minhas');
     store.pessoaEscolhida.set('p-bruno');
     store.status.set(new Set(['a_fazer']));
+    store.ordenarPor.set('nome');
 
     store.limpar();
 
@@ -25,5 +26,6 @@ describe('TarefasFiltrosStore', () => {
     expect(store.quem()).toBe('todos');
     expect(store.pessoaEscolhida()).toBe('');
     expect(store.status().size).toBe(ORDEM_STATUS.length);
+    expect(store.ordenarPor()).toBe('prazo');
   });
 });
