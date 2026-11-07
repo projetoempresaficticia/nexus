@@ -113,6 +113,10 @@ describe('ProjetosPage', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelectorAll('.pcard').length).toBe(2);
+    expect([...el.querySelectorAll('.nome')].map((n) => n.textContent)).toEqual([
+      'Marketing',
+      'Turmas',
+    ]);
     const select = el.querySelector('.viewbar select') as HTMLSelectElement;
     select.value = 'p-ana';
     select.dispatchEvent(new Event('change'));
@@ -131,5 +135,58 @@ describe('ProjetosPage', () => {
     const el2 = segunda.nativeElement as HTMLElement;
     expect(el2.querySelectorAll('.pcard').length).toBe(1);
     expect((el2.querySelector('.viewbar select') as HTMLSelectElement).value).toBe('p-ana');
+  });
+
+  it('ordenar os cartões por prazo (T-70)', async () => {
+    const itens = [
+      item({ id: 'p', nivel: 0, nome: 'Turmas', setor_id: SETORES.sucesso, prazo: '2026-11-01' }),
+      item({
+        id: 'p2',
+        nivel: 0,
+        nome: 'Marketing',
+        setor_id: SETORES.sucesso,
+        prazo: '2026-12-01',
+      }),
+    ];
+    TestBed.configureTestingModule({
+      imports: [ProjetosPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AcessoService,
+          useValue: {
+            carregarInicial: vi
+              .fn()
+              .mockResolvedValue(
+                dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]),
+              ),
+            contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
+          },
+        },
+        { provide: ItensService, useValue: { listar: vi.fn().mockResolvedValue(itens) } },
+      ],
+    });
+    await TestBed.inject(AcessoStore).carregar();
+    const fixture = TestBed.createComponent(ProjetosPage);
+    await fixture.whenStable();
+    await new Promise((r) => setTimeout(r));
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect([...el.querySelectorAll('.nome')].map((n) => n.textContent)).toEqual([
+      'Marketing',
+      'Turmas',
+    ]);
+    const selects = [...el.querySelectorAll('.viewbar select')] as HTMLSelectElement[];
+    const ordenar = selects.find((s) =>
+      s.closest('.field-inline')?.textContent?.includes('Ordenar por'),
+    )!;
+    ordenar.value = 'prazo';
+    ordenar.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect([...el.querySelectorAll('.nome')].map((n) => n.textContent)).toEqual([
+      'Turmas',
+      'Marketing',
+    ]);
   });
 });
