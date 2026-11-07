@@ -77,6 +77,13 @@ export const TEXTOS = {
     contaTesteAjuda: 'Nunca recebe e-mail de verdade, não importa a preferência da pessoa.',
   },
   setor: { rotulo: 'Setor', todos: 'Todos os meus setores' },
+  ordenar: {
+    rotulo: 'Ordenar por',
+    prazo: 'Prazo',
+    prioridade: 'Prioridade',
+    nome: 'Nome (A-Z)',
+    recente: 'Criado mais recente',
+  },
   comum: {
     carregando: 'Carregando…',
     semResponsavel: 'Sem responsável',
