@@ -33,3 +33,37 @@
 .grupo.contexto .nav-label {
   color: var(--muted);
 }
+.status-filtro {
+  position: relative;
+}
+.status-pop {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.status-acoes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.status-acoes .btn {
+  flex: 1 1 0;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
