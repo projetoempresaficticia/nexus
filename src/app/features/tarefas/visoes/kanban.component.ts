@@ -19,6 +19,7 @@ import { AvataresComponent } from '../../../shared/ui/avatares.component';
 import { BarraComponent } from '../../../shared/ui/barra.component';
 import { MudarStatusComponent } from '../../../shared/ui/mudar-status.component';
 import { NivelComponent } from '../../../shared/ui/nivel.component';
+import { RolagemTopoComponent } from '../../../shared/ui/rolagem-topo.component';
 import { ToastService } from '../../../shared/ui/toast.service';
 import { dataCurta } from '../../../shared/utils/datas';
 import { progressoPorFilhos } from '../../../shared/utils/progresso';
@@ -55,6 +56,7 @@ const ORDEM_PRIORIDADE: Prioridade[] = ['alta', 'media', 'baixa'];
     BarraComponent,
     NivelComponent,
     MudarStatusComponent,
+    RolagemTopoComponent,
   ],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.css',

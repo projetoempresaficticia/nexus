@@ -9,7 +9,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Site passa a ser publicado no Cloudflare Pages (a partir do repositório privado) e o banco ganha backup diário encriptado no Google Drive, com teste automático de restauro e guia de recuperação (T-48).
 
 ### Corrigido
-- 2026-11-07 — Kanban e "Por pessoa": colunas com muitas tarefas deixavam a página enorme, e a barra de rolagem horizontal do quadro ficava lá embaixo, fora da tela. Agora cada coluna rola por dentro, com altura travada e o cabeçalho fixo no topo dela (T-68).
+- 2026-11-07 — Kanban e "Por pessoa": a barra de rolagem horizontal do quadro ficava lá embaixo, fora da tela, quando uma coluna tinha muita tarefa. Agora tem uma segunda barra idêntica em cima, sincronizada com a de baixo — a rolagem de cada coluna continua igual a antes (T-68).
 - 2026-10-25 — Ícone da aba do navegador ainda era o padrão do Angular; agora é a marca do Nexus.
 - 2026-10-25 — Campo de Responsável (nova tarefa, item): quem digitava um nome e saía do campo sem clicar numa opção ficava com o texto pendurado ali, parecendo uma pessoa marcada — sem ninguém de verdade ligado ao item (prejudicava as métricas). Agora a lista abre ao focar o campo e, ao sair, só entra uma pessoa se sobrou exatamente uma sugestão; senão, o texto é limpo.
 - 2026-10-25 — Botões "‹ Hoje ›" nas visões Mês, Semana e Linha do tempo apareciam empilhados e com o fundo escuro da barra lateral (T-58).
