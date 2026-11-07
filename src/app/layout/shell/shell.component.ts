@@ -9,6 +9,8 @@ import { RealtimeService } from '../../core/services/realtime.service';
 import { SincronizacaoService } from '../../core/services/sincronizacao.service';
 import { TemaService } from '../../core/services/tema.service';
 import { SolicitacoesStore } from '../../core/solicitacoes/solicitacoes.store';
+import { ProjetosFiltrosStore } from '../../features/projetos/projetos-filtros.store';
+import { TarefasFiltrosStore } from '../../features/tarefas/tarefas-filtros.store';
 import { NotificacoesSinoComponent } from './notificacoes-sino.component';
 
 interface ItemMenu {
@@ -32,6 +34,8 @@ export class ShellComponent {
   private readonly itensStore = inject(ItensStore);
   private readonly solicitacoes = inject(SolicitacoesStore);
   private readonly notificacoes = inject(NotificacoesStore);
+  private readonly filtrosTarefas = inject(TarefasFiltrosStore);
+  private readonly filtrosProjetos = inject(ProjetosFiltrosStore);
   protected readonly t = TEXTOS;
   protected readonly realtime = inject(RealtimeService);
 
@@ -100,6 +104,8 @@ export class ShellComponent {
     this.itensStore.limpar();
     this.solicitacoes.limpar();
     this.notificacoes.limpar();
+    this.filtrosTarefas.limpar();
+    this.filtrosProjetos.limpar();
     await this.router.navigateByUrl('/login');
   }
 }
