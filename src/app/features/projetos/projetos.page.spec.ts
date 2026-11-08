@@ -64,6 +64,57 @@ describe('ProjetosPage', () => {
     expect(el.querySelector('.btn.primary')?.textContent).toContain('+ Novo projeto');
   });
 
+  it('mostra o status do projeto no cartão e filtra por ele (T-72)', async () => {
+    const itens = [
+      item({ id: 'p', nivel: 0, nome: 'Turmas', setor_id: SETORES.sucesso, status: 'a_fazer' }),
+      item({
+        id: 'p2',
+        nivel: 0,
+        nome: 'Marketing',
+        setor_id: SETORES.sucesso,
+        status: 'concluida',
+      }),
+    ];
+    TestBed.configureTestingModule({
+      imports: [ProjetosPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AcessoService,
+          useValue: {
+            carregarInicial: vi
+              .fn()
+              .mockResolvedValue(
+                dadosIniciais([{ setor_id: SETORES.sucesso, papel: 'lider' }], [SETORES.sucesso]),
+              ),
+            contarSolicitacoesPendentes: vi.fn().mockResolvedValue(0),
+          },
+        },
+        { provide: ItensService, useValue: { listar: vi.fn().mockResolvedValue(itens) } },
+      ],
+    });
+    await TestBed.inject(AcessoStore).carregar();
+    const fixture = TestBed.createComponent(ProjetosPage);
+    await fixture.whenStable();
+    await new Promise((r) => setTimeout(r));
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    const cartoes = el.querySelectorAll('.pcard');
+    expect(cartoes[0].querySelector('app-pill-status')?.textContent?.trim()).toBe('Concluída');
+    expect(cartoes[1].querySelector('app-pill-status')?.textContent?.trim()).toBe('A fazer');
+
+    (el.querySelector('.status-filtro button') as HTMLElement).click();
+    await fixture.whenStable();
+    const concluida = [...el.querySelectorAll('.status-item')].find((l) =>
+      l.textContent?.includes('Concluída'),
+    )!;
+    (concluida.querySelector('input') as HTMLInputElement).click();
+    await fixture.whenStable();
+
+    expect([...el.querySelectorAll('.nome')].map((n) => n.textContent)).toEqual(['Turmas']);
+  });
+
   it('filtro por pessoa (líder) só mostra projetos com a pessoa responsável abaixo', async () => {
     const itensComResponsavel = [
       item({ id: 'p', nivel: 0, nome: 'Turmas', setor_id: SETORES.sucesso }),

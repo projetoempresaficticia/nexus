@@ -1,11 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AcessoStore } from '../../core/auth/acesso.store';
 import { ItensStore } from '../../core/itens/itens.store';
+import { ORDEM_STATUS, STATUS_ITEM, StatusItem } from '../../core/models/rotulos';
 import { TEXTOS } from '../../core/models/textos';
 import { CabecalhoComponent } from '../../layout/cabecalho/cabecalho.component';
 import { BarraComponent } from '../../shared/ui/barra.component';
 import { CarregandoComponent } from '../../shared/ui/carregando.component';
+import { PillStatusComponent } from '../../shared/ui/pill-status.component';
 import { VazioComponent } from '../../shared/ui/vazio.component';
 import { CriterioOrdenacao, ordenarItens } from '../../shared/utils/ordenar';
 import {
@@ -26,7 +28,9 @@ import { ProjetosFiltrosStore } from './projetos-filtros.store';
     VazioComponent,
     CarregandoComponent,
     NovoItemModal,
+    PillStatusComponent,
   ],
+  host: { '(document:keydown.escape)': 'statusAberto.set(false)' },
   templateUrl: './projetos.page.html',
   styles: `
     :host {
@@ -63,6 +67,40 @@ import { ProjetosFiltrosStore } from './projetos-filtros.store';
     }
     .avulsas {
       border-style: dashed;
+    }
+    .status-filtro {
+      position: relative;
+    }
+    .status-pop {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    .status-acoes {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .status-acoes .btn {
+      flex: 1 1 0;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      font-size: 14px;
+      cursor: pointer;
     }
   `,
 })
@@ -106,13 +144,41 @@ export class ProjetosPage {
     ['recente', this.t.ordenar.recente],
   ];
 
+  /**
+   * Filtro por status do próprio projeto (T-72, igual ao de Tarefas US-22): quais status
+   * aparecem na grade. Todos marcados = sem filtro nenhum.
+   */
+  protected readonly statusLista = ORDEM_STATUS;
+  protected readonly statusEscolhido = this.filtros.status;
+  protected readonly statusAberto = signal(false);
+  protected readonly statusTexto = computed(() => {
+    const n = this.statusEscolhido().size;
+    return n === this.statusLista.length
+      ? this.t.tarefas.status.todos
+      : this.t.tarefas.status.alguns(n);
+  });
+  protected statusRotulo(s: StatusItem): string {
+    return STATUS_ITEM[s].texto;
+  }
+  protected alternarStatus(s: StatusItem, marcado: boolean): void {
+    const atual = new Set(this.statusEscolhido());
+    if (marcado) atual.add(s);
+    else atual.delete(s);
+    this.filtros.status.set(atual);
+  }
+  protected marcarTodosStatus(marcar: boolean): void {
+    this.filtros.status.set(new Set(marcar ? this.statusLista : []));
+  }
+
   protected readonly cartoes = computed(() => {
     const todos = this.itens.todos();
     const pessoa = this.pessoa();
+    const status = this.statusEscolhido();
     const projetos = todos.filter(
       (i) =>
         i.nivel === 0 &&
         this.noFiltro(i.setor_id) &&
+        status.has(i.status) &&
         (!pessoa || ehResponsavelAbaixo(i.id, pessoa, todos)),
     );
     return ordenarItens(projetos, this.ordenarPor()).map((p) => {
@@ -136,5 +202,12 @@ export class ProjetosPage {
 
   constructor() {
     void this.itens.carregar();
+
+    // Fecha o painel de status ao clicar fora dele (igual ao de Tarefas).
+    const fechar = (evento: MouseEvent) => {
+      if (!(evento.target as HTMLElement).closest('.status-filtro')) this.statusAberto.set(false);
+    };
+    document.addEventListener('click', fechar);
+    inject(DestroyRef).onDestroy(() => document.removeEventListener('click', fechar));
   }
 }
