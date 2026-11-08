@@ -23,6 +23,7 @@ Todas as mudanças relevantes do Nexus v2. Formato [Keep a Changelog](https://ke
 - 2026-10-24 — Página de acesso não autorizado (quando a conta não está cadastrada ou está inativa) ganha a marca do Nexus e passa a orientar a pessoa a entrar em contato com a gestão para fazer o cadastro.
 
 ### Adicionado
+- 2026-11-07 — Aba Projetos: cartão do projeto mostra o status (A fazer, Em andamento, Bloqueada, Aguardando aprovação, Concluída) e ganha um filtro por status, igual ao de Tarefas (T-72).
 - 2026-11-07 — Barra de busca por nome na aba Tarefas: encontra a tarefa em qualquer visão. A busca também fica guardada durante a sessão (T-71).
 - 2026-11-07 — Filtro "Ordenar por" (Prazo, Prioridade, Nome, Criado mais recente) na Lista de Tarefas, dentro de cada coluna do Kanban e na grade de Projetos. A escolha também fica guardada durante a sessão (T-70).
 - 2026-11-07 — Tarefas: filtro por Status (marca/desmarca quais status aparecem, em qualquer visão). E os filtros da tela (aba, visão, "Só os meus", pessoa, status), e também o filtro por pessoa de Projetos, continuam escolhidos ao sair de uma tarefa e voltar, ou trocar de tela e voltar — não resetam mais (T-69).
